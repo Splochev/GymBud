@@ -1,0 +1,23 @@
+import React, { createContext, useState } from 'react';
+import PropTypes from 'prop-types';
+
+const initialState = {
+    user: undefined
+};
+
+
+const Store = ({ children }) => {
+    const [state, setState] = useState(initialState);
+    return (
+        <Context.Provider value={[state, setState]}>
+            {children}
+        </Context.Provider>
+    );
+};
+
+export const Context = createContext(initialState);
+export default Store;
+
+Store.propTypes = {
+    children: PropTypes.node,
+};
