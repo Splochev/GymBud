@@ -11,6 +11,7 @@ import Login from "./components/Login/Login"
 import Register from "./components/Register/Register";
 import ForgotPassword from "./components/Login/ForgotPassword/ForgotPassword";
 import Store from './store/Store'
+import ProgressTracker from './components/ProgressTracker/ProgressTracker'
 
 const App = () => {
     const [loggedIn, setLoggedIn] = useState(true);
@@ -18,7 +19,8 @@ const App = () => {
         return (
             <div className="app">
                 <LoggedInHeader />
-                <HomePageArticles />
+                {/* <HomePageArticles /> */}
+                <ProgressTracker />
                 <Footer />
                 <CalorieCalculator />
                 <OneRepMaxCalculator />

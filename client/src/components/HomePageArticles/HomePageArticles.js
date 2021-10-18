@@ -1,4 +1,8 @@
+import useStyles from './styles'
+
+
 const HomePageArticles = () => {
+    const classes = useStyles();
     return (
         <div className="home-page-section row">
             <div className="col">
@@ -47,7 +51,7 @@ const HomePageArticles = () => {
                                 </div>
                             </div>
                         </article>
-                        <article className="postcard light">
+                        <article className={"postcard light" + " " + classes.articleCard} >
                             <img className="postcard__img" src="/landing-page-background-woman-img.png" alt="woman doing leg press" />
                             <div className="postcard__text t-dark">
                                 <div className="postcard__preview-txt">
