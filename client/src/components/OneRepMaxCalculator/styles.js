@@ -1,8 +1,11 @@
 import { makeStyles } from '@material-ui/core';
 
 export default makeStyles(() => ({
-    icon: {
-        fontSize: '24px'
-    }
+    oneRepMaxInput: {
+        width: '30%'
+    },
+    borderless: {
+        borderRadius: '0px',
+    },
 
 }))

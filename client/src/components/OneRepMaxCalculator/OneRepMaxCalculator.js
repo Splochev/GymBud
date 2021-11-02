@@ -1,22 +1,22 @@
 import useStyles from './styles'
 import { useState } from 'react';
-import disable from '../Global/disableUrl';
 import MissingFields from '../Global/MissingFields'
 
 const OneRepMaxCalculator = () => {
     const classes = useStyles();
     const [alert, setAlert] = useState('');
 
-    function calculate(event) {
-        event.preventDefault();
-        const weight = document.getElementById("oneRepMaxWeight");
-        const reps = document.getElementById("reps");
-        const oneRM = document.getElementById("one-rep-max-result");
+    function calculate(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const weight = formData.get('weight');
+        const reps = formData.get('reps');
+        const oneRM = document.getElementsByName("oneRMResult")[0];
 
-        if ((reps.value <= 10 && reps.value >= 4) && (weight.value > 0)) {
-            oneRM.value = (weight.value / (1.0278 - 0.0278 * reps.value)).toFixed(2);
+        if ((reps <= 10 && reps >= 4) && (weight > 0)) {
+            oneRM.value = (weight / (1.0278 - 0.0278 * reps)).toFixed(2);
         } else {
-            setAlert(<MissingFields setAlert={setAlert} alertMessage={'All fields are required! Repetitions must be between 4 and 10. Weight must be a positive number.'} />)
+            setAlert(<MissingFields setAlert={setAlert} alertMessage={'All fields are required!'} />)
             oneRM.value = '';
         }
     }
@@ -46,43 +46,33 @@ const OneRepMaxCalculator = () => {
                             repetitions.
                         </p>
                         {alert}
-                        <div className="row">
-                            <div className="col">
-                                <form onSubmit={disable}>
-                                    <div className="input-group mb-3">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text"><i className={"fas fa-balance-scale " + classes.icon}></i></span>
-                                        </div>
-                                        <input type="number" className="form-control" placeholder="Weight" id="oneRepMaxWeight" min="1"></input>
+                        <form onSubmit={calculate}>
+                            <div className="row">
+                                <div class="form-group col">
+                                    <div className="input-group-prepend">
+                                        <span className={"input-group-text" + ' ' + classes.borderless}><i className="fas fa-balance-scale"></i></span>
+                                        <input type="number" className={"form-control" + ' ' + classes.borderless} name='weight' placeholder="Weight" min="1"></input>
                                     </div>
-                                </form>
-                            </div>
-                            <div className="col">
-                                <form onSubmit={disable}>
-                                    <div className="input-group mb-3">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text"><i className={"fas fa-sort-numeric-up " + classes.icon}></i></span>
-                                        </div>
-                                        <input type="number" className="form-control" placeholder="Repetitions" id="reps" min="4" max="10"></input>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div className="d-flex justify-content-center">
-                            <form onSubmit={disable}>
-                                <div className="form-group">
-                                    <div className="d-flex justify-content-center">
-                                        <label htmlFor="one-rep-max-result">Your one rep max is: </label>
-                                    </div>
-                                    <input type="number" className="form-control" id="one-rep-max-result" disabled></input>
                                 </div>
-                            </form>
-                        </div>
-                        <div className="d-flex justify-content-center">
-                            <button type="button" className="btn btn-success" data-toggle="tooltip" title="Calculate 1 Rep Max" onClick={calculate}>
-                                <i className={"fas fa-calculator " + classes.icon}></i>
-                            </button>
-                        </div>
+                                <div class="form-group col">
+                                    <div className="input-group-prepend">
+                                        <span className={"input-group-text" + ' ' + classes.borderless}><i className="fas fa-sort-numeric-up"></i></span>
+                                        <input type="number" className={"form-control" + ' ' + classes.borderless} name='reps' placeholder="Reps" min="4" max="10"></input>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="form-group d-flex justify-content-center row">
+                                <div>Your one rep max is: </div>
+                            </div>
+                            <div className="form-group d-flex justify-content-center row">
+                                <input type="number" className={"form-control" + ' ' + classes.oneRepMaxInput} name="oneRMResult" disabled></input>
+                            </div>
+                            <div className="d-flex justify-content-center row">
+                                <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate 1 Rep Max" >
+                                    <i className="fas fa-calculator"></i>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-danger" data-dismiss="modal">Close</button>
