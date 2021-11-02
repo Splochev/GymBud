@@ -51,10 +51,10 @@ const HomePageArticles = () => {
                                 </div>
                             </div>
                         </article>
-                        <article className={"postcard light" + " " + classes.articleCard} >
+                        <article className="postcard light"  >
                             <img className="postcard__img" src="/landing-page-background-woman-img.png" alt="woman doing leg press" />
                             <div className="postcard__text t-dark">
-                                <div className="postcard__preview-txt">
+                                <div className={"postcard__preview-txt" + " " + classes.articleCardText}>
                                     <div className="postcard__bar"></div>
                                     Create and manage your own workout journal.
                                     <br></br>Submit every workout's set and rep.
