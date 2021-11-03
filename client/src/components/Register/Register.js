@@ -1,11 +1,28 @@
-const Register = () => {
+import { useState, useEffect } from 'react';
+import MissingFields from '../Global/MissingFields'
+
+const Register = ({ showRegister, setShowRegister }) => {
+    const [alert, setAlert] = useState('');
+
+
+    useEffect(() => {
+        if (showRegister) {
+            document.getElementById('register-modal').addEventListener('click', (e) => {
+                if (e.target.className == 'modal fade' || e.target.className == 'modal fade show') {
+                    setShowRegister(false);
+                }
+            })
+        }
+    }, [showRegister]);
+
+
     return (
         <div className="modal fade" id="register-modal">
             <div className="modal-dialog">
                 <div className="modal-content">
                     <div className="modal-header">
                         <h4 className="modal-title">Sign Up</h4>
-                        <button type="button" className="close" data-dismiss="modal">&times;</button>
+                        <button type="button" className="close" data-dismiss="modal" onClick={() => { setShowRegister(false) }}>&times;</button>
                     </div>
                     <div className="modal-body">
                         <div className="container mt-3">

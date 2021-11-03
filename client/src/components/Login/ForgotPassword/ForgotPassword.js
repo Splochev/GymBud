@@ -1,4 +1,20 @@
-const ForgotPassword = () => {
+import { useState, useEffect } from 'react';
+import MissingFields from '../../Global/MissingFields';
+
+const ForgotPassword = ({ showForgotPassword, setShowForgotPassword }) => {
+    const [alert, setAlert] = useState('');
+
+    useEffect(() => {
+        if (showForgotPassword) {
+            document.getElementById('forgot-password-modal').addEventListener('click', (e) => {
+                if (e.target.className == 'modal fade' || e.target.className == 'modal fade show') {
+                    setShowForgotPassword(false);
+                }
+            })
+        }
+    }, [showForgotPassword]);
+
+
     return (
 
         <div className="modal fade" id="forgot-password-modal">
@@ -6,7 +22,7 @@ const ForgotPassword = () => {
                 <div className="modal-content">
                     <div className="modal-header">
                         <h4 className="modal-title">Reset Your Password</h4>
-                        <button type="button" className="close" data-dismiss="modal">&times;</button>
+                        <button type="button" className="close" data-dismiss="modal" onClick={() => { setShowForgotPassword(false) }}>&times;</button>
 
                     </div>
                     <div className="modal-body">

@@ -1,8 +1,8 @@
 import useStyles from './styles'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MissingFields from '../Global/MissingFields'
 
-const OneRepMaxCalculator = () => {
+const OneRepMaxCalculator = ({ showOneRMCalculator, setOneRMCalculator }) => {
     const classes = useStyles();
     const [alert, setAlert] = useState('');
 
@@ -21,15 +21,24 @@ const OneRepMaxCalculator = () => {
         }
     }
 
+    useEffect(() => {
+        if (showOneRMCalculator) {
+            document.getElementById('one-rep-max-calculator').addEventListener('click', (e) => {
+                if (e.target.className == 'modal fade' || e.target.className == 'modal fade show') {
+                    setOneRMCalculator(false);
+                }
+            })
+        }
+    }, [showOneRMCalculator]);
+
+
     return (
         <div className="modal fade" id="one-rep-max-calculator">
             <div className="modal-dialog modal-lg modal-dialog-scrollable">
                 <div className="modal-content">
-
                     <div className="modal-header">
                         <h4 className="modal-title">One Rep Max Calculator</h4>
-
-                        <button type="button" className="close" data-dismiss="modal">&times;</button>
+                        <button type="button" className="close" data-dismiss="modal" onClick={() => { setOneRMCalculator(false) }}>&times;</button>
                     </div>
                     <div className="modal-body">
                         <p>
@@ -75,7 +84,7 @@ const OneRepMaxCalculator = () => {
                         </form>
                     </div>
                     <div className="modal-footer">
-                        <button type="button" className="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={() => { setOneRMCalculator(false) }}>Close</button>
                     </div>
                 </div>
             </div>

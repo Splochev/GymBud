@@ -1,14 +1,25 @@
 import KatchMcardleFormula from './KatchMcardleFormula/KatchMcardleFormula';
 import MifflinStJeorFormula from './MifflinStJeorFormula/MifflinStJeorFormula'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useStyles from './styles.js'
 import disable from '../Global/disableUrl';
 import MissingFields from '../Global/MissingFields';
 
-const CalorieCalculator = () => {
+const CalorieCalculator = ({ showCalorieCalculator, setShowCalorieCalculator }) => {
     const classes = useStyles();
     const [formula, setFormula] = useState(<KatchMcardleFormula />);
     const [alert, setAlert] = useState('');
+
+    useEffect(() => {
+        if (showCalorieCalculator) {
+            document.getElementById('calorie-calculator').addEventListener('click', (e) => {
+                if (e.target.className == 'modal fade' || e.target.className == 'modal fade show') {
+                    setShowCalorieCalculator(false);
+                }
+            })
+        }
+    }, [showCalorieCalculator]);
+
 
     function onChangeKatchMcardleRadio() {
         setFormula(<KatchMcardleFormula />);
@@ -63,7 +74,7 @@ const CalorieCalculator = () => {
                 <div className="modal-content">
                     <div className="modal-header">
                         <h4>Calorie Calculator</h4>
-                        <button type="button" className="close" data-dismiss="modal">&times;</button>
+                        <button type="button" className="close" data-dismiss="modal" onClick={() => { setShowCalorieCalculator(false) }} >&times;</button>
                     </div>
                     <div className="modal-body">
                         <div className="d-flex justify-content-center">
@@ -84,10 +95,7 @@ const CalorieCalculator = () => {
                             </form>
                         </div>
                         {formula}
-
-
                         <hr />
-
                         <div className="d-flex justify-content-center">
                             <h4>TDEE calculator:</h4>
                         </div>
@@ -126,7 +134,7 @@ const CalorieCalculator = () => {
 
                     </div>
                     <div className="modal-footer">
-                        <button type="button" className="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={() => { setShowCalorieCalculator(false) }}>Close</button>
                     </div>
                 </div>
             </div>

@@ -1,10 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MissingFields from "../Global/MissingFields";
 import useStyles from './styles'
 
-const AddFood = () => {
+const AddFood = ({ showAddFood, setAddFood }) => {
     const [alert, setAlert] = useState('');
     const classes = useStyles();
+
+
+    useEffect(() => {
+        if (showAddFood) {
+            document.getElementById('add-food').addEventListener('click', (e) => {
+                if (e.target.className == 'modal fade' || e.target.className == 'modal fade show') {
+                    setAddFood(false);
+                }
+            })
+        }
+    }, [showAddFood]);
 
     function calculate(e) {
         e.preventDefault();
@@ -43,7 +54,7 @@ const AddFood = () => {
                 <div className="modal-content">
                     <div className="modal-header">
                         <h4 className="modal-title">Add Food</h4>
-                        <button type="button" className="close" data-dismiss="modal">&times;</button>
+                        <button type="button" className="close" data-dismiss="modal" onClick={() => { setAddFood(false) }}>&times;</button>
                     </div>
                     <div className="modal-body">
                         {alert}
@@ -91,7 +102,7 @@ const AddFood = () => {
                         </div>
                     </div>
                     <div className="modal-footer">
-                        <button type="button" className="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={() => { setAddFood(false) }}>Close</button>
                     </div>
                 </div>
             </div >

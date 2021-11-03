@@ -1,11 +1,27 @@
-const Login = () => {
+import { useState, useEffect } from 'react';
+import MissingFields from '../Global/MissingFields'
+
+const Login = ({ showLogin, setShowLogin, setShowForgotPassword }) => {
+    const [alert, setAlert] = useState('');
+
+
+    useEffect(() => {
+        if (showLogin) {
+            document.getElementById('login-modal').addEventListener('click', (e) => {
+                if (e.target.className == 'modal fade' || e.target.className == 'modal fade show') {
+                    setShowLogin(false);
+                }
+            })
+        }
+    }, [showLogin]);
+
     return (
         <div className="modal fade" id="login-modal">
             <div className="modal-dialog">
                 <div className="modal-content">
                     <div className="modal-header">
                         <h4 className="modal-title">Sign In</h4>
-                        <button type="button" className="close" data-dismiss="modal">&times;</button>
+                        <button type="button" className="close" data-dismiss="modal" onClick={() => { setShowLogin(false) }}>&times;</button>
 
                     </div>
                     <div className="modal-body">
@@ -24,7 +40,15 @@ const Login = () => {
                                     </div>
                                     <input type="password" className="form-control" placeholder="Your password..." required></input>
                                 </div>
-                                <span className="psw">Forgot <a href="#!" data-dismiss="modal" data-toggle="modal" data-target="#forgot-password-modal">password?</a></span>
+                                <span className="psw">Forgot&nbsp;
+                                    <a href="#!" data-dismiss="modal" data-toggle="modal" data-target="#forgot-password-modal" onClick={(e) => {
+                                        e.preventDefault();
+                                        setShowLogin(false);
+                                        setShowForgotPassword(true);
+                                    }}>
+                                        password?
+                                    </a>
+                                </span>
                                 <div className="d-flex justify-content-center"><button type="button" className="btn btn-success">Sign In</button>
                                 </div>
                             </form>

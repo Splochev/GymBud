@@ -1,12 +1,21 @@
 import useStyles from './styles.js'
 import disable from '../../Global/disableUrl';
+import OneRepMaxCalculator from '../../OneRepMaxCalculator/OneRepMaxCalculator.js';
+import { useState } from 'react';
+import AddFood from '../../AddFood/AddFood.js';
+import CalorieCalculator from '../../CalorieCalculator/CalorieCalculator.js';
 
 const LoggedInHeader = () => {
     const classes = useStyles();
-
+    const [showOneRMCalculator, setOneRMCalculator] = useState(false);
+    const [showAddFood, setAddFood] = useState(false);
+    const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
 
     return (
         <div className="header">
+            {showOneRMCalculator ? <OneRepMaxCalculator showOneRMCalculator={showOneRMCalculator} setOneRMCalculator={setOneRMCalculator} /> : null}
+            {showAddFood ? <AddFood showAddFood={showAddFood} setAddFood={setAddFood} /> : null}
+            {showCalorieCalculator ? <CalorieCalculator showCalorieCalculator={showCalorieCalculator} setShowCalorieCalculator={setShowCalorieCalculator} /> : null}
             <div className="nav-wrapper">
                 <ul className="nav justify-content-end">
                     <li className="nav-item">
@@ -56,14 +65,22 @@ const LoggedInHeader = () => {
                             </li>
 
                             <li className="nav-item">
-                                <a className={"nav-link " + classes.navUrls} href="#!" data-toggle="modal" data-target="#calorie-calculator" onClick={disable}
+                                <a className={"nav-link " + classes.navUrls} href="#!" data-toggle="modal" data-target="#calorie-calculator" onClick={(e) => {
+                                    e.preventDefault();
+                                    setShowCalorieCalculator(true);
+                                }}
                                 >Calorie
                                     Calculator</a>
                             </li>
                             <li className="nav-item">
-                                <a className={"nav-link " + classes.navUrls} href="#!" data-toggle="modal" data-target="#one-rep-max-calculator" onClick={disable}>1 Rep
+                                <a className={"nav-link " + classes.navUrls} href="#!" data-toggle="modal" data-target="#one-rep-max-calculator" onClick={(e) => {
+                                    e.preventDefault();
+                                    setOneRMCalculator(true);
+                                }}>
+                                    1 Rep
                                     Max
-                                    Calculator</a>
+                                    Calculator
+                                </a>
                             </li>
                             <li className="nav-item dropdown">
                                 <a className={"nav-link dropdown-toggle " + classes.navUrls} href="#!" role="button"
@@ -72,7 +89,13 @@ const LoggedInHeader = () => {
                                 </a>
                                 <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <a className={"dropdown-item " + classes.dropDown} href="#!">My Food</a>
-                                    <a className={"dropdown-item " + classes.dropDown} href="#!" data-toggle="modal" data-target="#add-food">Add Food</a>
+                                    <a className={"dropdown-item " + classes.dropDown} href="#!" data-toggle="modal" data-target="#add-food"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setAddFood(true);
+                                        }}>
+                                        Add Food
+                                    </a>
                                 </div>
                             </li>
                             <li className="nav-item dropdown">
