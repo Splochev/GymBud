@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import MissingFields from '../Global/MissingFields'
+import { useEffect } from 'react';
+// import MissingFields from '../Global/MissingFields'
 
 const Register = ({ showRegister, setShowRegister }) => {
-    const [alert, setAlert] = useState('');
+    // const [alert, setAlert] = useState('');
 
 
     useEffect(() => {
         if (showRegister) {
             document.getElementById('register-modal').addEventListener('click', (e) => {
-                if (e.target.className == 'modal fade' || e.target.className == 'modal fade show') {
+                if (e.target.className === 'modal fade' || e.target.className === 'modal fade show') {
                     setShowRegister(false);
                 }
             })

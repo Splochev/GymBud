@@ -1,5 +1,4 @@
 import useStyles from './styles.js'
-import disable from '../../Global/disableUrl.js';
 import OneRepMaxCalculator from '../../OneRepMaxCalculator/OneRepMaxCalculator.js';
 import Login from '../../Login/Login.js';
 import ForgotPassword from '../../Login/ForgotPassword/ForgotPassword.js';
@@ -39,7 +38,7 @@ const LoggedOutHeader = () => {
                         }}>Sign Up</a>
                     </li>
                     <li className="nav-item dropdown dropleft">
-                        <a className={"nav-link dropdown-toggle" + " " + classes.questionIcon + " " + classes.signInOrUpUrls} href="#!" role="button" data-toggle="dropdown"
+                        <a className={`nav-link dropdown-toggle ${classes.questionIcon} ${classes.signInOrUpUrls}`} href="#!" role="button" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false">
                             <i className="far fa-question-circle"></i>
                         </a>

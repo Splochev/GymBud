@@ -13,7 +13,7 @@ const CalorieCalculator = ({ showCalorieCalculator, setShowCalorieCalculator }) 
     useEffect(() => {
         if (showCalorieCalculator) {
             document.getElementById('calorie-calculator').addEventListener('click', (e) => {
-                if (e.target.className == 'modal fade' || e.target.className == 'modal fade show') {
+                if (e.target.className === 'modal fade' || e.target.className === 'modal fade show') {
                     setShowCalorieCalculator(false);
                 }
             })

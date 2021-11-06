@@ -1,5 +1,4 @@
 import useStyles from './styles.js'
-import disable from '../../Global/disableUrl';
 import OneRepMaxCalculator from '../../OneRepMaxCalculator/OneRepMaxCalculator.js';
 import { useState } from 'react';
 import AddFood from '../../AddFood/AddFood.js';
@@ -25,7 +24,7 @@ const LoggedInHeader = () => {
                         <a className={"nav-link " + classes.signInOrUpUrls} href="#!">Logout</a>
                     </li>
                     <li className="nav-item dropdown dropleft">
-                        <a className={"nav-link dropdown-toggle" + " " + classes.questionIcon + " " + classes.signInOrUpUrls} href="#!" role="button"
+                        <a className={`nav-link dropdown-toggle ${classes.questionIcon} ${classes.signInOrUpUrls}`} href="#!" role="button"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i className="far fa-question-circle"></i>
                         </a>

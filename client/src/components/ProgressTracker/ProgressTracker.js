@@ -19,11 +19,11 @@ const ProgressTracker = () => {
             <tbody>
                 <tr>
                     <th scope="row">10/18/2021<br></br>- 10/23/2021</th>
-                    <td><input type="text" class={"form-control" + " " + classes.progressTrackerInput} placeholder="Weight"></input></td>
-                    <td><input type="text" class={"form-control" + " " + classes.progressTrackerInput} placeholder="Weight"></input></td>
-                    <td><input type="text" class={"form-control" + " " + classes.progressTrackerInput} placeholder="Weight"></input></td>
-                    <td><input type="text" class={"form-control" + " " + classes.progressTrackerInput} placeholder="Weight"></input></td>
-                    <td><input type="text" class={"form-control" + " " + classes.progressTrackerInput} placeholder="Weight"></input></td>
+                    <td><input type="text" class={"form-control " + classes.progressTrackerInput} placeholder="Weight"></input></td>
+                    <td><input type="text" class={"form-control " + classes.progressTrackerInput} placeholder="Weight"></input></td>
+                    <td><input type="text" class={"form-control " + classes.progressTrackerInput} placeholder="Weight"></input></td>
+                    <td><input type="text" class={"form-control " + classes.progressTrackerInput} placeholder="Weight"></input></td>
+                    <td><input type="text" class={"form-control " + classes.progressTrackerInput} placeholder="Weight"></input></td>
                     <td className={classes.progressTrackerInput}>XX</td>
                     <td>XX</td>
                 </tr>

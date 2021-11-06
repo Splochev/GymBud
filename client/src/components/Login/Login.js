@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import MissingFields from '../Global/MissingFields'
+import { useEffect } from 'react';
+// import MissingFields from '../Global/MissingFields'
 
 const Login = ({ showLogin, setShowLogin, setShowForgotPassword }) => {
-    const [alert, setAlert] = useState('');
+    // const [alert, setAlert] = useState('');
 
 
     useEffect(() => {
         if (showLogin) {
             document.getElementById('login-modal').addEventListener('click', (e) => {
-                if (e.target.className == 'modal fade' || e.target.className == 'modal fade show') {
+                if (e.target.className === 'modal fade' || e.target.className === 'modal fade show') {
                     setShowLogin(false);
                 }
             })

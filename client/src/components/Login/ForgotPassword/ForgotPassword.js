@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
-import MissingFields from '../../Global/MissingFields';
+import { useEffect } from 'react';
+// import MissingFields from '../../Global/MissingFields';
 
 const ForgotPassword = ({ showForgotPassword, setShowForgotPassword }) => {
-    const [alert, setAlert] = useState('');
+    // const [alert, setAlert] = useState('');
 
     useEffect(() => {
         if (showForgotPassword) {
             document.getElementById('forgot-password-modal').addEventListener('click', (e) => {
-                if (e.target.className == 'modal fade' || e.target.className == 'modal fade show') {
+                if (e.target.className === 'modal fade' || e.target.className === 'modal fade show') {
                     setShowForgotPassword(false);
                 }
             })

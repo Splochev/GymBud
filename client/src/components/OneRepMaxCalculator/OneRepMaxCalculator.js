@@ -24,7 +24,7 @@ const OneRepMaxCalculator = ({ showOneRMCalculator, setOneRMCalculator }) => {
     useEffect(() => {
         if (showOneRMCalculator) {
             document.getElementById('one-rep-max-calculator').addEventListener('click', (e) => {
-                if (e.target.className == 'modal fade' || e.target.className == 'modal fade show') {
+                if (e.target.className === 'modal fade' || e.target.className === 'modal fade show') {
                     setOneRMCalculator(false);
                 }
             })
@@ -59,14 +59,14 @@ const OneRepMaxCalculator = ({ showOneRMCalculator, setOneRMCalculator }) => {
                             <div className="row">
                                 <div class="form-group col">
                                     <div className="input-group-prepend">
-                                        <span className={"input-group-text" + ' ' + classes.borderless}><i className="fas fa-balance-scale"></i></span>
-                                        <input type="number" className={"form-control" + ' ' + classes.borderless} name='weight' placeholder="Weight" min="1"></input>
+                                        <span className={"input-group-text " + classes.borderless}><i className="fas fa-balance-scale"></i></span>
+                                        <input type="number" className={"form-control " + classes.borderless} name='weight' placeholder="Weight" min="1"></input>
                                     </div>
                                 </div>
                                 <div class="form-group col">
                                     <div className="input-group-prepend">
-                                        <span className={"input-group-text" + ' ' + classes.borderless}><i className="fas fa-sort-numeric-up"></i></span>
-                                        <input type="number" className={"form-control" + ' ' + classes.borderless} name='reps' placeholder="Reps" min="4" max="10"></input>
+                                        <span className={"input-group-text " + classes.borderless}><i className="fas fa-sort-numeric-up"></i></span>
+                                        <input type="number" className={"form-control " + classes.borderless} name='reps' placeholder="Reps" min="4" max="10"></input>
                                     </div>
                                 </div>
                             </div>
@@ -74,7 +74,7 @@ const OneRepMaxCalculator = ({ showOneRMCalculator, setOneRMCalculator }) => {
                                 <div>Your one rep max is: </div>
                             </div>
                             <div className="form-group d-flex justify-content-center row">
-                                <input type="number" className={"form-control" + ' ' + classes.oneRepMaxInput} name="oneRMResult" disabled></input>
+                                <input type="number" className={"form-control " + classes.oneRepMaxInput} name="oneRMResult" disabled></input>
                             </div>
                             <div className="d-flex justify-content-center row">
                                 <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate 1 Rep Max" >
