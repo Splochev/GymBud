@@ -17,7 +17,6 @@ const OneRepMaxCalculator = ({ showOneRMCalculator, setOneRMCalculator }) => {
             oneRM.value = (weight / (1.0278 - 0.0278 * reps)).toFixed(2);
         } else {
             setAlert(<MissingFields setAlert={setAlert} alertMessage={'All fields are required!'} />)
-            oneRM.value = '';
         }
     }
 
@@ -26,6 +25,11 @@ const OneRepMaxCalculator = ({ showOneRMCalculator, setOneRMCalculator }) => {
             document.getElementById('one-rep-max-calculator').addEventListener('click', (e) => {
                 if (e.target.className === 'modal fade' || e.target.className === 'modal fade show') {
                     setOneRMCalculator(false);
+                    try {
+                        document.getElementsByclassName('modal-backdrop')[0].remove()
+                    } catch (err) {
+                        return null;
+                    }
                 }
             })
         }
@@ -57,15 +61,15 @@ const OneRepMaxCalculator = ({ showOneRMCalculator, setOneRMCalculator }) => {
                         {alert}
                         <form onSubmit={calculate}>
                             <div className="row">
-                                <div class="form-group col">
+                                <div className="form-group col">
                                     <div className="input-group-prepend">
-                                        <span className={"input-group-text " + classes.borderless}><i className="fas fa-balance-scale"></i></span>
+                                        <div className={`input-group-text ${classes.borderless} ${classes.iconPrepend}`}><i className={"fas fa-balance-scale " + classes.icon}></i></div>
                                         <input type="number" className={"form-control " + classes.borderless} name='weight' placeholder="Weight" min="1"></input>
                                     </div>
                                 </div>
-                                <div class="form-group col">
+                                <div className="form-group col">
                                     <div className="input-group-prepend">
-                                        <span className={"input-group-text " + classes.borderless}><i className="fas fa-sort-numeric-up"></i></span>
+                                        <div className={`input-group-text ${classes.borderless} ${classes.iconPrepend}`}><i className={"fas fa-sort-numeric-up " + classes.icon}></i></div>
                                         <input type="number" className={"form-control " + classes.borderless} name='reps' placeholder="Reps" min="4" max="10"></input>
                                     </div>
                                 </div>
@@ -78,7 +82,7 @@ const OneRepMaxCalculator = ({ showOneRMCalculator, setOneRMCalculator }) => {
                             </div>
                             <div className="d-flex justify-content-center row">
                                 <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate 1 Rep Max" >
-                                    <i className="fas fa-calculator"></i>
+                                    <i className={"fas fa-calculator " + classes.icon}></i>
                                 </button>
                             </div>
                         </form>

@@ -7,5 +7,11 @@ export default makeStyles(() => ({
     borderless: {
         borderRadius: '0px',
     },
+    icon: {
+        fontSize: '20px'
+    },
+    iconPrepend: {
+        width: '50px'
+    },
 
 }))

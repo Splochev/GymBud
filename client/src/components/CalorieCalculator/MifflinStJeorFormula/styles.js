@@ -2,6 +2,15 @@ import { makeStyles } from '@material-ui/core';
 
 export default makeStyles(() => ({
     icon: {
-        fontSize: '24px'
-    }
+        fontSize: '20px'
+    },
+    cornerless: {
+        borderRadius: 0,
+    },
+    iconPrepend: {
+        width: '50px'
+    },
+    iconPrependWeight: {
+        width: '59px'
+    },
 }))

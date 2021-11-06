@@ -5,10 +5,10 @@ export default makeStyles(() => ({
         backgroundColor: '#343a40 !important',
     },
     icon: {
-        fontSize: '24px'
+        fontSize: '20px'
     },
     chooseFormula: {
-        paddingBottom: '24px'
+        paddingBottom: '25px'
     },
     activityIndexDropownWrap: {
         paddingBottom: '16px'
@@ -21,6 +21,4 @@ export default makeStyles(() => ({
             backgroundColor: 'white'
         }
     }
-
-
 }))

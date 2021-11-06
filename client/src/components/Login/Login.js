@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 // import MissingFields from '../Global/MissingFields'
+import useStyles from './styles'
 
 const Login = ({ showLogin, setShowLogin, setShowForgotPassword }) => {
     // const [alert, setAlert] = useState('');
+    const classes = useStyles();
 
 
     useEffect(() => {
@@ -10,6 +12,11 @@ const Login = ({ showLogin, setShowLogin, setShowForgotPassword }) => {
             document.getElementById('login-modal').addEventListener('click', (e) => {
                 if (e.target.className === 'modal fade' || e.target.className === 'modal fade show') {
                     setShowLogin(false);
+                    try {
+                        document.getElementsByClassName('modal-backdrop')[0].remove()
+                    } catch (err) {
+                        return null;
+                    }
                 }
             })
         }
@@ -28,19 +35,19 @@ const Login = ({ showLogin, setShowLogin, setShowForgotPassword }) => {
                         <div className="container mt-3">
                             <p>Please fill in this form to sign in.</p>
                             <form>
-                                <div className="input-group mb-3">
+                                <div class="form-group">
                                     <div className="input-group-prepend">
-                                        <span className="input-group-text"><i className="fas fa-envelope"></i></span>
+                                        <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-envelope " + classes.icon}></i></div>
+                                        <input type="text" className={"form-control " + classes.cornerless} placeholder="Your email" required></input>
                                     </div>
-                                    <input type="text" className="form-control" placeholder="Your email..." required></input>
                                 </div>
-                                <div className="input-group mb-3">
+                                <div class="form-group">
                                     <div className="input-group-prepend">
-                                        <span className="input-group-text"><i className="fas fa-lock"></i></span>
+                                        <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-lock " + classes.icon}></i></div>
+                                        <input type="password" className={"form-control " + classes.cornerless} placeholder="Your password" required></input>
                                     </div>
-                                    <input type="password" className="form-control" placeholder="Your password..." required></input>
                                 </div>
-                                <span className="psw">Forgot&nbsp;
+                                <div>Forgot&nbsp;
                                     <a href="#!" data-dismiss="modal" data-toggle="modal" data-target="#forgot-password-modal" onClick={(e) => {
                                         e.preventDefault();
                                         setShowLogin(false);
@@ -48,7 +55,7 @@ const Login = ({ showLogin, setShowLogin, setShowForgotPassword }) => {
                                     }}>
                                         password?
                                     </a>
-                                </span>
+                                </div>
                                 <div className="d-flex justify-content-center"><button type="button" className="btn btn-success">Sign In</button>
                                 </div>
                             </form>

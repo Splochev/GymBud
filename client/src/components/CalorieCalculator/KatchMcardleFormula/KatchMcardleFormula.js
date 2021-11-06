@@ -23,13 +23,12 @@ const KatchMcardleFormula = () => {
                     <div className="custom-control custom-radio custom-control-inline">
                         <input type="radio" className="custom-control-input" id="knows-lbm-true" name="example" value="customEx"
                             defaultChecked onChange={onChangeKnowsLbmTrue}></input>
-                        <label className="custom-control-label" htmlFor="knows-lbm-true">I know my lean<br></br>body mass</label>
+                        <label className="custom-control-label" htmlFor="knows-lbm-true">I know my LBM</label>
                     </div>
                     <div className="custom-control custom-radio custom-control-inline">
                         <input type="radio" className="custom-control-input" id="knows-lbm-false" name="example"
                             value="customEx" onChange={onChangeKnowsLbmFalse}></input>
-                        <label className="custom-control-label" htmlFor="knows-lbm-false">I don't know my<br></br>lean body
-                            mass</label>
+                        <label className="custom-control-label" htmlFor="knows-lbm-false">I don't know my LBM</label>
                     </div>
                 </form>
                 {knowsLbmLayout}

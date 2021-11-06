@@ -15,6 +15,11 @@ const CalorieCalculator = ({ showCalorieCalculator, setShowCalorieCalculator }) 
             document.getElementById('calorie-calculator').addEventListener('click', (e) => {
                 if (e.target.className === 'modal fade' || e.target.className === 'modal fade show') {
                     setShowCalorieCalculator(false);
+                    try {
+                        document.getElementsByClassName('modal-backdrop')[0].remove()
+                    } catch (err) {
+                        return null;
+                    }
                 }
             })
         }
@@ -33,38 +38,39 @@ const CalorieCalculator = ({ showCalorieCalculator, setShowCalorieCalculator }) 
         event.preventDefault();
         const indexValue = event.target.id;
         const indexInput = document.getElementById("activity-index");
-        indexInput.textContent = indexValue;
+        indexInput.textContent = 'Chosen Activity Index: ' + indexValue;
     }
 
     function calculate() {
-        const bmr = document.getElementById("bmr-result").value;
-        const indexInput = document.getElementById("activity-index");
+        const bmr = document.getElementsByName("bmr-result")[0].value;
+        const indexInput = document.getElementById("activity-index").textContent.substring(23);
         const tdee = document.getElementById("tdee-result");
-        tdee.value = '';
-        if (bmr) {
-            switch (indexInput.textContent) {
-                case '1.2':
-                    tdee.value = bmr * 1.2;
-                    break;
-                case '1.375':
-                    tdee.value = bmr * 1.375;
-                    break;
-                case '1.55':
-                    tdee.value = bmr * 1.55;
-                    break;
-                case '1.725':
-                    tdee.value = bmr * 1.725;
-                    break;
-                case '1.9':
-                    tdee.value = bmr * 1.9;
-                    break;
-                default:
-                    setAlert(<MissingFields setAlert={setAlert} alertMessage={'All fields are required! Please select an activity index. BMR result must not be empty.'} />)
-
+        try {
+            if (bmr) {
+                switch (indexInput) {
+                    case '1.2':
+                        tdee.value = bmr * 1.2;
+                        break;
+                    case '1.375':
+                        tdee.value = bmr * 1.375;
+                        break;
+                    case '1.55':
+                        tdee.value = bmr * 1.55;
+                        break;
+                    case '1.725':
+                        tdee.value = bmr * 1.725;
+                        break;
+                    case '1.9':
+                        tdee.value = bmr * 1.9;
+                        break;
+                    default:
+                        throw new Error('Please select an activity index.')
+                }
+            } else {
+                throw new Error('BMR result must not be empty.')
             }
-        } else {
-            setAlert(<MissingFields setAlert={setAlert} alertMessage={'All fields are required! Please select an activity index. BMR result must not be empty.'} />)
-
+        } catch (err) {
+            setAlert(<MissingFields setAlert={setAlert} alertMessage={err.message} />)
         }
     }
 
@@ -102,7 +108,7 @@ const CalorieCalculator = ({ showCalorieCalculator, setShowCalorieCalculator }) 
                         {alert}
                         <div className="d-flex justify-content-center">
                             <div className={"dropdown dropright " + classes.activityIndexDropownWrap} id="dropdown-activity-index">
-                                <button type="button" className={"btn btn-secondary dropdown-toggle " + classes.activityIndexDropownButton} id="activity-index" data-toggle="dropdown">
+                                <button type="button" className={"btn btn-secondary " + classes.activityIndexDropownButton} id="activity-index" data-toggle="dropdown">
                                     Choose Activity Index
                                 </button>
                                 <div className="dropdown-menu">
@@ -122,14 +128,12 @@ const CalorieCalculator = ({ showCalorieCalculator, setShowCalorieCalculator }) 
                             </button>
                         </div>
                         <div className="d-flex justify-content-center">
-                            <form onSubmit={disable}>
-                                <div className="form-group">
-                                    <div className="d-flex justify-content-center">
-                                        <label htmlFor="tdee-result">Your TDEE is:</label>
-                                    </div>
-                                    <input type="number" className="form-control" id="tdee-result" disabled></input>
+                            <div className="form-group">
+                                <div className="d-flex justify-content-center">
+                                    <label htmlFor="tdee-result">Your TDEE is:</label>
                                 </div>
-                            </form>
+                                <input type="number" className="form-control" id="tdee-result" disabled></input>
+                            </div>
                         </div>
 
                     </div>
