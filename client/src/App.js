@@ -5,7 +5,7 @@ import HomePageArticles from "./components/HomePageArticles/HomePageArticles";
 import Footer from "./components/Footer/Footer";
 import { useState } from 'react';
 import Store from './components/store/Store'
-// import ProgressTracker from './components/ProgressTracker/ProgressTracker'
+import ProgressTracker from './components/ProgressTracker/ProgressTracker'
 
 const App = () => {
     const [loggedIn, setLoggedIn] = useState(true);
@@ -13,8 +13,8 @@ const App = () => {
         return (
             <div className="app">
                 <LoggedInHeader />
-                <HomePageArticles />
-                {/* <ProgressTracker /> */}
+                {/* <HomePageArticles /> */}
+                <ProgressTracker />
                 <Footer />
             </div>
         )
