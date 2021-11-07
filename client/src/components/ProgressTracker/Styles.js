@@ -1,15 +1,25 @@
 import { makeStyles } from '@material-ui/core';
 
 export default makeStyles(() => ({
-
-    progressTrackerInput: {
-        borderTopColor: 'white !important',
-        borderLeftColor: 'white !important',
-        borderRightColor: 'white !important',
+    container: {
+        position: 'relative',
+        paddingBottom: '30px'
     },
-    dateText: {
-        textAlign: 'center'
-    }
-
-
+    addButton: {
+        position: 'absolute',
+        zIndex: 1,
+        left: 30,
+        marginTop: '-45px',
+        background: '#343a40',
+        border: 'none',
+        fontSize: '1.5rem',
+        color: 'white',
+        '&:hover': {
+            color: '#3F51B5',
+        },
+        '&:focus': {
+            outline: 'none',
+            border: 'none',
+        },
+    },
 }))
