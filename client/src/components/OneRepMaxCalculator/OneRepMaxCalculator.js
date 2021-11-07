@@ -45,14 +45,14 @@ const OneRepMaxCalculator = ({ setOneRMCalculator }) => {
                 <div className="row">
                     <div className="form-group col">
                         <div className="input-group-prepend">
-                            <div className={`input-group-text ${classes.borderless} ${classes.iconPrepend}`}><i className={"fas fa-balance-scale " + classes.icon}></i></div>
-                            <input type="number" className={"form-control " + classes.borderless} name='weight' placeholder="Weight" min="1"></input>
+                            <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-balance-scale " + classes.icon}></i></div>
+                            <input type="number" className={"form-control " + classes.cornerless} name='weight' placeholder="Weight" min="1" required></input>
                         </div>
                     </div>
                     <div className="form-group col">
                         <div className="input-group-prepend">
-                            <div className={`input-group-text ${classes.borderless} ${classes.iconPrepend}`}><i className={"fas fa-sort-numeric-up " + classes.icon}></i></div>
-                            <input type="number" className={"form-control " + classes.borderless} name='reps' placeholder="Reps" min="4" max="10"></input>
+                            <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-sort-numeric-up " + classes.icon}></i></div>
+                            <input type="number" className={"form-control " + classes.cornerless} name='reps' placeholder="Reps" min="4" max="10" required></input>
                         </div>
                     </div>
                 </div>

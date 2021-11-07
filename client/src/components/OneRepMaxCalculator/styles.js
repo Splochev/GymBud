@@ -4,7 +4,7 @@ export default makeStyles(() => ({
     oneRepMaxInput: {
         width: '30%'
     },
-    borderless: {
+    cornerless: {
         borderRadius: '0px',
     },
     icon: {
