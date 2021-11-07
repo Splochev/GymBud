@@ -12,9 +12,9 @@ const LoggedInHeader = () => {
 
     return (
         <div className="header">
-            {showOneRMCalculator ? <OneRepMaxCalculator showOneRMCalculator={showOneRMCalculator} setOneRMCalculator={setOneRMCalculator} /> : null}
-            {showAddFood ? <AddFood showAddFood={showAddFood} setAddFood={setAddFood} /> : null}
-            {showCalorieCalculator ? <CalorieCalculator showCalorieCalculator={showCalorieCalculator} setShowCalorieCalculator={setShowCalorieCalculator} /> : null}
+            {showOneRMCalculator ? <OneRepMaxCalculator setOneRMCalculator={setOneRMCalculator} /> : null}
+            {showAddFood ? <AddFood setAddFood={setAddFood} /> : null}
+            {showCalorieCalculator ? <CalorieCalculator setShowCalorieCalculator={setShowCalorieCalculator} /> : null}
             <div className="nav-wrapper">
                 <ul className="nav justify-content-end">
                     <li className="nav-item">
@@ -46,17 +46,14 @@ const LoggedInHeader = () => {
                         aria-label="Toggle navigation">
                         <span className="bars-icon"><i className="fas fa-bars"></i> </span>
                     </button>
-
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
-
                         <ul className="navbar-nav mr-auto">
-
                             <li className="nav-item">
                                 <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button"
                                 ><i className="fas fa-hamburger"></i> <i className="fas fa-search"></i></a>
                             </li>
                             <li className="nav-item">
-                                <a className={"nav-link " + classes.navUrls} href="#!" data-toggle="modal" data-target="#meal-planner">Meal Planner
+                                <a className={"nav-link " + classes.navUrls} href="#!">Meal Planner
                                     <span className={"badge badge-pill badge-secondary " + classes.addedFoodCounter}>0</span></a>
                             </li>
                             <li className="nav-item">
@@ -64,7 +61,7 @@ const LoggedInHeader = () => {
                             </li>
 
                             <li className="nav-item">
-                                <a className={"nav-link " + classes.navUrls} href="#!" data-toggle="modal" data-target="#calorie-calculator" onClick={(e) => {
+                                <a className={"nav-link " + classes.navUrls} href="#!" onClick={(e) => {
                                     e.preventDefault();
                                     setShowCalorieCalculator(true);
                                 }}
@@ -72,7 +69,7 @@ const LoggedInHeader = () => {
                                     Calculator</a>
                             </li>
                             <li className="nav-item">
-                                <a className={"nav-link " + classes.navUrls} href="#!" data-toggle="modal" data-target="#one-rep-max-calculator" onClick={(e) => {
+                                <a className={"nav-link " + classes.navUrls} href="#!" onClick={(e) => {
                                     e.preventDefault();
                                     setOneRMCalculator(true);
                                 }}>
@@ -88,11 +85,10 @@ const LoggedInHeader = () => {
                                 </a>
                                 <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <a className={"dropdown-item " + classes.dropDown} href="#!">My Food</a>
-                                    <a className={"dropdown-item " + classes.dropDown} href="#!" data-toggle="modal" data-target="#add-food"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            setAddFood(true);
-                                        }}>
+                                    <a className={"dropdown-item " + classes.dropDown} href="#!" onClick={(e) => {
+                                        e.preventDefault();
+                                        setAddFood(true);
+                                    }}>
                                         Add Food
                                     </a>
                                 </div>

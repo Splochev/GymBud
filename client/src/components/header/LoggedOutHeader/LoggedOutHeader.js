@@ -17,10 +17,13 @@ const LoggedOutHeader = () => {
     return (
         <div className="header">
             {showOneRMCalculator ? <OneRepMaxCalculator showOneRMCalculator={showOneRMCalculator} setOneRMCalculator={setOneRMCalculator} /> : null}
-            {showLogin ? <Login showLogin={showLogin} setShowLogin={setShowLogin} setShowForgotPassword={setShowForgotPassword} /> : null}
-            {showForgotPassword ? <ForgotPassword showForgotPassword={showForgotPassword} setShowForgotPassword={setShowForgotPassword} /> : null}
+            {showCalorieCalculator ? <CalorieCalculator setShowCalorieCalculator={setShowCalorieCalculator} /> : null}
             {showRegister ? <Register showRegister={showRegister} setShowRegister={setShowRegister} /> : null}
-            {showCalorieCalculator ? <CalorieCalculator showCalorieCalculator={showCalorieCalculator} setShowCalorieCalculator={setShowCalorieCalculator} /> : null}
+
+
+            {showLogin ? <Login setShowLogin={setShowLogin} setShowForgotPassword={setShowForgotPassword} /> : null}
+            {showForgotPassword ? <ForgotPassword showForgotPassword={showForgotPassword} setShowForgotPassword={setShowForgotPassword} /> : null}
+
             <div className="nav-wrapper">
                 <ul className="nav justify-content-end">
                     <li className="nav-item">
@@ -32,7 +35,7 @@ const LoggedOutHeader = () => {
                         </a>
                     </li>
                     <li className="nav-item">
-                        <a className={"nav-link " + classes.signInOrUpUrls} href="#!" data-toggle="modal" data-target="#register-modal" onClick={(e) => {
+                        <a className={"nav-link " + classes.signInOrUpUrls} href="#!" onClick={(e) => {
                             e.preventDefault();
                             setShowRegister(true)
                         }}>Sign Up</a>
@@ -66,13 +69,13 @@ const LoggedOutHeader = () => {
                                     className="fas fa-hamburger"></i> <i className="fas fa-search"></i></a>
                             </li>
                             <li className="nav-item">
-                                <a className={"nav-link " + classes.navUrls} href="#!" data-toggle="modal" data-target="#calorie-calculator" onClick={(e) => {
+                                <a className={"nav-link " + classes.navUrls} href="#!" onClick={(e) => {
                                     e.preventDefault();
                                     setShowCalorieCalculator(true);
                                 }}>Calorie Calculator</a>
                             </li>
                             <li className="nav-item">
-                                <a className={"nav-link " + classes.navUrls} href="#!" data-toggle="modal" data-target="#one-rep-max-calculator" onClick={(e) => {
+                                <a className={"nav-link " + classes.navUrls} href="#!" onClick={(e) => {
                                     e.preventDefault();
                                     setOneRMCalculator(true);
                                 }}>1 Rep

@@ -7,7 +7,6 @@ export default makeStyles(() => ({
     },
     addButton: {
         position: 'absolute',
-        zIndex: 1,
         left: 30,
         marginTop: '-45px',
         background: '#343a40',

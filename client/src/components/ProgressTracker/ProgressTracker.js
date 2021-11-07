@@ -2,6 +2,7 @@ import MUIDataTable from "mui-datatables";
 import useStyles from './styles'
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { useState } from "react";
+import UGBModal from "../Global/UGBModal";
 
 const columns = [
     {
@@ -93,9 +94,6 @@ const columns = [
         }
     },
 ];
-
-
-
 
 
 const getMuiTheme = () => createTheme({
@@ -207,6 +205,7 @@ const ProgressTracker = () => {
             id: '28105'
         },
     ])
+    const [showFillCellDialog, setShowFillCellDialog] = useState(false);
 
     function addNewRow(e) {
         setData([...data, {
@@ -224,6 +223,12 @@ const ProgressTracker = () => {
         }])
     }
 
+    function onCellClick(colData, cellMeta) {
+        setShowFillCellDialog(true);
+        console.log(colData)
+        console.log(cellMeta)
+    }
+
     const options = {
         print: false,
         responsive: 'simple',
@@ -232,18 +237,23 @@ const ProgressTracker = () => {
         rowsPerPageOptions: [],
         tableBodyHeight: '450px',
         search: false,
+        onCellClick: onCellClick,
         filterType: 'checkbox',
     };
 
     return (
         <div className={classes.container}>
+            {showFillCellDialog ?
+                <UGBModal width='sm' handleClose={setShowFillCellDialog}>
+
+                </UGBModal>
+                : null}
             <ThemeProvider theme={getMuiTheme()}>
                 <MUIDataTable
                     title={"Weight Tracker"}
                     data={data}
                     columns={columns}
                     options={options}
-                    serverSide={true}
                 />
             </ThemeProvider>
             <button data-toggle="tooltip" title="Add a new row" onClick={addNewRow} className={classes.addButton}><i class={"fas fa-plus-circle " + classes.icon}></i></button>

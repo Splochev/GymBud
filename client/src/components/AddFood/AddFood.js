@@ -1,26 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import MissingFields from "../Global/MissingFields";
 import useStyles from './styles'
+import UGBModal from "../Global/UGBModal";
 
-const AddFood = ({ showAddFood, setAddFood }) => {
+const AddFood = ({ setAddFood }) => {
     const [alert, setAlert] = useState('');
     const classes = useStyles();
-
-
-    useEffect(() => {
-        if (showAddFood) {
-            document.getElementById('add-food').addEventListener('click', (e) => {
-                if (e.target.className === 'modal fade' || e.target.className === 'modal fade show') {
-                    setAddFood(false);
-                    try {
-                        document.getElementsByClassName('modal-backdrop')[0].remove()
-                    } catch (err) {
-                        return null;
-                    }
-                }
-            })
-        }
-    }, [showAddFood]);
 
     function calculate(e) {
         e.preventDefault();
@@ -54,61 +39,55 @@ const AddFood = ({ showAddFood, setAddFood }) => {
     }
 
     return (
-        <div className="modal fade" id="add-food">
-            <div className="modal-dialog">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h4 className="modal-title">Add Food</h4>
-                        <button type="button" className="close" data-dismiss="modal" onClick={() => { setAddFood(false) }}>&times;</button>
-                    </div>
-                    <div className="modal-body">
-                        {alert}
-                        <div className="container mt-3">
-                            <form onSubmit={addFood}>
-                                <div className="form-group">
-                                    <div className="input-group-prepend">
-                                        <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-utensils " + classes.icon}></i></div>
-                                        <input type="text" className={"form-control " + classes.cornerless} name='food-name' placeholder="Food name" required></input>
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <div className="input-group-prepend">
-                                        <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-bread-slice " + classes.icon}></i></div>
-                                        <input type="number" className={"form-control " + classes.cornerless} name='carbs' placeholder="Carbs per 100 grams" min="0" max="100" required></input>
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <div className="input-group-prepend">
-                                        <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-fish " + classes.icon}></i></div>
-                                        <input type="number" className={"form-control " + classes.cornerless} name='fat' placeholder="Fat per 100 grams" min="0" max="100" required ></input>
-                                    </div>
-                                </div>
-
-                                <div className="form-group">
-                                    <div className="input-group-prepend">
-                                        <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-drumstick-bite " + classes.icon}></i></div>
-                                        <input type="number" className={"form-control " + classes.cornerless} name='protein' placeholder="Protein per 100 grams" min="0" max="100" required></input>
-                                    </div>
-                                </div>
-
-                                <div className="form-group">
-                                    <div className="input-group-prepend">
-                                        <div className={`input-group-text ${classes.cornerless} ${classes.iconPrependFire}`}><i className={"fas fa-burn " + classes.icon}></i></div>
-                                        <input type="number" className={"form-control " + classes.cornerless} name='calories' placeholder="Calories Per 100 grams" min="0" max="900" required></input>
-                                        <div className={`input-group-text ${classes.cornerless} ${classes.calculatorBtn} ${classes.iconPrepend}`} data-toggle="tooltip" title="Calculate the calories of the food" onClick={calculate}> <i className={"fas fa-calculator " + classes.icon}></i></div>
-                                    </div>
-                                </div>
-                                <div className="d-flex justify-content-center">
-                                    <button type="submit" className="btn btn-success">
-                                        Add To My Food
-                                    </button>
-                                </div>
-                            </form>
+        <UGBModal width='sm' handleClose={setAddFood}>
+            <div className="form-group d-flex justify-content-center row">
+                <h4>One Rep Max Calculator</h4>
+            </div>
+            <hr></hr>
+            {alert}
+            <div className="container mt-3">
+                <form onSubmit={addFood}>
+                    <div className="form-group">
+                        <div className="input-group-prepend">
+                            <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-utensils " + classes.icon}></i></div>
+                            <input type="text" className={"form-control " + classes.cornerless} name='food-name' placeholder="Food name" required></input>
                         </div>
                     </div>
-                </div>
-            </div >
-        </div >
+                    <div className="form-group">
+                        <div className="input-group-prepend">
+                            <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-bread-slice " + classes.icon}></i></div>
+                            <input type="number" className={"form-control " + classes.cornerless} name='carbs' placeholder="Carbs per 100 grams" min="0" max="100" required></input>
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <div className="input-group-prepend">
+                            <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-fish " + classes.icon}></i></div>
+                            <input type="number" className={"form-control " + classes.cornerless} name='fat' placeholder="Fat per 100 grams" min="0" max="100" required ></input>
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <div className="input-group-prepend">
+                            <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-drumstick-bite " + classes.icon}></i></div>
+                            <input type="number" className={"form-control " + classes.cornerless} name='protein' placeholder="Protein per 100 grams" min="0" max="100" required></input>
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <div className="input-group-prepend">
+                            <div className={`input-group-text ${classes.cornerless} ${classes.iconPrependFire}`}><i className={"fas fa-burn " + classes.icon}></i></div>
+                            <input type="number" className={"form-control " + classes.cornerless} name='calories' placeholder="Calories Per 100 grams" min="0" max="900" required></input>
+                            <div className={`input-group-text ${classes.cornerless} ${classes.calculatorBtn} ${classes.iconPrepend}`} data-toggle="tooltip" title="Calculate the calories of the food" onClick={calculate}> <i className={"fas fa-calculator " + classes.icon}></i></div>
+                        </div>
+                    </div>
+                    <div className="d-flex justify-content-center">
+                        <button type="submit" className="btn btn-success">
+                            Add To My Food
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </UGBModal>
     );
 }
 
