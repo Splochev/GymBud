@@ -1,43 +1,33 @@
-import React from "react";
+import React, { useState } from 'react';
 import LoggedOutHeader from "./components/header/LoggedOutHeader/LoggedOutHeader"
 import LoggedInHeader from "./components/header/LoggedInHeader/LoggedInHeader";
 import HomePageArticles from "./components/HomePageArticles/HomePageArticles";
 import Footer from "./components/Footer/Footer";
-import { useState } from 'react';
-import Store from './components/store/Store'
 import ProgressTracker from './components/ProgressTracker/ProgressTracker'
+import { StoreContext, initialStoreState } from './components/store/Store';
 
 const App = () => {
-    const [loggedIn, setLoggedIn] = useState(true);
-    if (loggedIn) {
-        return (
-            <div className="app">
-                <LoggedInHeader />
-                {/* <HomePageArticles /> */}
-                <ProgressTracker />
-                <Footer />
-            </div>
-        )
-    }
+    const loggedIn = true;
+    const [storeState, setStoreState] = useState(initialStoreState);
+
     return (
-        <div className="app">
-            <LoggedOutHeader />
-            <HomePageArticles />
-            <Footer />
-        </div>
-    )
-    // return (
-    //     < Store >
-    //         <div className="app">
-    //             <LoggedOutHeader />
-    //             <CalorieCalculator />
-    //             <OneRepMaxCalculator />
-    //             <Login />
-    //             <Register />
-    //             <ForgotPassword />
-    //         </div>
-    //     </Store >
-    // )
+        <StoreContext.Provider value={[storeState, setStoreState]}>
+            {loggedIn ?
+                <React.Fragment>
+                    <LoggedInHeader />
+                    {/* <HomePageArticles /> */}
+                    <ProgressTracker />
+                    <Footer />
+                </React.Fragment>
+                :
+                <React.Fragment>
+                    <LoggedOutHeader />
+                    <HomePageArticles />
+                    <Footer />
+                </React.Fragment>
+            }
+        </StoreContext.Provider>
+    );
 }
 
 export default App;
