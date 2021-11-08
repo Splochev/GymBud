@@ -21,4 +21,16 @@ export default makeStyles(() => ({
             border: 'none',
         },
     },
+    cornerless: {
+        borderRadius: '0px',
+    },
+    icon: {
+        fontSize: '20px'
+    },
+    iconPrepend: {
+        width: '50px'
+    },
+    cellInput: {
+        paddingBottom: '15px'
+    },
 }))
