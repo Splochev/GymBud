@@ -76,8 +76,8 @@ const UGBModal = ({ width, handleClose, ...params }) => {
                         return classes.lg;
                 }
             })()}`}>
-                <div class="d-flex flex-row-reverse">
-                    <button onClick={() => { handleClose(false) }} type="button" class="close">
+                <div className="d-flex flex-row-reverse">
+                    <button onClick={() => { handleClose(false) }} type="button" className="close">
                         <span>&times;</span>
                     </button>
                 </div>
