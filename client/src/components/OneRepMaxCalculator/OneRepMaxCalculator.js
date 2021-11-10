@@ -1,7 +1,7 @@
 import useStyles from './styles'
 import { useState } from 'react';
-import MissingFields from '../Global/MissingFields'
 import UGBModal from '../Global/UGBModal';
+import UGBMissingFields from '../Global/UGBMissingFields'
 
 const OneRepMaxCalculator = ({ setOneRMCalculator }) => {
     const classes = useStyles();
@@ -17,7 +17,7 @@ const OneRepMaxCalculator = ({ setOneRMCalculator }) => {
         if ((reps <= 10 && reps >= 4) && (weight > 0)) {
             oneRM.value = (weight / (1.0278 - 0.0278 * reps)).toFixed(2);
         } else {
-            setAlert(<MissingFields setAlert={setAlert} alertMessage={'All fields are required!'} />)
+            setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'All fields are required!'} />)
         }
     }
 

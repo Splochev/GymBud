@@ -1,5 +1,5 @@
 import { useState } from "react";
-import MissingFields from "../Global/MissingFields";
+import UGBMissingFields from "../Global/UGBMissingFields";
 import useStyles from './styles'
 import UGBModal from "../Global/UGBModal";
 
@@ -18,7 +18,7 @@ const AddFood = ({ setAddFood }) => {
             calories.value = carbs.value * 4 + protein.value * 4 + fat.value * 9;
         } else {
             calories.value = '';
-            setAlert(<MissingFields setAlert={setAlert} alertMessage={'The sum of protein, fat and carbs mustn\'t exceed 100 grams.'} />)
+            setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'The sum of protein, fat and carbs mustn\'t exceed 100 grams.'} />)
         }
     }
 
@@ -34,7 +34,7 @@ const AddFood = ({ setAddFood }) => {
         if ((Number(protein) + Number(carbs) + Number(fat)) <= 100 && (Number(protein) + Number(carbs) + Number(fat)) >= 0) {
             //adding food to server
         } else {
-            setAlert(<MissingFields setAlert={setAlert} alertMessage={'The sum of protein, fat and carbs mustn\'t exceed 100 grams.'} />)
+            setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'The sum of protein, fat and carbs mustn\'t exceed 100 grams.'} />)
         }
     }
 

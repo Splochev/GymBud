@@ -1,6 +1,6 @@
 import useStyles from './styles.js'
 import { useState } from 'react';
-import MissingFields from '../../Global/MissingFields.js';
+import UGBMissingFields from '../../Global/UGBMissingFields.js';
 
 const MifflinStJeorFormula = () => {
     const classes = useStyles();
@@ -24,7 +24,7 @@ const MifflinStJeorFormula = () => {
                 result.value = ((10 * weight) + (6.25 * height) - (5 * age) - 161).toFixed(2);
             }
         } catch (err) {
-            setAlert(<MissingFields setAlert={setAlert} alertMessage={'All fields are required!'} />)
+            setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'All fields are required!'} />)
         }
     }
 

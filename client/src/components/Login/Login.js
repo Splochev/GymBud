@@ -1,6 +1,6 @@
-// import MissingFields from '../Global/MissingFields'
 import useStyles from './styles'
 import UGBModal from '../Global/UGBModal';
+// import UGBMissingFields from '../Global/UGBMissingFields'
 
 const Login = ({ setShowLogin, setShowForgotPassword }) => {
     // const [alert, setAlert] = useState('');

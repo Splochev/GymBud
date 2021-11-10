@@ -2,7 +2,7 @@ import KatchMcardleFormula from './KatchMcardleFormula/KatchMcardleFormula';
 import MifflinStJeorFormula from './MifflinStJeorFormula/MifflinStJeorFormula'
 import { useState } from 'react';
 import useStyles from './styles.js'
-import MissingFields from '../Global/MissingFields';
+import UGBMissingFields from '../Global/UGBMissingFields';
 import UGBModal from '../Global/UGBModal';
 
 
@@ -55,7 +55,7 @@ const CalorieCalculator = ({ setShowCalorieCalculator }) => {
                 throw new Error('BMR result must not be empty.')
             }
         } catch (err) {
-            setAlert(<MissingFields setAlert={setAlert} alertMessage={err.message} />)
+            setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={err.message} />)
         }
     }
 

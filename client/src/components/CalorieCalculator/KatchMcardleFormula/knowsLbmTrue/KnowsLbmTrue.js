@@ -1,6 +1,6 @@
 import useStyles from './styles.js'
 import { useState } from 'react';
-import MissingFields from '../../../Global/MissingFields.js';
+import UGBMissingFields from '../../../Global/UGBMissingFields.js';
 
 const KnowsLbmTrue = () => {
     const classes = useStyles();
@@ -17,7 +17,7 @@ const KnowsLbmTrue = () => {
                 bmr.value = (370 + (21.6 * lbm)).toFixed(2);
             }
         } catch (err) {
-            setAlert(<MissingFields setAlert={setAlert} alertMessage={'Please provide your lean body mass in kg.'} />)
+            setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'Please provide your lean body mass in kg.'} />)
         }
     }
 
