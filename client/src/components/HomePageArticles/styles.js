@@ -31,20 +31,22 @@ export default makeStyles(() => ({
             opacity: 1
         },
         '&:hover': {
-            "& .postCardBar": { /*fix selector, must select postCardBar*/
+            "& $postCardBar": {
                 width: '95%'
             }
+
+
         },
         '@media (min-width: 1500px)': {
             flexWrap: 'inherit',
             '&:hover': {
-                "& .postCardImg": { /*fix selector, must select postCardText*/
+                "& $postcardImg": {
                     transform: 'scale(1.1)'
                 }
             },
             '&:nth-child(2n+0)': {
                 flexDirection: 'row-reverse',
-                "& .postCardText": { /*fix selector, must select postCardText*/
+                "& $postCardText": {
                     '&::before': {
                         right: '-12px !important',
                         transform: 'rotate(-4deg)'
@@ -52,7 +54,7 @@ export default makeStyles(() => ({
                 }
             },
             '&:nth-child(2n+1)': {
-                "& .postCardText": { /*fix selector, must select postCardText*/
+                "& $postCardText": {
                     '&::before': {
                         left: '-12px !important',
                         transform: 'rotate(4deg)'
