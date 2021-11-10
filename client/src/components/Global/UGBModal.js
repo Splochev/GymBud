@@ -55,7 +55,8 @@ const useStyles = makeStyles(() => ({
         '@media (min-width: 1820px)': {
             maxWidth: '1800px',
         }
-    }
+    },
+
 }));
 
 const UGBModal = ({ width, handleClose, ...params }) => {
@@ -72,7 +73,7 @@ const UGBModal = ({ width, handleClose, ...params }) => {
                         return classes.sm;
                     case 'md':
                         return classes.md;
-                    case 'lg':
+                    default:
                         return classes.lg;
                 }
             })()}`}>
