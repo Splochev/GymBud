@@ -6,6 +6,9 @@ const headCells = [
         id: 'week',
         numeric: false,
         label: 'Week',
+        CellRender: ({ cellData }) => {
+            return 'Week ' + cellData
+        }
     },
     {
         id: 1,

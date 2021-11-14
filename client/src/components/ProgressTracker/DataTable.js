@@ -217,7 +217,9 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, dis
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row, index) => {
                                 return (
-                                    <TableRow>
+                                    <TableRow
+                                        key={row.id}
+                                    >
                                         <TableCell padding="checkbox">
                                             <IconButton data-toggle="tooltip" title="Delete row" onClick={(e) => {
                                                 handleDelete(row)
@@ -230,7 +232,6 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, dis
                                         {headCells.map((headCell, cellIndex) => {
                                             const CellRender = headCell.CellRender;
                                             return <TableCell
-                                                label="Incorrect entry."
                                                 key={headCell.id + cellIndex} align="left" data-toggle="tooltip" title="Edit cell">
                                                 {cellIndex >= 1 && cellIndex <= 7 ?
                                                     <TextField type='text'
@@ -239,9 +240,9 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, dis
                                                     />
                                                     :
                                                     CellRender ?
-                                                        <CellRender key={headCell.id + cellIndex} cellData={headCell.id === 'week' ? `Week ${row[headCell.id]}` : row[headCell.id]} rowData={row} />
+                                                        <CellRender key={headCell.id + cellIndex} cellData={row[headCell.id]} rowData={row} />
                                                         :
-                                                        headCell.id === 'week' ? `Week ${row[headCell.id]}` : row[headCell.id]
+                                                        row[headCell.id]
                                                 }
                                             </TableCell>
                                         })}
