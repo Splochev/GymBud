@@ -2,23 +2,23 @@ import { makeStyles } from '@material-ui/core';
 
 export default makeStyles(() => ({
   questionIcon: {
-    textDecoration: 'none !important',
+    textDecoration: 'none',
     '&:hover': {
-      textDecoration: 'none !important'
+      textDecoration: 'none'
     }
   },
   signInOrUpUrls: {
-    color: '#343a40 !important',
+    color: '#343a40',
     fontSize: '20px',
     '&:hover': {
       textDecoration: 'underline'
     }
   },
   dropDown: {
-    color: '#343a40 !important',
+    color: '#343a40',
     fontSize: '20px',
     '&:hover': {
-      color: '#343a40 !important',
+      color: '#343a40',
       textDecoration: 'underline',
       backgroundColor: 'white'
     }
@@ -34,11 +34,11 @@ export default makeStyles(() => ({
     color: 'white',
     '&:hover': {
       color: 'white',
-      textDecoration: 'underline !important'
+      textDecoration: 'underline'
     }
   },
   navToggler: {
-    color: 'white !important'
+    color: 'white'
   },
   blackStripe: {
     backgroundColor: 'black',

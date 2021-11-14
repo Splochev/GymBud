@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 
 export default makeStyles(() => ({
     activityIndexDropownButton: {
-        backgroundColor: '#343a40 !important',
+        backgroundColor: '#343a40',
     },
     icon: {
         fontSize: '20px'
@@ -14,9 +14,9 @@ export default makeStyles(() => ({
         paddingBottom: '16px'
     },
     dropdownItem: {
-        color: '#343a40 !important',
+        color: '#343a40',
         '&:hover': {
-            color: '#343a40 !important',
+            color: '#343a40',
             textDecoration: 'underline',
             backgroundColor: 'white'
         }

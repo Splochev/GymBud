@@ -48,7 +48,7 @@ export default makeStyles(() => ({
                 flexDirection: 'row-reverse',
                 "& $postCardText": {
                     '&::before': {
-                        right: '-12px !important',
+                        right: '-12px',
                         transform: 'rotate(-4deg)'
                     },
                 }
@@ -56,7 +56,7 @@ export default makeStyles(() => ({
             '&:nth-child(2n+1)': {
                 "& $postCardText": {
                     '&::before': {
-                        left: '-12px !important',
+                        left: '-12px',
                         transform: 'rotate(4deg)'
                     },
                 }

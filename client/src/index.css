@@ -1,6 +1,6 @@
 body {
-    font-family: "Roboto", serif !important; 
-    background-color: white !important;
+    font-family: "Roboto", serif; 
+    background-color: white;
 }
 
 input::-webkit-outer-spin-button,
