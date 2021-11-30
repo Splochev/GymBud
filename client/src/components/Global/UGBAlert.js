@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 export default function UGBAlert({ open, setOpen, message }) {
   const classes = useStyles();
 
-  const handleClose = (event, reason) => {
+  const onClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -32,8 +32,8 @@ export default function UGBAlert({ open, setOpen, message }) {
 
   return (
     <div className={classes.root}>
-      <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-        <Alert onClose={handleClose} classes={{ root: classes.alert }} severity="error">
+      <Snackbar open={open} autoHideDuration={2000} onClose={onClose}>
+        <Alert onClose={onClose} classes={{ root: classes.alert }} severity="error">
           {message}
         </Alert>
       </Snackbar>

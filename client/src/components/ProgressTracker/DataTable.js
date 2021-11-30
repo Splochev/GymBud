@@ -54,16 +54,16 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
         setOrderBy(property);
     };
 
-    const handleChangePage = (event, newPage) => {
+    const onChangePage = (event, newPage) => {
         setPage(newPage);
     };
 
-    const handleChangeRowsPerPage = (event) => {
+    const onChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
 
-    const handleOnBlur = (event, rowData, cellIndex) => {
+    const onBlur = (event, rowData, cellIndex) => {
         let inputValue = event.target.value
         if (!/^([1-9]\d*)(\.?)(\d+)?$/g.test(inputValue) && inputValue.length > 0) {
             if (Number(inputValue) === 0) {
@@ -165,7 +165,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
                                             {cellIndex >= 1 && cellIndex <= 7 ?
                                                 <TextField
                                                     type='text'
-                                                    onBlur={(event) => { handleOnBlur(event, row, cellIndex) }}
+                                                    onBlur={(event) => { onBlur(event, row, cellIndex) }}
                                                     label={row[headCell.id] ? `${row[headCell.id]}kg` : ''}
                                                     key={headCell.id + cellIndex}
                                                     InputProps={row[headCell.id] ?
@@ -218,8 +218,8 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
                 count={rows.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+                onPageChange={onChangePage}
+                onRowsPerPageChange={onChangeRowsPerPage}
             />
         </Box>
     );
