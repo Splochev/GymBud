@@ -1,90 +1,44 @@
-import { makeStyles } from '@material-ui/core';
+import React from 'react';
+import Dialog from '@material-ui/core/Dialog';
+import Slide from '@material-ui/core/Slide';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
-const useStyles = makeStyles(() => ({
-    modal: {
-        display: 'block',
-        position: 'fixed',
-        zIndex: 2147483647,
-        paddingTop: '100px',
-        left: 0,
-        top: 0,
-        width: '100%',
-        height: '100%',
-        overflow: 'auto',
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    },
-    modalContent: {
-        backgroundColor: 'white',
-        margin: 'auto',
-        padding: '20px',
-        border: '1px solid #888',
-        borderRadius: '0.3rem',
-    },
-    sm: {
-        maxWidth: '400px',
-    },
-    md: {
-        maxWidth: '400px',
-        '@media (min-width: 860px)': {
-            maxWidth: '600px',
-        },
-        '@media (min-width: 820px)': {
-            maxWidth: '800px',
-        }
-    },
-    lg: {
-        maxWidth: '400px',
-        '@media (min-width: 860px)': {
-            maxWidth: '600px',
-        },
-        '@media (min-width: 820px)': {
-            maxWidth: '800px',
-        },
-        '@media (min-width: 1020px)': {
-            maxWidth: '1000px',
-        },
-        '@media (min-width: 1220px)': {
-            maxWidth: '1200px',
-        },
-        '@media (min-width: 1420px)': {
-            maxWidth: '1400px',
-        },
-        '@media (min-width: 1620px)': {
-            maxWidth: '1600px',
-        },
-        '@media (min-width: 1820px)': {
-            maxWidth: '1800px',
-        }
-    },
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
+const useStyles = makeStyles((theme) => ({
+    hasPadding: {
+        padding: '1.5rem'
+    },
+    actions: {
+        display: 'flex',
+        justifyContent: "flex-end",
+        "& button:first-child": {
+            marginRight: theme.spacing(2),
+        },
+        "& button": {
+            width: '93px'
+        }
+    }
 }));
 
-const UGBModal = ({ width, handleClose, ...params }) => {
-    const classes = useStyles();
+
+function UGBModal({ open, onClose, maxWidth, hasPadding = true, fullWidth=true, children }) {
+    const styles = useStyles();
     return (
-        <div id='modal' className={classes.modal} onClick={(e) => {
-            if (e.target.id === 'modal') {
-                handleClose(false)
-            }
-        }} >
-            <div className={`${classes.modalContent} ${(() => {
-                switch (width) {
-                    case 'sm':
-                        return classes.sm;
-                    case 'md':
-                        return classes.md;
-                    default:
-                        return classes.lg;
-                }
-            })()}`}>
-                <div className="d-flex flex-row-reverse">
-                    <button onClick={() => { handleClose(false) }} type="button" className="close">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                {params.children}
+        <Dialog
+            open={open}
+            onClose={onClose ? onClose : null}
+            TransitionComponent={Transition}
+            // maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false;
+            maxWidth={maxWidth}
+            fullWidth={fullWidth}
+        >
+            <div className={hasPadding ? styles.hasPadding : null}>
+                {children}
             </div>
-        </div >
+        </Dialog>
     );
 }
 

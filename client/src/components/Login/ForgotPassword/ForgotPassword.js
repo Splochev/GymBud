@@ -1,13 +1,12 @@
 // import UGBMissingFields from '../Global/UGBMissingFields'
 import useStyles from '../styles'
-import UGBModal from '../../Global/UGBModal';
 
-const ForgotPassword = ({ setShowForgotPassword }) => {
+const ForgotPassword = () => {
     // const [alert, setAlert] = useState('');
     const classes = useStyles();
 
     return (
-        <UGBModal width='sm' handleClose={setShowForgotPassword}>
+        <div>
             <div className="form-group d-flex justify-content-center row">
                 <h4>Reset Your Password</h4>
             </div>
@@ -28,7 +27,7 @@ const ForgotPassword = ({ setShowForgotPassword }) => {
                     </div>
                 </form>
             </div>
-        </UGBModal>
+        </div>
     );
 }
 

@@ -1,9 +1,8 @@
 import { useState } from "react";
 import UGBMissingFields from "../Global/UGBMissingFields";
 import useStyles from './styles'
-import UGBModal from "../Global/UGBModal";
 
-const AddFood = ({ setAddFood }) => {
+const AddFood = () => {
     const [alert, setAlert] = useState('');
     const classes = useStyles();
 
@@ -39,7 +38,7 @@ const AddFood = ({ setAddFood }) => {
     }
 
     return (
-        <UGBModal width='sm' handleClose={setAddFood}>
+        <div>
             <div className="form-group d-flex justify-content-center row">
                 <h4>One Rep Max Calculator</h4>
             </div>
@@ -87,7 +86,7 @@ const AddFood = ({ setAddFood }) => {
                     </div>
                 </form>
             </div>
-        </UGBModal>
+        </div>
     );
 }
 

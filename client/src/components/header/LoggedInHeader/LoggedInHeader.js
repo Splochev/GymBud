@@ -3,6 +3,7 @@ import OneRepMaxCalculator from '../../OneRepMaxCalculator/OneRepMaxCalculator.j
 import { useState } from 'react';
 import AddFood from '../../AddFood/AddFood.js';
 import CalorieCalculator from '../../CalorieCalculator/CalorieCalculator.js';
+import UGBModal from '../../Global/UGBModal.js';
 
 const LoggedInHeader = () => {
     const classes = useStyles();
@@ -12,9 +13,27 @@ const LoggedInHeader = () => {
 
     return (
         <div className="header">
-            {showOneRMCalculator ? <OneRepMaxCalculator setOneRMCalculator={setOneRMCalculator} /> : null}
-            {showAddFood ? <AddFood setAddFood={setAddFood} /> : null}
-            {showCalorieCalculator ? <CalorieCalculator setShowCalorieCalculator={setShowCalorieCalculator} /> : null}
+            <UGBModal
+                open={showOneRMCalculator}
+                onClose={() => setOneRMCalculator(false)}
+                maxWidth='sm'
+            >
+                <OneRepMaxCalculator />
+            </UGBModal>
+            <UGBModal
+                open={showAddFood}
+                onClose={() => setAddFood(false)}
+                maxWidth='xs'
+            >
+                <AddFood />
+            </UGBModal>
+            <UGBModal
+                open={showCalorieCalculator}
+                onClose={() => setShowCalorieCalculator(false)}
+                maxWidth='sm'
+            >
+                <CalorieCalculator />
+            </UGBModal>
             <div className="nav-wrapper">
                 <ul className="nav justify-content-end">
                     <li className="nav-item">

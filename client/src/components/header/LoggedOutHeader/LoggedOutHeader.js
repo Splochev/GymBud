@@ -5,6 +5,7 @@ import ForgotPassword from '../../Login/ForgotPassword/ForgotPassword.js';
 import { useState } from 'react';
 import Register from '../../Register/Register.js';
 import CalorieCalculator from '../../CalorieCalculator/CalorieCalculator.js';
+import UGBModal from '../../Global/UGBModal.js';
 
 const LoggedOutHeader = () => {
     const classes = useStyles();
@@ -16,13 +17,44 @@ const LoggedOutHeader = () => {
 
     return (
         <div className="header">
-            {showOneRMCalculator ? <OneRepMaxCalculator showOneRMCalculator={showOneRMCalculator} setOneRMCalculator={setOneRMCalculator} /> : null}
-            {showCalorieCalculator ? <CalorieCalculator setShowCalorieCalculator={setShowCalorieCalculator} /> : null}
-            {showRegister ? <Register showRegister={showRegister} setShowRegister={setShowRegister} /> : null}
-
-
-            {showLogin ? <Login setShowLogin={setShowLogin} setShowForgotPassword={setShowForgotPassword} /> : null}
-            {showForgotPassword ? <ForgotPassword showForgotPassword={showForgotPassword} setShowForgotPassword={setShowForgotPassword} /> : null}
+            <UGBModal
+                open={showOneRMCalculator}
+                onClose={() => setOneRMCalculator(false)}
+                maxWidth='sm'
+            >
+                <OneRepMaxCalculator />
+            </UGBModal>
+            <UGBModal
+                open={showCalorieCalculator}
+                onClose={() => setShowCalorieCalculator(false)}
+                maxWidth='sm'
+            >
+                <CalorieCalculator />
+            </UGBModal>
+            <UGBModal
+                open={showRegister}
+                onClose={() => setShowRegister(false)}
+                maxWidth='sm'
+            >
+                <Register />
+            </UGBModal>
+            <UGBModal
+                open={showLogin}
+                onClose={() => setShowLogin(false)}
+                maxWidth='sm'
+            >
+                <Login
+                    setShowForgotPassword={setShowForgotPassword}
+                    setShowLogin={setShowLogin}
+                />
+            </UGBModal>
+            <UGBModal
+                open={showForgotPassword}
+                onClose={() => setShowForgotPassword(false)}
+                maxWidth='sm'
+            >
+                <ForgotPassword />
+            </UGBModal>
 
             <div className="nav-wrapper">
                 <ul className="nav justify-content-end">

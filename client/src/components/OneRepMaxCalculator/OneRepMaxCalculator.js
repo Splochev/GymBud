@@ -1,9 +1,8 @@
 import useStyles from './styles'
 import { useState } from 'react';
-import UGBModal from '../Global/UGBModal';
 import UGBMissingFields from '../Global/UGBMissingFields'
 
-const OneRepMaxCalculator = ({ setOneRMCalculator }) => {
+const OneRepMaxCalculator = () => {
     const classes = useStyles();
     const [alert, setAlert] = useState('');
 
@@ -22,7 +21,7 @@ const OneRepMaxCalculator = ({ setOneRMCalculator }) => {
     }
 
     return (
-        <UGBModal width='md' handleClose={setOneRMCalculator}>
+        <div>
             <div className="form-group d-flex justify-content-center row">
                 <h4>One Rep Max Calculator</h4>
             </div>
@@ -68,7 +67,7 @@ const OneRepMaxCalculator = ({ setOneRMCalculator }) => {
                     </button>
                 </div>
             </form>
-        </UGBModal>
+        </div>
     );
 }
 

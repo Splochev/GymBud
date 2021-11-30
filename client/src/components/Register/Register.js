@@ -1,13 +1,12 @@
 // import UGBMissingFields from '../Global/UGBMissingFields'
 import useStyles from './styles'
-import UGBModal from '../Global/UGBModal';
 
-const Register = ({ setShowRegister }) => {
+const Register = () => {
     // const [alert, setAlert] = useState('');
     const classes = useStyles();
 
     return (
-        <UGBModal width='sm' handleClose={setShowRegister}>
+        <div>
             <div className="form-group d-flex justify-content-center row">
                 <h4>Sign Up</h4>
             </div>
@@ -37,7 +36,7 @@ const Register = ({ setShowRegister }) => {
                     </div>
                 </form>
             </div>
-        </UGBModal>
+        </div>
     );
 }
 

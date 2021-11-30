@@ -20,5 +20,8 @@ export default makeStyles(() => ({
             textDecoration: 'underline',
             backgroundColor: 'white'
         }
+    },
+    calorieCalculatorContainer: {
+        height:'695px'
     }
 }))

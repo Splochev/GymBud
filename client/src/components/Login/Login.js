@@ -1,5 +1,4 @@
 import useStyles from './styles'
-import UGBModal from '../Global/UGBModal';
 // import UGBMissingFields from '../Global/UGBMissingFields'
 
 const Login = ({ setShowLogin, setShowForgotPassword }) => {
@@ -7,7 +6,7 @@ const Login = ({ setShowLogin, setShowForgotPassword }) => {
     const classes = useStyles();
 
     return (
-        <UGBModal width='sm' handleClose={setShowLogin}>
+        <div>
             <div className="form-group d-flex justify-content-center row">
                 <h4>Sign In</h4>
             </div>
@@ -40,7 +39,7 @@ const Login = ({ setShowLogin, setShowForgotPassword }) => {
                     </div>
                 </form>
             </div>
-        </UGBModal>
+        </div>
     );
 }
 
