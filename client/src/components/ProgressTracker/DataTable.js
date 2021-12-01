@@ -161,7 +161,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
                                     {headCells.map((headCell, cellIndex) => {
                                         const CellRender = headCell.CellRender;
                                         return <TableCell
-                                            key={headCell.id + cellIndex} align="left" data-toggle="tooltip" title="Edit cell">
+                                            key={headCell.id + "_" + cellIndex} align="left" data-toggle="tooltip" title="Edit cell">
                                             {cellIndex >= 1 && cellIndex <= 7 ?
                                                 <TextField
                                                     type='text'
@@ -173,10 +173,11 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
                                                             endAdornment: <InputAdornment position="end">
                                                                 <IconButton
                                                                     onClick={() => {
-                                                                        const tempRows = rows;
-                                                                        tempRows[tempRows.indexOf(row)][headCell.id] = null;
-                                                                        console.log(tempRows)
-                                                                        setRows(tempRows)
+                                                                        const tempRows = [...rows];
+                                                                        tempRows[index][headCell.id] = null;
+                                                                        calculateRowAvgWeight(tempRows[index]);
+                                                                        calculateWeightChanges();
+                                                                        setRows(tempRows);
                                                                     }}
                                                                     data-toggle="tooltip" title="Clear cell"
                                                                     onMouseDown={(event) => {
