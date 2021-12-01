@@ -1,7 +1,9 @@
+import { useStoreContext } from '../store/Store';
 import useStyles from './styles'
 // import UGBMissingFields from '../Global/UGBMissingFields'
 
 const Login = ({ setShowLogin, setShowForgotPassword }) => {
+    const [store, setStore] = useStoreContext();
     // const [alert, setAlert] = useState('');
     const classes = useStyles();
 
@@ -35,7 +37,17 @@ const Login = ({ setShowLogin, setShowForgotPassword }) => {
                             password?
                         </a>
                     </div>
-                    <div className="d-flex justify-content-center"><button type="button" className="btn btn-success">Sign In</button>
+                    <div className="d-flex justify-content-center">
+                        <button
+                            // type="submit"
+                            type="button"
+                            className="btn btn-success"
+                            onClick={(e) => {
+                                setStore(state => (state.user = true, { ...state }));
+                            }}
+                        >
+                            Sign In
+                        </button>
                     </div>
                 </form>
             </div>

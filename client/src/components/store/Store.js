@@ -1,7 +1,7 @@
 import React, { createContext } from 'react';
 
 export const initialStoreState = {
-    user: null,
+    user: false,
 };
 
 

@@ -7,12 +7,11 @@ import ProgressTracker from './components/ProgressTracker/ProgressTracker'
 import { StoreContext, initialStoreState } from './components/store/Store';
 
 const App = () => {
-    const loggedIn = true;
     const [storeState, setStoreState] = useState(initialStoreState);
 
     return (
         <StoreContext.Provider value={[storeState, setStoreState]}>
-            {loggedIn ?
+            {storeState.user ?
                 <React.Fragment>
                     <LoggedInHeader />
                     {/* <HomePageArticles /> */}

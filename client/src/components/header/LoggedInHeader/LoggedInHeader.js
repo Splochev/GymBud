@@ -4,9 +4,11 @@ import { useState } from 'react';
 import AddFood from '../../AddFood/AddFood.js';
 import CalorieCalculator from '../../CalorieCalculator/CalorieCalculator.js';
 import UGBModal from '../../Global/UGBModal.js';
+import { useStoreContext } from '../../store/Store.js';
 
 const LoggedInHeader = () => {
     const classes = useStyles();
+    const [store, setStore] = useStoreContext();
     const [showOneRMCalculator, setOneRMCalculator] = useState(false);
     const [showAddFood, setAddFood] = useState(false);
     const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
@@ -40,7 +42,10 @@ const LoggedInHeader = () => {
                         <a className={"nav-link " + classes.signInOrUpUrls} href="#!">My Profile</a>
                     </li>
                     <li className="nav-item">
-                        <a className={"nav-link " + classes.signInOrUpUrls} href="#!">Logout</a>
+                        <a className={"nav-link " + classes.signInOrUpUrls} href="#!" onClick={(e) => {
+                            e.preventDefault()
+                            setStore(state => (state.user = false, { ...state }));
+                        }}>Logout</a>
                     </li>
                     <li className="nav-item dropdown dropleft">
                         <a className={`nav-link dropdown-toggle ${classes.questionIcon} ${classes.signInOrUpUrls}`} href="#!" role="button"
