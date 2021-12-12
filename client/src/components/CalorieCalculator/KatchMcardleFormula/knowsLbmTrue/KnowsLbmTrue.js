@@ -1,6 +1,7 @@
 import useStyles from './styles.js'
 import { useState } from 'react';
 import UGBMissingFields from '../../../Global/UGBMissingFields.js';
+import { UGBInput } from '../../../Global/UGBInput'
 
 const KnowsLbmTrue = () => {
     const classes = useStyles();
@@ -26,12 +27,14 @@ const KnowsLbmTrue = () => {
         <div className="col" id="knows-lbm-true-form">
             {alert}
             <form onSubmit={calculate}>
-                <div className="form-group">
-                    <div className="input-group-prepend">
-                        <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-weight " + classes.icon}></i></div>
-                        <input type="number" className={"form-control " + classes.cornerless} name='lbm' min='1' max='250' placeholder="LBM" required></input>
-                    </div>
-                </div>
+                <UGBInput
+                    type="number"
+                    name='lbm'
+                    min='1'
+                    max='250'
+                    placeholder="LBM"
+                    iconStart='fas fa-weight'
+                />
                 <div className="d-flex justify-content-center">
                     <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate BMR">
                         <i className={"fas fa-calculator " + classes.icon}></i>

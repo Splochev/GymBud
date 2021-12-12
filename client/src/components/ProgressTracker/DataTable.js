@@ -13,6 +13,7 @@ import UGBAlert from '../Global/UGBAlert';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import ClearIcon from '@material-ui/icons/Clear';
+import useStyles from './styles'
 
 function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
     const createSortHandler = (property) => (event) => {
@@ -21,10 +22,10 @@ function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
 
     return (
         <TableHead>
-            <TableRow>
-                {headCells.map((headCell) => (
+            <TableRow >
+                {headCells.map((headCell, index) => (
                     <TableCell
-                        key={headCell.id}
+                        key={headCell.id + "_" + index}
                         align={'left'}
                         padding={'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
@@ -43,7 +44,43 @@ function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
     );
 }
 
+const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, index }) => {
+    const classes = useStyles();
+    const [shrink, setShrink] = React.useState(false);
+
+    return (
+        <TextField
+            type='text'
+            onBlur={(event) => onBlur(event, row, cellIndex, setShrink)}
+            label={row[headCell.id] ? `${row[headCell.id]}kg` : ''}
+            key={headCell.id + "_" + cellIndex}
+            InputLabelProps={{ shrink: shrink }}
+            InputProps={row[headCell.id] ?
+                {
+                    onFocus: () => { setShrink(true) },
+                    endAdornment:
+                        <InputAdornment className={classes.muiInputAdornmentRoot} position="end">
+                            <IconButton
+                                disableFocusRipple
+                                disableRipple
+                                onClick={e => onClickIconButton(index, headCell)}
+                                data-toggle="tooltip" title="Clear cell"
+                                onMouseDown={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                }}
+                                edge="end"
+                            >
+                                <ClearIcon />
+                            </IconButton>
+                        </InputAdornment>
+                } : null}
+        />
+    );
+}
+
 export default function DataTable({ rows, headCells, page, setPage, setRows, order, setOrder, orderBy, setOrderBy }) {
+    const classes = useStyles();
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [open, setOpen] = React.useState(false);
     const [message, setMessage] = React.useState('');
@@ -62,29 +99,6 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-
-    const onBlur = (event, rowData, cellIndex) => {
-        let inputValue = event.target.value
-        if (!/^([1-9]\d*)(\.?)(\d+)?$/g.test(inputValue) && inputValue.length > 0) {
-            if (Number(inputValue) === 0) {
-                setOpen(true);
-                setMessage('Incorrect entry. Zero is not allowed.')
-            } else {
-                setOpen(true);
-                setMessage('Incorrect entry. Only numbers allowed.')
-            }
-            event.target.value = null;
-        } else if (inputValue) {
-            if (inputValue.charAt(inputValue.length - 1) === '.') {
-                inputValue = inputValue.substring(0, inputValue.length - 1)
-            }
-            rowData[cellIndex] = inputValue;
-            calculateRowAvgWeight(rowData)
-            calculateWeightChanges()
-            setRows([...rows])
-            event.target.value = null
-        }
-    }
 
     const calculateRowAvgWeight = (rowData) => {
         const nums = [];
@@ -110,7 +124,8 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
             nums.push(Number(rowData['7']))
         }
 
-        rowData.avgWeight = (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(2).toString()
+        const avgWeight = (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(2).toString();
+        rowData.avgWeight = avgWeight === 'NaN' ? 0 : avgWeight;
     }
 
     const calculateWeightChanges = () => {
@@ -129,6 +144,39 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
             }
         }
         setRows([...tempRows])
+    }
+
+    const onBlur = (event, rowData, cellIndex, setShrink) => {
+        const element = event.target;
+        let inputValue = element.value
+        if (!/^([1-9]\d*)(\.?)(\d+)?$/g.test(inputValue) && inputValue.length > 0) {
+            if (Number(inputValue) === 0) {
+                setOpen(true);
+                setMessage('Incorrect entry. Zero is not allowed.')
+            } else {
+                setOpen(true);
+                setMessage('Incorrect entry. Only numbers allowed.')
+            }
+            element.value = '';
+        } else if (inputValue) {
+            if (inputValue.charAt(inputValue.length - 1) === '.') {
+                inputValue = inputValue.substring(0, inputValue.length - 1)
+            }
+            rowData[cellIndex] = Number(inputValue).toFixed(1);
+            calculateRowAvgWeight(rowData)
+            calculateWeightChanges()
+            setRows([...rows])
+            element.value = ''
+        }
+        setShrink(false)
+    }
+
+    const onClickIconButton = (index, headCell) => {
+        const tempRows = [...rows];
+        tempRows[index][headCell.id] = null;
+        calculateRowAvgWeight(tempRows[index]);
+        calculateWeightChanges();
+        setRows(tempRows);
     }
 
     const emptyRows =
@@ -156,44 +204,25 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
                         {rows.map((row, index) => {
                             return (
                                 <TableRow
-                                    key={row.week}
+                                    key={row.week + '_' + index}
                                 >
                                     {headCells.map((headCell, cellIndex) => {
                                         const CellRender = headCell.CellRender;
                                         return <TableCell
+                                            className={classes.textField}
                                             key={headCell.id + "_" + cellIndex} align="left" data-toggle="tooltip" title="Edit cell">
                                             {cellIndex >= 1 && cellIndex <= 7 ?
-                                                <TextField
-                                                    type='text'
-                                                    onBlur={(event) => { onBlur(event, row, cellIndex) }}
-                                                    label={row[headCell.id] ? `${row[headCell.id]}kg` : ''}
-                                                    key={headCell.id + cellIndex}
-                                                    InputProps={row[headCell.id] ?
-                                                        {
-                                                            endAdornment: <InputAdornment position="end">
-                                                                <IconButton
-                                                                    onClick={() => {
-                                                                        const tempRows = [...rows];
-                                                                        tempRows[index][headCell.id] = null;
-                                                                        calculateRowAvgWeight(tempRows[index]);
-                                                                        calculateWeightChanges();
-                                                                        setRows(tempRows);
-                                                                    }}
-                                                                    data-toggle="tooltip" title="Clear cell"
-                                                                    onMouseDown={(event) => {
-                                                                        event.preventDefault();
-                                                                        event.stopPropagation();
-                                                                    }}
-                                                                    edge="end"
-                                                                >
-                                                                    <ClearIcon />
-                                                                </IconButton>
-                                                            </InputAdornment>
-                                                        } : null}
+                                                <TableTextField
+                                                    onBlur={onBlur}
+                                                    onClickIconButton={onClickIconButton}
+                                                    row={row}
+                                                    cellIndex={cellIndex}
+                                                    headCell={headCell}
+                                                    index={index}
                                                 />
                                                 :
                                                 CellRender ?
-                                                    <CellRender key={headCell.id + cellIndex} cellData={row[headCell.id]} rowData={row} />
+                                                    <CellRender key={headCell.id + "_" + cellIndex} cellData={row[headCell.id]} rowData={row} />
                                                     :
                                                     row[headCell.id]
                                             }
@@ -214,7 +243,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[]}
+                rowsPerPageOptions={[5, 10, 15]}
                 component="div"
                 count={rows.length}
                 rowsPerPage={rowsPerPage}

@@ -1,6 +1,7 @@
 import useStyles from './styles'
 import { useState } from 'react';
 import UGBMissingFields from '../../../Global/UGBMissingFields';
+import { UGBInput } from '../../../Global/UGBInput'
 
 const KnowsLbmFalse = () => {
     const classes = useStyles();
@@ -43,20 +44,22 @@ const KnowsLbmFalse = () => {
                             className={"fas fa-venus " + classes.icon}></i></label>
                     </div>
                 </div>
-
-                <div className="form-group">
-                    <div className="input-group-prepend">
-                        <div className={`input-group-text ${classes.cornerless} ${classes.iconPrependWeight}`}><i className={"fas fa-weight " + classes.icon}></i></div>
-                        <input type="number" className={"form-control " + classes.cornerless} name='weight' min='1' max='250' placeholder="Weight" required></input>
-                    </div>
-                </div>
-
-                <div className="form-group">
-                    <div className="input-group-prepend">
-                        <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-ruler " + classes.icon}></i></div>
-                        <input type="number" className={"form-control " + classes.cornerless} name='height' min='1' max='275' placeholder="Height" required></input>
-                    </div>
-                </div>
+                <UGBInput
+                    type="number"
+                    name='weight'
+                    min='1'
+                    max='250'
+                    placeholder="Weight"
+                    iconStart='fas fa-weight'
+                />
+                <UGBInput
+                    type='number'
+                    name='height'
+                    min='1'
+                    max='275'
+                    placeholder="Height"
+                    iconStart='fas fa-ruler'
+                />
                 <div className="d-flex justify-content-center">
                     <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate BMR">
                         <i className={"fas fa-calculator " + classes.icon}></i>

@@ -1,7 +1,13 @@
-body {
+body,html {
     font-family: "Roboto", serif; 
     background-color: white;
+    height: 100%;
 }
+
+/* body > .footer {
+  position: sticky;
+  top: 100vh;
+} */
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

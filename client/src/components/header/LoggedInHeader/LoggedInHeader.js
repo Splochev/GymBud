@@ -5,9 +5,10 @@ import AddFood from '../../AddFood/AddFood.js';
 import CalorieCalculator from '../../CalorieCalculator/CalorieCalculator.js';
 import UGBModal from '../../Global/UGBModal.js';
 import { useStoreContext } from '../../store/Store.js';
+import clsx from 'clsx';
 
 const LoggedInHeader = () => {
-    const classes = useStyles();
+    const styles = useStyles();
     const [store, setStore] = useStoreContext();
     const [showOneRMCalculator, setOneRMCalculator] = useState(false);
     const [showAddFood, setAddFood] = useState(false);
@@ -39,53 +40,53 @@ const LoggedInHeader = () => {
             <div className="nav-wrapper">
                 <ul className="nav justify-content-end">
                     <li className="nav-item">
-                        <a className={"nav-link " + classes.signInOrUpUrls} href="#!">My Profile</a>
+                        <a className={clsx("nav-link", styles.signInOrUpUrls)} href="#!">My Profile</a>
                     </li>
                     <li className="nav-item">
-                        <a className={"nav-link " + classes.signInOrUpUrls} href="#!" onClick={(e) => {
+                        <a className={clsx("nav-link", styles.signInOrUpUrls)} href="#!" onClick={(e) => {
                             e.preventDefault()
                             setStore(state => (state.user = false, { ...state }));
                         }}>Logout</a>
                     </li>
                     <li className="nav-item dropdown dropleft">
-                        <a className={`nav-link dropdown-toggle ${classes.questionIcon} ${classes.signInOrUpUrls}`} href="#!" role="button"
+                        <a className={clsx('nav-link dropdown-toggle', styles.questionIcon, styles.signInOrUpUrls)} href="#!" role="button"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i className="far fa-question-circle"></i>
+                            <i className="far fa-question-circle" />
                         </a>
                         <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a className={"dropdown-item " + classes.dropDown} href="#!">Opt1</a>
-                            <a className={"dropdown-item " + classes.dropDown} href="#!">Opt2</a>
+                            <a className={clsx("dropdown-item", styles.dropDown)} href="#!">Opt1</a>
+                            <a className={clsx("dropdown-item", styles.dropDown)} href="#!">Opt2</a>
                         </div>
                     </li>
                 </ul>
             </div>
 
-            <div className={"nav-menu-wrapper " + classes.blackStripe}>
-                <nav className={"navbar navbar-expand-lg " + classes.nav}>
+            <div className={clsx("nav-menu-wrapper", styles.blackStripe)}>
+                <nav className={clsx("navbar navbar-expand-lg", styles.nav)}>
                     <a className="navbar-brand" href="#!">
-                        <img src="/UrGymBudLogoLight.png" alt="Logo" className={classes.logo}></img>
+                        <img src="/UrGymBudLogoLight.png" alt="Logo" className={styles.logo}></img>
                     </a>
-                    <button className={"navbar-toggler " + classes.navToggler} type="button" data-toggle="collapse"
+                    <button className={clsx("navbar-toggler", styles.navToggler)} type="button" data-toggle="collapse"
                         data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                         aria-label="Toggle navigation">
-                        <span className="bars-icon"><i className="fas fa-bars"></i> </span>
+                        <span className="bars-icon"><i className="fas fa-bars" /> </span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav mr-auto">
                             <li className="nav-item">
                                 <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button"
-                                ><i className="fas fa-hamburger"></i> <i className="fas fa-search"></i></a>
+                                ><i className="fas fa-hamburger"></i> <i className="fas fa-search" /></a>
                             </li>
                             <li className="nav-item">
-                                <a className={"nav-link " + classes.navUrls} href="#!">Meal Planner
-                                    <span className={"badge badge-pill badge-secondary " + classes.addedFoodCounter}>0</span></a>
+                                <a className={clsx("nav-link", styles.navUrls)} href="#!">Meal Planner
+                                    <span className={clsx("badge badge-pill badge-secondary", styles.addedFoodCounter)}>0</span></a>
                             </li>
                             <li className="nav-item">
-                                <a className={"nav-link " + classes.navUrls} href="#!">Progress-Tracker</a>
+                                <a className={clsx("nav-link", styles.navUrls)} href="#!">Progress-Tracker</a>
                             </li>
 
                             <li className="nav-item">
-                                <a className={"nav-link " + classes.navUrls} href="#!" onClick={(e) => {
+                                <a className={clsx("nav-link", styles.navUrls)} href="#!" onClick={(e) => {
                                     e.preventDefault();
                                     setShowCalorieCalculator(true);
                                 }}
@@ -93,7 +94,7 @@ const LoggedInHeader = () => {
                                     Calculator</a>
                             </li>
                             <li className="nav-item">
-                                <a className={"nav-link " + classes.navUrls} href="#!" onClick={(e) => {
+                                <a className={clsx("nav-link", styles.navUrls)} href="#!" onClick={(e) => {
                                     e.preventDefault();
                                     setOneRMCalculator(true);
                                 }}>
@@ -103,13 +104,13 @@ const LoggedInHeader = () => {
                                 </a>
                             </li>
                             <li className="nav-item dropdown">
-                                <a className={"nav-link dropdown-toggle " + classes.navUrls} href="#!" role="button"
+                                <a className={clsx("nav-link dropdown-toggle", styles.navUrls)} href="#!" role="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Food
                                 </a>
                                 <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a className={"dropdown-item " + classes.dropDown} href="#!">My Food</a>
-                                    <a className={"dropdown-item " + classes.dropDown} href="#!" onClick={(e) => {
+                                    <a className={clsx("dropdown-item", styles.dropDown)} href="#!">My Food</a>
+                                    <a className={clsx("dropdown-item", styles.dropDown)} href="#!" onClick={(e) => {
                                         e.preventDefault();
                                         setAddFood(true);
                                     }}>
@@ -118,23 +119,23 @@ const LoggedInHeader = () => {
                                 </div>
                             </li>
                             <li className="nav-item dropdown">
-                                <a className={"nav-link dropdown-toggle " + classes.navUrls} href="#!" role="button"
+                                <a className={clsx("nav-link dropdown-toggle", styles.navUrls)} href="#!" role="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Meals
                                 </a>
                                 <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a className={"dropdown-item " + classes.dropDown} href="#!">My Meals</a>
-                                    <a className={"dropdown-item " + classes.dropDown} href="#!">My Meal Plans</a>
+                                    <a className={clsx("dropdown-item", styles.dropDown)} href="#!">My Meals</a>
+                                    <a className={clsx("dropdown-item", styles.dropDown)} href="#!">My Meal Plans</a>
                                 </div>
                             </li>
                             <li className="nav-item dropdown">
-                                <a className={"nav-link dropdown-toggle " + classes.navUrls} href="#!" role="button"
+                                <a className={clsx("nav-link dropdown-toggle", styles.navUrls)} href="#!" role="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Workout Journal
                                 </a>
                                 <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a className={"dropdown-item " + classes.dropDown} href="#!">My Workout Journal</a>
-                                    <a className={"dropdown-item " + classes.dropDown} href="#!">Create A Workout Journal</a>
+                                    <a className={clsx("dropdown-item", styles.dropDown)} href="#!">My Workout Journal</a>
+                                    <a className={clsx("dropdown-item", styles.dropDown)} href="#!">Create A Workout Journal</a>
                                 </div>
                             </li>
                         </ul>

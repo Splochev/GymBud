@@ -3,6 +3,7 @@ import MifflinStJeorFormula from './MifflinStJeorFormula/MifflinStJeorFormula'
 import { useState } from 'react';
 import useStyles from './styles.js'
 import UGBMissingFields from '../Global/UGBMissingFields';
+import clsx from 'clsx'
 
 const CalorieCalculator = () => {
     const classes = useStyles();
@@ -88,16 +89,16 @@ const CalorieCalculator = () => {
                 </div>
                 {alert}
                 <div className="d-flex justify-content-center">
-                    <div className={"dropdown dropright " + classes.activityIndexDropownWrap} id="dropdown-activity-index">
-                        <button type="button" className={"btn btn-secondary " + classes.activityIndexDropownButton} id="activity-index" data-toggle="dropdown">
+                    <div className={clsx('dropdown dropright', classes.activityIndexDropownWrap)} id="dropdown-activity-index">
+                        <button type="button" className={clsx("btn btn-secondary", classes.activityIndexDropownButton)} id="activity-index" data-toggle="dropdown">
                             Choose Activity Index
                         </button>
                         <div className="dropdown-menu">
-                            <a className={"dropdown-item " + classes.dropdownItem} href="#!" id='1.2' onClick={onSelectedActivityIndex}>1.2 - If you rarely exercise</a>
-                            <a className={"dropdown-item " + classes.dropdownItem} href="#!" id='1.375' onClick={onSelectedActivityIndex}>1.375 - If you exercise on 1 to 3 days per week</a>
-                            <a className={"dropdown-item " + classes.dropdownItem} href="#!" id='1.55' onClick={onSelectedActivityIndex}>1.55 - If you exercise on 3 to 5 days per week</a>
-                            <a className={"dropdown-item " + classes.dropdownItem} href="#!" id='1.725' onClick={onSelectedActivityIndex}>1.725 - If you exercise 6 to 7 days per week</a>
-                            <a className={"dropdown-item " + classes.dropdownItem} href="#!" id='1.9' onClick={onSelectedActivityIndex}>1.9 - If you exercise every day and have<br></br>a physical job or if
+                            <a className={clsx("dropdown-item", classes.dropdownItem)} href="#!" id='1.2' onClick={onSelectedActivityIndex}>1.2 - If you rarely exercise</a>
+                            <a className={clsx("dropdown-item", classes.dropdownItem)} href="#!" id='1.375' onClick={onSelectedActivityIndex}>1.375 - If you exercise on 1 to 3 days per week</a>
+                            <a className={clsx("dropdown-item", classes.dropdownItem)} href="#!" id='1.55' onClick={onSelectedActivityIndex}>1.55 - If you exercise on 3 to 5 days per week</a>
+                            <a className={clsx("dropdown-item", classes.dropdownItem)} href="#!" id='1.725' onClick={onSelectedActivityIndex}>1.725 - If you exercise 6 to 7 days per week</a>
+                            <a className={clsx("dropdown-item", classes.dropdownItem)} href="#!" id='1.9' onClick={onSelectedActivityIndex}>1.9 - If you exercise every day and have<br></br>a physical job or if
                                 you
                                 often exercise twice a day</a>
                         </div>

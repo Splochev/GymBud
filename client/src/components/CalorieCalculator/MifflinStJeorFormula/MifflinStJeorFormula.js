@@ -1,9 +1,10 @@
 import useStyles from './styles.js'
 import { useState } from 'react';
 import UGBMissingFields from '../../Global/UGBMissingFields.js';
+import { UGBInput } from '../../Global/UGBInput.js';
 
 const MifflinStJeorFormula = () => {
-    const classes = useStyles();
+    const styles = useStyles();
     const [alert, setAlert] = useState('');
 
     function calculate(e) {
@@ -38,35 +39,41 @@ const MifflinStJeorFormula = () => {
                         <div className="custom-control custom-radio custom-control-inline">
                             <input type="radio" className="custom-control-input" id="male-mifflin-st-jeor-radio" name="gender" defaultChecked></input>
                             <label className="custom-control-label" htmlFor="male-mifflin-st-jeor-radio"><i
-                                className={"fas fa-mars " + classes.icon}></i></label>
+                                className={"fas fa-mars " + styles.icon}></i></label>
                         </div>
                         <div className="custom-control custom-radio custom-control-inline">
                             <input type="radio" className="custom-control-input" id="female-mifflin-st-jeor-radio" name="gender"></input>
                             <label className="custom-control-label" htmlFor="female-mifflin-st-jeor-radio"><i
-                                className={"fas fa-venus " + classes.icon}></i></label>
+                                className={"fas fa-venus " + styles.icon}></i></label>
                         </div>
                     </div>
-                    <div className="form-group">
-                        <div className="input-group-prepend">
-                            <div className={`input-group-text ${classes.cornerless} ${classes.iconPrependWeight}`}><i className={"fas fa-weight " + classes.icon}></i></div>
-                            <input type="number" className={"form-control " + classes.cornerless} name='weight' min='1' max='250' placeholder="Weight" required></input>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="input-group-prepend">
-                            <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-ruler " + classes.icon}></i></div>
-                            <input type="number" className={"form-control " + classes.cornerless} name='height' min='1' max='275' placeholder="Height" required></input>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="input-group-prepend">
-                            <div className={`input-group-text ${classes.cornerless} ${classes.iconPrepend}`}><i className={"fas fa-user-clock " + classes.icon}></i></div>
-                            <input type="number" className={"form-control " + classes.cornerless} name='age' min='0' max='125' placeholder="Age" required></input>
-                        </div>
-                    </div>
+                    <UGBInput
+                        type='number'
+                        name='weight'
+                        placeholder="Weight"
+                        min='1'
+                        max='250'
+                        iconStart='fas fa-weight'
+                    />
+                    <UGBInput
+                        type='number'
+                        name='height'
+                        placeholder="height"
+                        min='1'
+                        max='275'
+                        iconStart='fas fa-ruler'
+                    />
+                    <UGBInput
+                        type='number'
+                        name='age'
+                        placeholder="Age"
+                        min='1'
+                        max='125'
+                        iconStart='fas fa-user-clock'
+                    />
                     <div className="d-flex justify-content-center">
                         <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate BMR">
-                            <i className={"fas fa-calculator " + classes.icon}></i>
+                            <i className={"fas fa-calculator " + styles.icon}></i>
                         </button>
                     </div>
                     <div className="d-flex justify-content-center">

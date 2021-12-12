@@ -1,9 +1,10 @@
 import useStyles from './styles.js'
+import clsx from 'clsx'
 
 const Footer = () => {
     const classes = useStyles();
     return (
-        <nav className={"navbar navbar-expand-sm justify-content-center " + classes.copyrightNav}>
+        <nav className={clsx('navbar navbar-expand-sm justify-content-center', classes.copyrightNav, classes.footer)}>
             <section className="mb-4">
                 {/* Facebook */}
                 {/* <a className="btn btn-outline-light btn-floating m-1" href="https://www.facebook.com/" target="_blank"

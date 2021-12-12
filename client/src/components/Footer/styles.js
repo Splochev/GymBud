@@ -13,6 +13,10 @@ export default makeStyles(() => ({
     },
     icon: {
         fontSize: '24px'
+    },
+    footer: {
+        position: 'sticky',
+        top: '100vh'
     }
 }))
 

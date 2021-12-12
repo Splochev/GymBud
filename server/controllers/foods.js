@@ -1,7 +1,5 @@
 import Food from '../models/food.js'
 
-
-
 /**
  * Everytime I go to @Link "http://localhost:5000/food" + "/getfoods", "/getfood" or "/addfood"
  * a function will be executed from here to the server
