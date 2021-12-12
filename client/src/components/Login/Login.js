@@ -45,6 +45,7 @@ const Login = ({ setShowLogin, setShowForgotPassword }) => {
                             className="btn btn-success"
                             onClick={(e) => {
                                 setStore(state => (state.user = true, { ...state }));
+                                sessionStorage.setItem('user', true)
                             }}
                         >
                             Sign In

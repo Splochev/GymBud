@@ -46,6 +46,7 @@ const LoggedInHeader = () => {
                         <a className={clsx("nav-link", styles.signInOrUpUrls)} href="#!" onClick={(e) => {
                             e.preventDefault()
                             setStore(state => (state.user = false, { ...state }));
+                            sessionStorage.removeItem('user');
                         }}>Logout</a>
                     </li>
                     <li className="nav-item dropdown dropleft">
