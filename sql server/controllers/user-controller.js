@@ -15,10 +15,10 @@ module.exports = class UserController {
     attachEndpoints() {
         this.router.post('/login', (req, res) => this.login(req, res));
         this.router.get('/me', AuthHelpers.loggedIn, (req, res) => this.getMe(req, res));
+        this.router.post('/logout', AuthHelpers.loggedIn, (req, res) => this.logout(req, res));
     }
 
     async login(req, res, next) {
-     
         passport.authenticate('local', (err, user, info) => {
             if (err) {
                 res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error'));
@@ -55,5 +55,16 @@ module.exports = class UserController {
         }
     };
 
+    async logout(req, res) {
+        try {
+            await req.logout();
+
+            res.json({ success: true });
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
 
 }
