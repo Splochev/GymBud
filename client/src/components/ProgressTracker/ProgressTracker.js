@@ -9,8 +9,8 @@ import { UGBInput } from '../Global/UGBInput';
 
 export function MaterialUIPickers({ selectedDate, setSelectedDate }) {
     const [today] = useState(new Date());
+    const [maxDate] = useState(new Date(today.setDate(today.getDate())));
     const [minDate] = useState(new Date(today.setDate(today.getDate() - 30)));
-    const [maxDate] = useState(new Date(today.setDate(today.getDate() + 60)));
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
