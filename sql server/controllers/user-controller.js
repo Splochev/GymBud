@@ -16,6 +16,7 @@ module.exports = class UserController {
         this.router.post('/login', (req, res) => this.login(req, res));
         this.router.get('/me', AuthHelpers.loggedIn, (req, res) => this.getMe(req, res));
         this.router.post('/logout', AuthHelpers.loggedIn, (req, res) => this.logout(req, res));
+        this.router.post('/register', (req, res) => this.register(req, res));
     }
 
     async login(req, res, next) {
@@ -60,6 +61,50 @@ module.exports = class UserController {
             await req.logout();
 
             res.json({ success: true });
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+
+    async register(req, res) {
+        try {
+            const body = req.body;
+
+            if (!body.email || !body.password || !body.firstName || !body.lastName || !body.sex) {
+                if (!body.email) {
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.data, 'Email is required!'));
+                } else if (!body.password) {
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Password is required!'));
+                } else if (!body.firstName) {
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'First Name is required!'));
+                } else if (!body.lastName) {
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Last Name is required!'));
+                } else if (!body.sex) {
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Sex is required!'));
+                } else if (!body.userType) {
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'User Type is required!'));
+                }
+            } else {
+                const password = bcrypt.hashSync(body.password, 10);
+                const dateObj = new Date();
+                const date = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
+
+                let userData = await MysqlAdapter.query(`
+                    INSERT IGNORE INTO users (email,password,first_name,last_name,sex,created_on)
+                    VALUES(
+                        ${escape(body.email)},
+                        "${password}",
+                        ${escape(body.firstName)},
+                        ${escape(body.lastName)},
+                        ${escape(body.sex)},
+                        "${date}"
+                    )
+                `)
+                res.json(userData);
+            }
         }
         catch (error) {
             console.error(error);
