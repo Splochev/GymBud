@@ -7,7 +7,7 @@ const UGBMissingFields = (props) => {
 
     useEffect(() => {
         setTimeout(() => { closeAlert() }, 2000);
-    });
+    },[]);
 
     return (<div className="alert alert-danger alert-dismissible">
         {props.alertMessage}

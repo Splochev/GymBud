@@ -1,5 +1,4 @@
 exports.up = function (knex) {
-    const date = new Date();
     return knex.schema.raw(`
         CREATE TABLE users(
             id INT NOT NULL AUTO_INCREMENT,
