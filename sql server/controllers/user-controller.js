@@ -89,8 +89,8 @@ module.exports = class UserController {
                 }
             } else {
                 const password = bcrypt.hashSync(body.password, 10);
-                const dateObj = new Date();
-                const date = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
+                let dateObj = new Date();
+                let date = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
 
                 let userData = await MysqlAdapter.query(`
                     INSERT IGNORE INTO users (email,password,first_name,last_name,sex,created_on)
@@ -102,8 +102,35 @@ module.exports = class UserController {
                         ${escape(body.sex)},
                         "${date}"
                     )
+                    returning id
                 `)
-                res.json(userData);
+
+                if (userData.length <= 0) {
+                    res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.authentication, 'Email already exists!'));
+                    return;
+                }
+
+                const id = userData[0].id;
+                dateObj = new Date(dateObj.setDate(dateObj.getDate() + 30));
+                date = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
+
+                let registrationConfirmationData = await MysqlAdapter.query(`
+                    INSERT IGNORE INTO registration_confirmation (user_id,expires_on,token)
+                    VALUES(
+                        "${id}",
+                        "${date}",
+                        UUID()
+                    )
+                    returning token
+                `)
+
+                if (registrationConfirmationData[0].length <= 0) {
+                    await MysqlAdapter.query(`DELETE FROM users WHERE id = ${id}`)
+                    res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.authentication, 'Something went wrong, please try again!'));
+                    return;
+                }
+
+                res.json({ token: registrationConfirmationData[0].token });
             }
         }
         catch (error) {
