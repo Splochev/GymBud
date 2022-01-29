@@ -12,7 +12,7 @@ exports.up = function (knex) {
             created_on DATE NOT NULL,
             PRIMARY KEY (id),
             CONSTRAINT email_unique UNIQUE (email)
-        );
+        )
     `)
 };
 
