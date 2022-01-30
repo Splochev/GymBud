@@ -17,6 +17,7 @@ module.exports = class UserController {
         this.router.get('/me', AuthHelpers.loggedIn, (req, res) => this.getMe(req, res));
         this.router.post('/logout', AuthHelpers.loggedIn, (req, res) => this.logout(req, res));
         this.router.post('/register', (req, res) => this.register(req, res));
+        this.router.put('/verify', (req, res) => this.verify(req, res));
     }
 
     async login(req, res, next) {
@@ -68,7 +69,6 @@ module.exports = class UserController {
         }
     };
 
-
     async register(req, res) {
         try {
             const body = req.body;
@@ -91,46 +91,29 @@ module.exports = class UserController {
                 const password = bcrypt.hashSync(body.password, 10);
                 let dateObj = new Date();
                 let date = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
+                dateObj = new Date(dateObj.setDate(dateObj.getDate() + 30));
+                let expirationDate = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
 
                 let userData = await MysqlAdapter.query(`
-                    INSERT IGNORE INTO users (email,password,first_name,last_name,sex,created_on)
+                    INSERT IGNORE INTO users (email,password,first_name,last_name,sex,created_on,verification_token_expires_on,verification_token)
                     VALUES(
                         ${escape(body.email)},
-                        "${password}",
+                        '${password}',
                         ${escape(body.firstName)},
                         ${escape(body.lastName)},
                         ${escape(body.sex)},
-                        "${date}"
+                        '${date}',
+                        '${expirationDate}',
+                        uuid()
                     )
-                    returning id
+                    RETURNING verification_token as token
                 `)
 
-                if (userData.length <= 0) {
-                    res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.authentication, 'Email already exists!'));
-                    return;
+                if (!userData.length) {
+                    res.status(409).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.authentication, 'Failed to submit, please try again!'));
                 }
 
-                const id = userData[0].id;
-                dateObj = new Date(dateObj.setDate(dateObj.getDate() + 30));
-                date = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
-
-                let registrationConfirmationData = await MysqlAdapter.query(`
-                    INSERT IGNORE INTO registration_confirmation (user_id,expires_on,token)
-                    VALUES(
-                        "${id}",
-                        "${date}",
-                        UUID()
-                    )
-                    returning token
-                `)
-
-                if (registrationConfirmationData[0].length <= 0) {
-                    await MysqlAdapter.query(`DELETE FROM users WHERE id = ${id}`)
-                    res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.authentication, 'Something went wrong, please try again!'));
-                    return;
-                }
-
-                res.json({ token: registrationConfirmationData[0].token });
+                res.json(userData[0]);
             }
         }
         catch (error) {
@@ -139,4 +122,26 @@ module.exports = class UserController {
         }
     };
 
+    async verify(req, res) {
+        try {
+            const userData = await MysqlAdapter.query(`
+                UPDATE users
+                SET 
+                    verification_token_expires_on = NULL,
+                    verification_token=null,
+                    active_status='active'
+                WHERE verification_token=${escape(req.query.token)}
+            `)
+
+            if (!userData.changedRows) {
+                res.status(409).json(ErrorHandler.GenerateError(404, ErrorHandler.ErrorTypes.bad_param, 'Invalid token'));
+            }
+
+            res.json({ success: true });
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
 }
