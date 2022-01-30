@@ -3,6 +3,7 @@ const express = require('express');
 const session = require("express-session");
 const passport = require('passport');
 const bodyParser = require('body-parser');
+const schedule = require('node-schedule')
 
 const cors = require('cors');
 const MysqlAdapter = require('./utils/mysql-adapter');
@@ -40,3 +41,8 @@ app.use('/api', MainRouter.build());
 app.listen(port, () => {
     console.log(`Gym Bud Server listening on http://localhost:${port}`)
 });
+
+schedule.scheduleJob('0 0 * * *', async () => {
+    console.log("in")
+    await MysqlAdapter.query(`DELETE FROM users WHERE verification_token_expires_on <= now()`)
+}) 
