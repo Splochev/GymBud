@@ -10,6 +10,8 @@ exports.up = function (knex) {
             active_status ENUM('pending', 'active', 'disabled') NOT NULL DEFAULT 'pending',
             user_type ENUM('user', 'trainer', 'admin') NOT NULL DEFAULT 'user',
             created_on DATE NOT NULL,
+            verification_token_expires_on DATE,       
+            verification_token VARCHAR(255) UNIQUE,
             PRIMARY KEY (id),
             CONSTRAINT email_unique UNIQUE (email)
         )
