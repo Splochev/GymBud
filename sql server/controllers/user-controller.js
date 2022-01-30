@@ -1,10 +1,11 @@
 const express = require('express');
 const ErrorHandler = require('../utils/error-handler');
 const MysqlAdapter = require('../utils/mysql-adapter');
+const Nodemailer = require("../utils/email-service");
+const AuthHelpers = require('../utils/auth-helpers');
 const { escape } = require('mysql');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
-const AuthHelpers = require('../utils/auth-helpers');
 
 module.exports = class UserController {
     constructor() {
@@ -113,7 +114,15 @@ module.exports = class UserController {
                     res.status(409).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.authentication, 'Failed to submit, please try again!'));
                 }
 
-                res.json(userData[0]);
+                await Nodemailer.sendMail({
+                    from: process.env.NM_USERNAME,
+                    to: body.email,
+                    subject: 'subject',
+                    text: 'Verify Ur Gym Bud account registration',
+                    html: `<p>Click <a href="http://localhost:3000/verify?token=${userData[0].token}">here</a> to verify Ur Gym Bud account registration</p>`
+                });
+
+                res.json({ success: true });
             }
         }
         catch (error) {
