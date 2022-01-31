@@ -211,10 +211,18 @@ module.exports = class UserController {
     async resetForgottenPassword(req, res) {
         try {
             const token = req.body.token ? escape(req.body.token) : undefined;
+            let password = req.body.password || undefined;
+
             if (!token) {
                 res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Token not provided!'));
                 return;
             }
+            if (!password) {
+                res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Password not provided!'));
+                return;
+            }
+
+            password = bcrypt.hashSync(password, 10);
 
             const email = await MysqlAdapter.query(`
                     SELECT email FROM users
@@ -226,7 +234,8 @@ module.exports = class UserController {
                     UPDATE users
                     SET
                         change_password_token_expires_on=null,
-                        change_password_token=null
+                        change_password_token=null,
+                        password='${password}'
                     WHERE
                         change_password_token=${token}
                 `);
