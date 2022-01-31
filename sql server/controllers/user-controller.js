@@ -19,6 +19,8 @@ module.exports = class UserController {
         this.router.post('/logout', AuthHelpers.loggedIn, (req, res) => this.logout(req, res));
         this.router.post('/register', (req, res) => this.register(req, res));
         this.router.put('/verify', (req, res) => this.verify(req, res));
+        this.router.put('/forgotten-password', (req, res) => this.forgottenPassword(req, res));
+        this.router.put('/reset-forgotten-password', (req, res) => this.resetForgottenPassword(req, res));
     }
 
     async login(req, res, next) {
@@ -77,16 +79,22 @@ module.exports = class UserController {
             if (!body.email || !body.password || !body.firstName || !body.lastName || !body.sex) {
                 if (!body.email) {
                     res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.data, 'Email is required!'));
+                    return;
                 } else if (!body.password) {
                     res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Password is required!'));
+                    return;
                 } else if (!body.firstName) {
                     res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'First Name is required!'));
+                    return;
                 } else if (!body.lastName) {
                     res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Last Name is required!'));
+                    return;
                 } else if (!body.sex) {
                     res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Sex is required!'));
+                    return;
                 } else if (!body.userType) {
                     res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'User Type is required!'));
+                    return;
                 }
             } else {
                 const password = bcrypt.hashSync(body.password, 10);
@@ -112,13 +120,13 @@ module.exports = class UserController {
 
                 if (!userData.length) {
                     res.status(409).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.authentication, 'Failed to submit, please try again!'));
+                    return;
                 }
 
                 await Nodemailer.sendMail({
                     from: process.env.NM_USERNAME,
                     to: body.email,
-                    subject: 'subject',
-                    text: 'Verify Ur Gym Bud account registration',
+                    subject: 'Verify account',
                     html: `<p>Click <a href="http://localhost:3000/verify?token=${userData[0].token}">here</a> to verify Ur Gym Bud account registration</p>`
                 });
 
@@ -144,6 +152,7 @@ module.exports = class UserController {
 
             if (!userData.changedRows) {
                 res.status(409).json(ErrorHandler.GenerateError(404, ErrorHandler.ErrorTypes.bad_param, 'Invalid token'));
+                return;
             }
 
             res.json({ success: true });
@@ -153,4 +162,92 @@ module.exports = class UserController {
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
         }
     };
+
+    async forgottenPassword(req, res) {
+        try {
+            const email = req.body.email ? escape(req.body.email) : undefined;
+            if (!email) {
+                res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Email not provided!'));
+                return;
+            }
+
+            let dateObj = new Date(new Date().setDate(new Date().getDate() + 30));
+            let expirationDate = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
+
+            const insert = await MysqlAdapter.query(`
+                    UPDATE users
+                    SET
+                        change_password_token_expires_on='${expirationDate}',
+                        change_password_token=uuid()
+                    WHERE
+                        email=${email}
+                `);
+
+            if (!insert.changedRows) {
+                res.status(409).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.authentication, 'Failed to submit, please try again!'));
+                return;
+            }
+
+            const token = await MysqlAdapter.query(`
+                    SELECT change_password_token as token from users
+                    WHERE
+                        email=${email}
+                `);
+
+            await Nodemailer.sendMail({
+                from: process.env.NM_USERNAME,
+                to: req.body.email,
+                subject: 'Password Reset',
+                html: `<p>Click <a href="http://localhost:3000/change-password?token=${token[0].token}" target="_blank">here</a> to reset password</p>`
+            });
+            res.json({ success: true });
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+    async resetForgottenPassword(req, res) {
+        try {
+            const token = req.body.token ? escape(req.body.token) : undefined;
+            if (!token) {
+                res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Token not provided!'));
+                return;
+            }
+
+            const email = await MysqlAdapter.query(`
+                    SELECT email FROM users
+                    WHERE
+                        change_password_token=${token}
+                `);
+            
+            const update = await MysqlAdapter.query(`
+                    UPDATE users
+                    SET
+                        change_password_token_expires_on=null,
+                        change_password_token=null
+                    WHERE
+                        change_password_token=${token}
+                `);
+
+            if (!update.changedRows) {
+                res.status(409).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.authentication, 'Failed to submit, please try again!'));
+                return;
+            }
+
+            await Nodemailer.sendMail({
+                from: process.env.NM_USERNAME,
+                to: email[0].email,
+                subject: 'Reset Password successfully',
+                html: `<p>Your password was reset successfully.</p>`
+            });
+            res.json({ success: true });
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
 }
