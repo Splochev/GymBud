@@ -12,6 +12,8 @@ exports.up = function (knex) {
             created_on DATE NOT NULL,
             verification_token_expires_on DATE,       
             verification_token VARCHAR(255) UNIQUE,
+            change_password_token_expires_on DATE,       
+            change_password_token VARCHAR(255) UNIQUE,
             PRIMARY KEY (id),
             CONSTRAINT email_unique UNIQUE (email)
         )
