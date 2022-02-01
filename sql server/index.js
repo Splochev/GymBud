@@ -45,4 +45,12 @@ app.listen(port, () => {
 schedule.scheduleJob('0 0 * * *', async () => {
     console.log("in")
     await MysqlAdapter.query(`DELETE FROM users WHERE verification_token_expires_on <= now()`)
+    await MysqlAdapter.query(`
+            UPDATE users
+            SET
+                change_password_token_expires_on=null,
+                change_password_token=null
+            WHERE
+               change_password_token_expires_on <= now()
+        `)
 }) 
