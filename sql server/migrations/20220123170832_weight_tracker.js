@@ -6,7 +6,8 @@ exports.up = function (knex) {
         date DATE NOT NULL,
         weight DOUBLE NOT NULL,
         PRIMARY KEY(id),
-        FOREIGN KEY(user_id) REFERENCES users(id)
+        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+        CONSTRAINT uq_user_id_date UNIQUE (user_id,date)
         )
     `)
 };
