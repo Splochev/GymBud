@@ -1,12 +1,28 @@
 import { UGBInput } from '../Global/UGBInput';
 import { useStoreContext } from '../store/Store';
-import useStyles from './styles'
-// import UGBMissingFields from '../Global/UGBMissingFields'
+import { postData } from '../utils/FetchUtils'
+import { useHistory } from 'react-router-dom';
 
 const Login = ({ setShowLogin, setShowForgotPassword }) => {
     const [store, setStore] = useStoreContext();
-    // const [alert, setAlert] = useState('');
-    const styles = useStyles();
+    const history = useHistory();
+    
+    async function onLogin(e) {
+        e.preventDefault()
+        try {
+            const form = new FormData(e.target);
+            const email = form.get('mail');
+            const password = form.get('password');
+            const data = await postData(process.env.REACT_APP_HOST + '/api/user/login', { email: email[0], password: password[0] });
+            if (!data) {
+                throw Error('Incorrect email or password!')
+            }
+            setStore(state => (state.user = data, { ...state }))
+            history.push('/');
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
 
     return (
         <div>
@@ -16,7 +32,7 @@ const Login = ({ setShowLogin, setShowForgotPassword }) => {
             <hr></hr>
             <div className="container mt-3">
                 <p>Please fill in this form to sign in.</p>
-                <form>
+                <form onSubmit={onLogin}>
                     <UGBInput
                         type='text'
                         name='mail'
@@ -40,13 +56,8 @@ const Login = ({ setShowLogin, setShowForgotPassword }) => {
                     </div>
                     <div className="d-flex justify-content-center">
                         <button
-                            // type="submit"
-                            type="button"
+                            type="submit"
                             className="btn btn-success"
-                            onClick={(e) => {
-                                setStore(state => (state.user = true, { ...state }));
-                                sessionStorage.setItem('user', true)
-                            }}
                         >
                             Sign In
                         </button>
