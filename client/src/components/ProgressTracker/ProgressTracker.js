@@ -100,43 +100,199 @@ const headCells = [
 const ProgressTracker = () => {
     const styles = useStyles();
     const [page, setPage] = useState(0);
-    const [rows, setRows] = useState([{
-        endDate: '11/28/2021',
-        startDate: '12/04/2021',
-        1: 68.0,
-        2: 67.3,
-        3: 67.3,
-        4: null,
-        5: 67.3,
-        6: 67.7,
-        7: 67.7,
-        avgWeight: 67.55,
-        weightChange: 0,
-    },
-    {
-        endDate: '12/05/2021',
-        startDate: '12/11/2021',
-        1: 67.7,
-        2: 67.3,
-        3: 67.1,
-        4: 67.0,
-        5: 66.6,
-        6: null,
-        7: 66.4,
-        avgWeight: 67.02,
-        weightChange: -0.79,
-    }
-
-
-
-    ]);
-    const [order, setOrder] = useState('asc');
-    const [orderBy, setOrderBy] = useState('');
+    const [rows, setRows] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
 
     useEffect(() => {
         console.log(selectedDate)
-    }, [selectedDate])
+    }, [])
+
+    useEffect(() => {
+        setRows([
+            {
+                "1": 68,
+                "2": 69,
+                "3": 67,
+                "4": null,
+                "5": null,
+                "6": 68,
+                "7": null,
+                "startDate": "2022-01-31",
+                "endDate": "2022-02-06",
+                "avgWeight": "68.00",
+                "weightChange": 0
+            },
+            {
+                "1": 67,
+                "2": 66,
+                "3": 67,
+                "4": 66,
+                "5": 65,
+                "6": 63,
+                "7": 66,
+                "startDate": "2022-02-07",
+                "endDate": "2022-02-13",
+                "avgWeight": "65.71",
+                "weightChange": -3.37
+            },
+            {
+                "1": 50,
+                "2": 50,
+                "3": 50,
+                "4": 50,
+                "5": 50,
+                "6": 50,
+                "7": 50,
+                "startDate": "2022-02-14",
+                "endDate": "2022-02-20",
+                "avgWeight": "50.00",
+                "weightChange": -23.91
+            },
+            {
+                "1": 50,
+                "2": 50,
+                "3": 50,
+                "4": 50,
+                "5": 50,
+                "6": 50,
+                "7": 50,
+                "startDate": "2022-02-21",
+                "endDate": "2022-02-27",
+                "avgWeight": "50.00",
+                "weightChange": 0
+            },
+            {
+                "1": 50,
+                "2": 50,
+                "3": 50,
+                "4": 50,
+                "5": 50,
+                "6": 50,
+                "7": 50,
+                "startDate": "2022-02-28",
+                "endDate": "2022-03-06",
+                "avgWeight": "50.00",
+                "weightChange": 0
+            },
+            {
+                "1": 99,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null,
+                "6": null,
+                "7": null,
+                "startDate": "2022-03-07",
+                "endDate": "2022-03-13",
+                "avgWeight": "99.00",
+                "weightChange": 98
+            },
+            {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null,
+                "6": null,
+                "7": null,
+                "startDate": "2022-03-14",
+                "endDate": "2022-03-20",
+                "avgWeight": 0,
+                "weightChange": 0
+            },
+            {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null,
+                "6": null,
+                "7": null,
+                "startDate": "2022-03-21",
+                "endDate": "2022-03-27",
+                "avgWeight": 0,
+                "weightChange": 0
+            },
+            {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null,
+                "6": null,
+                "7": null,
+                "startDate": "2022-03-27",
+                "endDate": "2022-04-02",
+                "avgWeight": 0,
+                "weightChange": 0
+            },
+            {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null,
+                "6": null,
+                "7": null,
+                "startDate": "2022-04-03",
+                "endDate": "2022-04-09",
+                "avgWeight": 0,
+                "weightChange": 0
+            },
+            {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null,
+                "6": null,
+                "7": null,
+                "startDate": "2022-04-10",
+                "endDate": "2022-04-16",
+                "avgWeight": 0,
+                "weightChange": 0
+            },
+            {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null,
+                "6": null,
+                "7": null,
+                "startDate": "2022-04-17",
+                "endDate": "2022-04-23",
+                "avgWeight": 0,
+                "weightChange": 0
+            },
+            {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null,
+                "6": null,
+                "7": null,
+                "startDate": "2022-04-24",
+                "endDate": "2022-04-30",
+                "avgWeight": 0,
+                "weightChange": 0
+            },
+            {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": null,
+                "6": null,
+                "7": null,
+                "startDate": "2022-05-01",
+                "endDate": "2022-05-07",
+                "avgWeight": 0,
+                "weightChange": 0
+            }
+        ])
+    }, [])
 
     return (
         <div>
@@ -162,10 +318,6 @@ const ProgressTracker = () => {
                 page={page}
                 setPage={setPage}
                 setRows={setRows}
-                orderBy={orderBy}
-                setOrderBy={setOrderBy}
-                order={order}
-                setOrder={setOrder}
             />
         </div>
     );
