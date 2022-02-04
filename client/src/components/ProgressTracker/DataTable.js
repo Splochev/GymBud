@@ -9,43 +9,45 @@ import { TablePagination } from '@material-ui/core';
 import { TableRow } from '@material-ui/core';
 import { TableSortLabel } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
+import useStyles from './styles'
 import UGBAlert from '../Global/UGBAlert';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import ClearIcon from '@material-ui/icons/Clear';
-import useStyles from './styles'
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
-function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
-    const createSortHandler = (property) => (event) => {
-        onRequestSort(event, property);
-    };
-
-    return (
-        <TableHead>
-            <TableRow >
-                {headCells.map((headCell, index) => (
-                    <TableCell
-                        key={headCell.id + "_" + index}
-                        align={'left'}
-                        padding={'normal'}
-                        sortDirection={orderBy === headCell.id ? order : false}
-                    >
-                        <TableSortLabel
-                            active={orderBy === headCell.id}
-                            direction={orderBy === headCell.id ? order : 'desc'}
-                            onClick={createSortHandler(headCell.id)}
-                        >
-                            {headCell.label}
-                        </TableSortLabel>
-                    </TableCell>
-                ))}
-            </TableRow>
-        </TableHead>
-    );
+function descendingComparator(a, b, orderBy) {
+    if (b[orderBy] < a[orderBy]) {
+        return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+        return 1;
+    }
+    return 0;
 }
 
-const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, index }) => {
-    const classes = useStyles();
+function getComparator(order, orderBy) {
+    return order === 'desc'
+        ? (a, b) => descendingComparator(a, b, orderBy)
+        : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function stableSort(array, comparator) {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+        const order = comparator(a[0], b[0]);
+        if (order !== 0) {
+            return order;
+        }
+        return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
+}
+
+
+const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, index, rowData }) => {
+    const styles = useStyles();
     const [shrink, setShrink] = React.useState(false);
 
     return (
@@ -59,11 +61,11 @@ const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, i
                 {
                     onFocus: () => { setShrink(true) },
                     endAdornment:
-                        <InputAdornment className={classes.muiInputAdornmentRoot} position="end">
+                        <InputAdornment className={styles.muiInputAdornmentRoot} position="end">
                             <IconButton
                                 disableFocusRipple
                                 disableRipple
-                                onClick={e => onClickIconButton(index, headCell)}
+                                onClick={e => onClickIconButton(index, headCell, rowData)}
                                 data-toggle="tooltip" title="Clear cell"
                                 onMouseDown={(event) => {
                                     event.preventDefault();
@@ -79,74 +81,63 @@ const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, i
     );
 }
 
-export default function DataTable({ rows, headCells, page, setPage, setRows, order, setOrder, orderBy, setOrderBy }) {
-    const classes = useStyles();
+
+function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
+    const createSortHandler = (property) => (event) => {
+        onRequestSort(event, property);
+    };
+
+    return (
+        <TableHead>
+            <TableRow>
+                {headCells.map((headCell, index) => {
+                    return (
+                        <TableCell
+                            key={`${headCell.id}-${index}`}
+                            align={'left'}
+                            padding={'normal'}
+                            sortDirection={orderBy === headCell.id ? order : false}
+                        >
+                            <TableSortLabel
+                                active={orderBy === headCell.id}
+                                direction={orderBy === headCell.id ? order : 'asc'}
+                                onClick={createSortHandler(headCell.id)}
+                                IconComponent={orderBy === headCell.id ? ArrowDropUpIcon : ArrowDropDownIcon}
+                            >
+                                {headCell.label}
+                            </TableSortLabel>
+                        </TableCell>
+                    );
+                })}
+            </TableRow>
+        </TableHead>
+    );
+}
+
+export default function DataTable({ rows, headCells, page, setPage, setRows, }) {
+    const styles = useStyles();
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [open, setOpen] = React.useState(false);
+    const [order, setOrder] = React.useState('asc');
+    const [orderBy, setOrderBy] = React.useState('');
     const [message, setMessage] = React.useState('');
 
-    const onRequestSort = (event, property) => {
+    const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
 
-    const onChangePage = (event, newPage) => {
+    const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
 
-    const onChangeRowsPerPage = (event) => {
+    const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
 
-    const calculateRowAvgWeight = (rowData) => {
-        const nums = [];
-        if (rowData['1'] && !Number.isNaN(Number(rowData['1']))) {
-            nums.push(Number(rowData['1']))
-        }
-        if (rowData['2'] && !Number.isNaN(Number(rowData['2']))) {
-            nums.push(Number(rowData['2']))
-        }
-        if (rowData['3'] && !Number.isNaN(Number(rowData['3']))) {
-            nums.push(Number(rowData['3']))
-        }
-        if (rowData['4'] && !Number.isNaN(Number(rowData['4']))) {
-            nums.push(Number(rowData['4']))
-        }
-        if (rowData['5'] && !Number.isNaN(Number(rowData['5']))) {
-            nums.push(Number(rowData['5']))
-        }
-        if (rowData['6'] && !Number.isNaN(Number(rowData['6']))) {
-            nums.push(Number(rowData['6']))
-        }
-        if (rowData['7'] && !Number.isNaN(Number(rowData['7']))) {
-            nums.push(Number(rowData['7']))
-        }
-
-        const avgWeight = (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(2).toString();
-        rowData.avgWeight = avgWeight === 'NaN' ? 0 : avgWeight;
-    }
-
-    const calculateWeightChanges = () => {
-        const tempRows = rows;
-        for (let i = 0; i < tempRows.length; i++) {
-            if (i === 0) {
-                tempRows[i].weightChange = 0;
-            } else {
-                const calculation = Math.round(((tempRows[i].avgWeight - tempRows[i - 1].avgWeight) / tempRows[i - 1].avgWeight * 100) * 100) / 100;
-                const calculationToString = calculation.toString();
-                if (calculationToString === 'NaN' || calculationToString.includes('Infinity')) {
-                    tempRows[i].weightChange = 0;
-                } else {
-                    tempRows[i].weightChange = calculation;
-                }
-            }
-        }
-        setRows([...tempRows])
-    }
-
-    const onBlur = (event, rowData, cellIndex, setShrink) => {
+    const handleOnBlur = (event, rowData, cellIndex, setShrink) => {
         const element = event.target;
         let inputValue = element.value
         if (!/^([1-9]\d*)(\.?)(\d+)?$/g.test(inputValue) && inputValue.length > 0) {
@@ -171,74 +162,99 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
         setShrink(false)
     }
 
-    const onClickIconButton = (index, headCell) => {
+    const calculateWeightChanges = () => {
+        const tempRows = rows;
+        for (let i = 0; i < tempRows.length; i++) {
+            if (i === 0) {
+                tempRows[i].weightChange = 0;
+            } else {
+                const calculation = !tempRows[i].avgWeight ? 0 : Math.round(((tempRows[i].avgWeight - tempRows[i - 1].avgWeight) / tempRows[i - 1].avgWeight * 100) * 100) / 100;
+                const calculationToString = calculation.toString();
+                if (isNaN(calculationToString) || calculationToString.includes('Infinity')) {
+                    tempRows[i].weightChange = 0;
+                } else {
+                    tempRows[i].weightChange = calculation;
+                }
+            }
+        }
+        setRows([...tempRows])
+    }
+
+    const calculateRowAvgWeight = (rowData) => {
+        const numbers = [];
+        for (let i = 1; i < 8; i++) {
+            if (rowData[i] && !isNaN(Number(rowData[i]))) {
+                numbers.push(Number(rowData[i]))
+            }
+        }
+        const avgWeight = (numbers.reduce((a, b) => a + b, 0) / numbers.length).toFixed(2).toString();
+        rowData.avgWeight = isNaN(avgWeight) ? 0 : avgWeight;
+    }
+
+    const onClickIconButton = (index, headCell,rowData) => {
         const tempRows = [...rows];
-        tempRows[index][headCell.id] = null;
-        calculateRowAvgWeight(tempRows[index]);
+        tempRows[rows.indexOf(rowData)][headCell.id] = null;
+        calculateRowAvgWeight(tempRows[rows.indexOf(rowData)]);
         calculateWeightChanges();
         setRows(tempRows);
     }
-
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 5 - rows.length;
 
     return (
         <Box sx={{ width: '100%', position: 'relative' }}>
             <UGBAlert open={open} setOpen={setOpen} message={message} />
             <TableContainer >
-                <Table
-                    aria-labelledby="weight-tracker-table"
-                    size={'medium'}
-                >
+                <Table size={'medium'}>
                     <EnhancedTableHead
                         headCells={headCells}
                         order={order}
                         orderBy={orderBy}
-                        onRequestSort={onRequestSort}
+                        onRequestSort={handleRequestSort}
                         rowCount={rows.length}
                         setRows={setRows}
                         rows={rows}
                         setPage={setPage}
                     />
                     <TableBody>
-                        {rows.map((row, index) => {
-                            return (
-                                <TableRow
-                                    key={row.week + '_' + index}
-                                >
-                                    {headCells.map((headCell, cellIndex) => {
-                                        const CellRender = headCell.CellRender;
-                                        return <TableCell
-                                            className={classes.textField}
-                                            key={headCell.id + "_" + cellIndex} align="left" data-toggle="tooltip" title="Edit cell">
-                                            {cellIndex >= 1 && cellIndex <= 7 ?
-                                                <TableTextField
-                                                    onBlur={onBlur}
-                                                    onClickIconButton={onClickIconButton}
-                                                    row={row}
-                                                    cellIndex={cellIndex}
-                                                    headCell={headCell}
-                                                    index={index}
-                                                />
-                                                :
-                                                CellRender ?
-                                                    <CellRender key={headCell.id + "_" + cellIndex} cellData={row[headCell.id]} rowData={row} />
-                                                    :
-                                                    row[headCell.id]
+                        {stableSort(rows, getComparator(order, orderBy))
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((row, index) => {
+                                return (
+                                    <TableRow key={`${row.startDate}-${row.endDate}`}>
+                                        {headCells.map((headCell, cellIndex) => {
+                                            let title = headCell.label;
+                                            if (headCell && headCell.id >= 1 && headCell.id <= 7) {
+                                                title = "Edit cell"
                                             }
-                                        </TableCell>
-                                    })}
-                                </TableRow>
-                            );
-                        })}
-                        {emptyRows > 0 && (
-                            <TableRow
-                                style={{
-                                    height: 53 * emptyRows,
-                                }}
-                            >
-                            </TableRow>
-                        )}
+                                            const CellRender = headCell.CellRender;
+                                            return (
+                                                <TableCell
+                                                    className={styles.textField}
+                                                    key={`${row.startDate}-${row.endDate}-${headCell.id}`}
+                                                    align="left"
+                                                    data-toggle="tooltip"
+                                                    title={title}
+                                                >
+                                                    {cellIndex >= 1 && cellIndex <= 7 ?
+                                                        <TableTextField
+                                                            onBlur={handleOnBlur}
+                                                            onClickIconButton={onClickIconButton}
+                                                            row={row}
+                                                            cellIndex={cellIndex}
+                                                            headCell={headCell}
+                                                            index={index}
+                                                            rowData={row}
+                                                        />
+                                                        :
+                                                        CellRender ?
+                                                            <CellRender key={`cellRender-${row.startDate}-${row.endDate}-${headCell.id}`} cellData={row[headCell.id]} rowData={row} />
+                                                            :
+                                                            row[headCell.id]
+                                                    }
+                                                </TableCell>);
+                                        })}
+                                    </TableRow>
+                                );
+                            })}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -248,8 +264,8 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, ord
                 count={rows.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
-                onPageChange={onChangePage}
-                onRowsPerPageChange={onChangeRowsPerPage}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
             />
         </Box>
     );
