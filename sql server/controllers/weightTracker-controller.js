@@ -18,11 +18,16 @@ module.exports = class WeightTrackerController {
     async getWeightData(req, res) {
         try {
             const user = req.user;
+            const today = req.query.limitDate ? new Date(req.query.limitDate) : new Date();
             let offsetDate = req.query.offsetDate ? new Date(req.query.offsetDate) : new Date();
-            const limitDate = req.query.limitDate ? new Date(req.query.limitDate) : new Date();
 
             if (!req.query.offsetDate) {
                 offsetDate.setDate(offsetDate.getDate() - 90);
+            }
+
+            if (offsetDate.getTime() > today.getTime()) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, 'Invalid dates'));
+                return;
             }
 
             const weightData = await MysqlAdapter.query(`
@@ -30,13 +35,35 @@ module.exports = class WeightTrackerController {
                     weight_tracker
                 WHERE
                     user_id = ${escape(user.id)}
-                    AND date BETWEEN ${escape(offsetDate.toISOString().split('T')[0])} AND ${escape(limitDate.toISOString().split('T')[0])}
+                    AND date BETWEEN CAST(${escape(offsetDate.toISOString().split('T')[0])} AS DATE) AND CAST(${escape(today.toISOString().split('T')[0])} AS DATE)
                 ORDER BY 
                     date ASC
             `);
 
             if (!weightData.length) {
-                res.status(409).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.authentication, 'Failed to submit, please try again!'));
+                res.json({ data: [] })
+                return;
+            }
+
+            const startDateOfWeek = new Date(weightData[0].date);
+            const endDateOfWeek = new Date(weightData[0].date);
+
+            if (weightData.length === 1) {
+                res.json({
+                    data: [{
+                        1: weightData[0].weight,
+                        2: null,
+                        3: null,
+                        4: null,
+                        5: null,
+                        6: null,
+                        7: null,
+                        startDate: startDateOfWeek.toISOString().split('T')[0],
+                        endDate: endDateOfWeek.toISOString().split('T')[0],
+                        avgWeight: weightData[0].weight,
+                        weightChange: 0
+                    }]
+                });
                 return;
             }
 
@@ -47,9 +74,7 @@ module.exports = class WeightTrackerController {
                 mappedWeightData[new Date(weightEntry.date).getTime()] = { ...weightEntry };
             }
 
-            const weeksAmount = Math.ceil((Math.ceil((Math.abs(new Date(weightData[weightData.length - 1].date) - new Date(weightData[0].date))) / (1000 * 60 * 60 * 24))) / 7);
-            const startDateOfWeek = new Date(weightData[0].date);
-            const endDateOfWeek = new Date(weightData[0].date);
+            const weeksAmount = Math.ceil((Math.ceil((Math.abs(today - new Date(weightData[0].date))) / (1000 * 60 * 60 * 24))) / 7);
             endDateOfWeek.setDate(endDateOfWeek.getDate() + 6);
 
             for (let i = 0; i < weeksAmount; i++) {
