@@ -46,7 +46,7 @@ function stableSort(array, comparator) {
 }
 
 
-const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, index, rowData }) => {
+const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, index, rowData, helperText }) => {
     const styles = useStyles();
     const [shrink, setShrink] = React.useState(false);
 
@@ -57,6 +57,7 @@ const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, i
             label={row[headCell.id] ? `${row[headCell.id]}kg` : ''}
             key={headCell.id + "_" + cellIndex}
             InputLabelProps={{ shrink: shrink }}
+            helperText={helperText}
             InputProps={row[headCell.id] ?
                 {
                     onFocus: () => { setShrink(true) },
@@ -222,8 +223,13 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                                     <TableRow key={`${row.startDate}-${row.endDate}`}>
                                         {headCells.map((headCell, cellIndex) => {
                                             let title = headCell.label;
+                                            let helperText = '';
+
                                             if (headCell && headCell.id >= 1 && headCell.id <= 7) {
                                                 title = "Edit cell"
+                                                const date = new Date(row.startDate);
+                                                date.setDate(date.getDate() + headCell.id - 1)
+                                                helperText = date.toDateString().slice(0,-4)
                                             }
                                             const CellRender = headCell.CellRender;
                                             return (
@@ -243,6 +249,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                                                             headCell={headCell}
                                                             index={index}
                                                             rowData={row}
+                                                            helperText={helperText}
                                                         />
                                                         :
                                                         CellRender ?
