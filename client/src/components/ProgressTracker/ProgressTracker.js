@@ -6,7 +6,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import useStyles from './styles'
 import clsx from 'clsx'
 import { UGBInput } from '../Global/UGBInput';
-import { getData } from '../utils/FetchUtils';
+import { getData, postData } from '../utils/FetchUtils';
 
 export function MaterialUIPickers({ selectedDate, setSelectedDate, maxDate, minDate }) {
 
@@ -85,7 +85,7 @@ const headCells = [
         id: 'dateRange',
         label: 'Date Range',
         CellRender: ({ rowData }) => {
-            return `${rowData.endDate} - ${rowData.startDate}`
+            return `${rowData.startDate} - ${rowData.endDate}`
         }
     },
     {
@@ -143,15 +143,47 @@ const ProgressTracker = () => {
     const styles = useStyles();
     const [page, setPage] = useState(0);
     const [rows, setRows] = useState([]);
+
+    const [defaultSelectedDate] = useState(new Date());
+    const [maxSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate())));
+    const [selectedDate, setSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate())));
+    const [minSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate() - 30)));
+
     const [today] = useState(new Date());
-    const [minSelectedDateDate] = useState(new Date(today.setDate(today.getDate() - 30)));
-    const [maxSelectedDateDate] = useState(new Date(today.setDate(today.getDate())));
-    const [selectedDate, setSelectedDate] = useState(new Date(today.setDate(today.getDate())));
     const [selectedOffsetDate, setSelectedOffsetDate] = useState(new Date(today.setDate(today.getDate() - 90)));
     const [selectedLimitDate, setSelectedLimitDate] = useState(new Date());
     const [maxSelectedOffsetDate, setMaxSelectedOffsetDate] = useState(selectedLimitDate);
     const [minSelectedLimitDate, setMinSelectedLimitDate] = useState(selectedOffsetDate);
 
+    function fetchTableData() {
+        getData(process.env.REACT_APP_HOST + `/api/weight-tracker/get-weight-data?offsetDate=${selectedOffsetDate.toISOString().split('T')[0]}&limitDate=${selectedLimitDate.toISOString().split('T')[0]}`)
+            .then(data => {
+                console.log(data)
+                setRows(data.data);
+            }, error => {
+                setRows([]);
+            })
+    }
+
+    function onSubmitWeight(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const weight = formData.get("weight")
+        postData(process.env.REACT_APP_HOST + `/api/weight-tracker/submit-weight`, {
+            date: selectedDate.toISOString().split('T')[0],
+            weight: Number(weight)
+        }).then(data => {
+            console.log(data)
+            fetchTableData()
+        }, error => {
+            console.log(error)
+        })
+
+    }
+
+    useEffect(() => {
+        fetchTableData()
+    }, [selectedOffsetDate, selectedLimitDate])
 
     useEffect(() => {
         setMaxSelectedOffsetDate(selectedLimitDate);
@@ -161,18 +193,9 @@ const ProgressTracker = () => {
         setMinSelectedLimitDate(selectedOffsetDate);
     }, [selectedOffsetDate])
 
-    useEffect(() => {
-        getData(process.env.REACT_APP_HOST + `/api/weight-tracker/get-weight-data?offsetDate=${selectedOffsetDate.toISOString().split('T')[0]}&limitDate=${selectedLimitDate.toISOString().split('T')[0]}`)
-            .then(data => {
-                setRows(data.data);
-            }, error => {
-                setRows([]);
-            })
-    }, [selectedOffsetDate, selectedLimitDate])
-
     return (
         <div>
-            <form className={styles.weightSubmission}>
+            <form className={styles.weightSubmission} onSubmit={onSubmitWeight}>
                 <UGBInput
                     type='number'
                     name='weight'
@@ -183,8 +206,8 @@ const ProgressTracker = () => {
                 <MaterialUIPickers
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
-                    maxDate={minSelectedDateDate}
-                    minDate={maxSelectedDateDate}
+                    minDate={minSelectedDate}
+                    maxDate={maxSelectedDate}
                 />
                 <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate 1 Rep Max" >
                     <i className={clsx("fas fa-calculator", styles.icon)} ></i>
@@ -200,6 +223,7 @@ const ProgressTracker = () => {
                 selectedDate={selectedLimitDate}
                 setSelectedDate={setSelectedLimitDate}
                 minDate={minSelectedLimitDate}
+                maxDate={new Date()}
             />
             <DataTable
                 rows={rows}
