@@ -7,9 +7,11 @@ import Register from '../../Register/Register.js';
 import CalorieCalculator from '../../CalorieCalculator/CalorieCalculator.js';
 import UGBModal from '../../Global/UGBModal.js';
 import clsx from 'clsx'
+import { useHistory } from 'react-router-dom';
 
 const LoggedOutHeader = () => {
     const styles = useStyles();
+    const history = useHistory();
     const [showOneRMCalculator, setOneRMCalculator] = useState(false);
     const [showLogin, setShowLogin] = useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -88,7 +90,10 @@ const LoggedOutHeader = () => {
             </div>
             <div className={clsx("nav-menu-wrapper", styles.blackStripe)}>
                 <nav className={clsx("navbar navbar-expand-lg ", styles.nav)}>
-                    <a className="navbar-brand" href="#!">
+                    <a className="navbar-brand" href="#!" onClick={(e) => {
+                        e.preventDefault();
+                        history.push('/home');
+                    }}>
                         <img src="/UrGymBudLogoLight.png" alt="Logo" className={styles.logo}></img>
                     </a>
                     <button className={clsx("navbar-toggler", styles.navToggler)} type="button" data-toggle="collapse" data-target="#navbarSupportedContent"

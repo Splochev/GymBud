@@ -6,10 +6,14 @@ import CalorieCalculator from '../../CalorieCalculator/CalorieCalculator.js';
 import UGBModal from '../../Global/UGBModal.js';
 import { useStoreContext } from '../../store/Store.js';
 import clsx from 'clsx';
+import { postData } from '../../utils/FetchUtils.js';
+import { useHistory } from 'react-router-dom';
+
 
 const LoggedInHeader = () => {
     const styles = useStyles();
     const [store, setStore] = useStoreContext();
+    const history = useHistory();
     const [showOneRMCalculator, setOneRMCalculator] = useState(false);
     const [showAddFood, setAddFood] = useState(false);
     const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
@@ -45,8 +49,12 @@ const LoggedInHeader = () => {
                     <li className="nav-item">
                         <a className={clsx("nav-link", styles.signInOrUpUrls)} href="#!" onClick={(e) => {
                             e.preventDefault()
-                            setStore(state => (state.user = false, { ...state }));
-                            sessionStorage.removeItem('user');
+                            postData(process.env.REACT_APP_HOST + '/api/user/logout')
+                                .then(data => {
+                                    setStore(state => (state.user = {}, { ...state }));
+                                }, error => {
+                                    console.log('LOGOUT ERROR--->', error)
+                                })
                         }}>Logout</a>
                     </li>
                     <li className="nav-item dropdown dropleft">
@@ -64,7 +72,10 @@ const LoggedInHeader = () => {
 
             <div className={clsx("nav-menu-wrapper", styles.blackStripe)}>
                 <nav className={clsx("navbar navbar-expand-lg", styles.nav)}>
-                    <a className="navbar-brand" href="#!">
+                    <a className="navbar-brand" href="#!" onClick={(e) => {
+                        e.preventDefault();
+                        history.push('/home');
+                    }}>
                         <img src="/UrGymBudLogoLight.png" alt="Logo" className={styles.logo}></img>
                     </a>
                     <button className={clsx("navbar-toggler", styles.navToggler)} type="button" data-toggle="collapse"
@@ -83,7 +94,10 @@ const LoggedInHeader = () => {
                                     <span className={clsx("badge badge-pill badge-secondary", styles.addedFoodCounter)}>0</span></a>
                             </li>
                             <li className="nav-item">
-                                <a className={clsx("nav-link", styles.navUrls)} href="#!">Progress-Tracker</a>
+                                <a className={clsx("nav-link", styles.navUrls)} href="#!" onClick={(e) => {
+                                    e.preventDefault();
+                                    history.push('/progress-tracker');
+                                }}>Progress-Tracker</a>
                             </li>
 
                             <li className="nav-item">
@@ -143,7 +157,7 @@ const LoggedInHeader = () => {
                     </div>
                 </nav>
             </div>
-        </div>
+        </div >
     );
 }
 
