@@ -158,7 +158,6 @@ const ProgressTracker = () => {
     function fetchTableData() {
         getData(process.env.REACT_APP_HOST + `/api/weight-tracker/get-weight-data?offsetDate=${selectedOffsetDate.toISOString().split('T')[0]}&limitDate=${selectedLimitDate.toISOString().split('T')[0]}`)
             .then(data => {
-                console.log(data)
                 setRows(data.data);
             }, error => {
                 setRows([]);
@@ -170,10 +169,9 @@ const ProgressTracker = () => {
         const formData = new FormData(e.target);
         const weight = formData.get("weight")
         postData(process.env.REACT_APP_HOST + `/api/weight-tracker/submit-weight`, {
-            date: selectedDate.toISOString().split('T')[0],
+            date: selectedDate,
             weight: Number(weight)
         }).then(data => {
-            console.log(data)
             fetchTableData()
         }, error => {
             console.log(error)
