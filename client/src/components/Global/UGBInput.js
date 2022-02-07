@@ -13,26 +13,49 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const UGBInput = ({ type, name, placeholder, min = null, max = null, required = true, iconStart, children }) => {
+export const UGBInput = ({ $value, type, name, placeholder, min = null, max = null, required = true, iconStart, children }) => {
     const styles = useStyles();
 
     return (
-        <div className='form-group col'>
-            <div className='input-group-prepend'>
-                <div className={clsx('input-group-text', styles.cornerless, styles.iconPrepend)}>
-                    <i className={clsx(iconStart, styles.icon)} />
+        $value ?
+            <div className='form-group col'>
+                <div className='input-group-prepend'>
+                    <div className={clsx('input-group-text', styles.cornerless, styles.iconPrepend)}>
+                        <i className={clsx(iconStart, styles.icon)} />
+                    </div>
+                    <input
+                        value={$value[0]}
+                        onChange={(e) => {
+                            $value[1](e.target.value)
+                        }}
+                        type={type}
+                        className={clsx('form-control', styles.cornerless)}
+                        name={name}
+                        placeholder={placeholder}
+                        required={required}
+                        min={min}
+                        max={max}
+                    />
+                    {children}
                 </div>
-                <input
-                    type={type}
-                    className={clsx('form-control', styles.cornerless)}
-                    name={name}
-                    placeholder={placeholder}
-                    required={required}
-                    min={min}
-                    max={max}
-                />
-                {children}
             </div>
-        </div>
+            :
+            <div className='form-group col'>
+                <div className='input-group-prepend'>
+                    <div className={clsx('input-group-text', styles.cornerless, styles.iconPrepend)}>
+                        <i className={clsx(iconStart, styles.icon)} />
+                    </div>
+                    <input
+                        type={type}
+                        className={clsx('form-control', styles.cornerless)}
+                        name={name}
+                        placeholder={placeholder}
+                        required={required}
+                        min={min}
+                        max={max}
+                    />
+                    {children}
+                </div>
+            </div>
     );
 }
