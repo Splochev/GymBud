@@ -18,8 +18,8 @@ module.exports = class WeightTrackerController {
     async getWeightData(req, res) {
         try {
             const user = req.user;
-            const today = new Date('2022-05-04');
             let offsetDate = req.query.offsetDate ? new Date(req.query.offsetDate) : new Date();
+            const limitDate = req.query.limitDate ? new Date(req.query.limitDate) : new Date();
 
             if (!req.query.offsetDate) {
                 offsetDate.setDate(offsetDate.getDate() - 90);
@@ -30,7 +30,7 @@ module.exports = class WeightTrackerController {
                     weight_tracker
                 WHERE
                     user_id = ${escape(user.id)}
-                    AND date BETWEEN ${escape(offsetDate.toISOString().split('T')[0])} AND ${escape(today.toISOString().split('T')[0])}
+                    AND date BETWEEN ${escape(offsetDate.toISOString().split('T')[0])} AND ${escape(limitDate.toISOString().split('T')[0])}
                 ORDER BY 
                     date ASC
             `);
@@ -42,12 +42,12 @@ module.exports = class WeightTrackerController {
 
             const responseWeightData = [];
             const mappedWeightData = {};
-            
+
             for (const weightEntry of weightData) {
                 mappedWeightData[new Date(weightEntry.date).getTime()] = { ...weightEntry };
             }
-            
-            const weeksAmount = Math.ceil((Math.ceil((Math.abs(today - new Date(weightData[0].date))) / (1000 * 60 * 60 * 24))) / 7);
+
+            const weeksAmount = Math.ceil((Math.ceil((Math.abs(new Date(weightData[weightData.length - 1].date) - new Date(weightData[0].date))) / (1000 * 60 * 60 * 24))) / 7);
             const startDateOfWeek = new Date(weightData[0].date);
             const endDateOfWeek = new Date(weightData[0].date);
             endDateOfWeek.setDate(endDateOfWeek.getDate() + 6);
