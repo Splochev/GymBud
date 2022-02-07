@@ -47,6 +47,7 @@ module.exports = class WeightTrackerController {
 
             const startDateOfWeek = new Date(weightData[0].date);
             const endDateOfWeek = new Date(weightData[0].date);
+            endDateOfWeek.setDate(endDateOfWeek.getDate() + 6);
 
             if (weightData.length === 1) {
                 res.json({
@@ -75,7 +76,7 @@ module.exports = class WeightTrackerController {
             }
 
             const weeksAmount = Math.ceil((Math.ceil((Math.abs(today - new Date(weightData[0].date))) / (1000 * 60 * 60 * 24))) / 7);
-            endDateOfWeek.setDate(endDateOfWeek.getDate() + 6);
+
 
             for (let i = 0; i < weeksAmount; i++) {
                 responseWeightData.push({ startDate: startDateOfWeek.toISOString().split('T')[0], endDate: endDateOfWeek.toISOString().split('T')[0] });
@@ -120,11 +121,11 @@ module.exports = class WeightTrackerController {
         try {
             const user = req.user;
             const weight = escape(req.body.weight);
-            const date = escape(req.body.date);
+            const date = new Date(req.body.date);
 
             const weightData = await MysqlAdapter.query(`
                 INSERT INTO weight_tracker (user_id,weight,date)
-                    values (${escape(user.id)},${weight},${date})
+                    values (${escape(user.id)},${weight},${escape(date.toISOString().split('T')[0])})
                 ON DUPLICATE KEY UPDATE
                     user_id = VALUES(user_id),
                     weight = VALUES(weight),
