@@ -191,7 +191,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
         rowData.avgWeight = isNaN(avgWeight) ? 0 : avgWeight;
     }
 
-    const onClickIconButton = (index, headCell,rowData) => {
+    const onClickIconButton = (index, headCell, rowData) => {
         const tempRows = [...rows];
         tempRows[rows.indexOf(rowData)][headCell.id] = null;
         calculateRowAvgWeight(tempRows[rows.indexOf(rowData)]);
@@ -200,9 +200,9 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
     }
 
     return (
-        <Box sx={{ width: '100%', position: 'relative' }}>
+        <Box sx={{ width: '100%', position: 'relative' }} className={styles[`tableContainerRoot${rowsPerPage}`]}>
             <UGBAlert open={open} setOpen={setOpen} message={message} />
-            <TableContainer >
+            <TableContainer>
                 <Table size={'medium'}>
                     <EnhancedTableHead
                         headCells={headCells}

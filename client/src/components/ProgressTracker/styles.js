@@ -33,6 +33,22 @@ export default makeStyles(() => ({
     weightSubmission: {
         display: 'flex',
         alignItems: 'baseline',
-        
+
     },
+    tableContainerRoot5: {
+        "& .MuiTableContainer-root": {
+
+            height: '465px'
+        }
+    },
+    // tableContainerRoot10: {
+    //     "& .MuiTableContainer-root": {
+    //         height: '850px'
+    //     }
+    // },
+    // tableContainerRoot15: {
+    //     "& .MuiTableContainer-root": {
+    //         height: '1150px'
+    //     }
+    // }
 }))
