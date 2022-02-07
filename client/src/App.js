@@ -33,7 +33,7 @@ const App = () => {
 
                         switch (resp.status) {
                             case 401:
-                                setStoreState(state => (state.user = null, { ...state }));
+                                setStoreState(state => (state.user = undefined, { ...state }));
                                 // $snackbarMessage.set(parsedError);
                                 return;
                             default:
@@ -60,8 +60,14 @@ const App = () => {
             .then(data => {
                 setStoreState(state => (state.user = data, { ...state }))
             }, error => {
+                setStoreState(state => (state.user = undefined, { ...state }))
                 console.log('api/user/me:', error)
             });
+
+
+        if (!storeState.returnUrl) {
+            setStoreState(state => (state.returnUrl = window.location.pathname, { ...state }))
+        }
 
         return () => {
             window.fetch = originalFetch;
@@ -73,7 +79,7 @@ const App = () => {
         isFetchAttached ?
             <StoreContext.Provider value={[storeState, setStoreState]}>
                 <BrowserRouter>
-                    {storeState.user || sessionStorage.getItem('user') ?
+                    {storeState.user ?
                         <div>
                             <LoggedInHeader />
                             <div>

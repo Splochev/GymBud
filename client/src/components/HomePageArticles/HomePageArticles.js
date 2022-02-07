@@ -1,8 +1,27 @@
 import useStyles from './styles'
 import clsx from 'clsx'
+import { useEffect } from 'react';
+import { useStoreContext } from '../store/Store';
+import { getData } from '../utils/FetchUtils';
+import { useHistory } from 'react-router-dom';
 
 const HomePageArticles = () => {
     const styles = useStyles();
+    const [store, setStore] = useStoreContext();
+    const history = useHistory();
+
+    useEffect(() => {
+        getData(process.env.REACT_APP_HOST + '/api/user/me')
+            .then(data => {
+                if (store.returnUrl) {
+                    history.push(store.returnUrl);
+                    setStore(state => (state.returnUrl = undefined, { ...state }))
+                }
+            }, error => {
+                console.log('api/user/me:', error)
+            });
+    }, [])
+
     return (
         <div className={clsx("row", styles.homePageSection)}>
             <div className="col">
@@ -58,7 +77,7 @@ const HomePageArticles = () => {
                         <article className={styles.postcard}  >
                             <img className={styles.postcardImg} src="/landing-page-background-woman-img.png" alt="woman doing leg press" />
                             <div className={styles.postCardText}>
-                                <div className={clsx(styles.articleCardTextWoman,styles.postCardPreviewText)}>
+                                <div className={clsx(styles.articleCardTextWoman, styles.postCardPreviewText)}>
                                     <div className={styles.postCardBar}></div>
                                     <ul>
                                         <li>Create and manage your own workout journal.</li>

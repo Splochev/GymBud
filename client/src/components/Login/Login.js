@@ -2,17 +2,17 @@ import { UGBInput } from '../Global/UGBInput';
 import { useStoreContext } from '../store/Store';
 import { postData } from '../utils/FetchUtils'
 import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
 
 const Login = ({ setShowLogin, setShowForgotPassword }) => {
     const [store, setStore] = useStoreContext();
     const history = useHistory();
-    
+    const email = useState('')
+    const password = useState('')
+
     async function onLogin(e) {
         e.preventDefault()
         try {
-            const form = new FormData(e.target);
-            const email = form.get('mail');
-            const password = form.get('password');
             const data = await postData(process.env.REACT_APP_HOST + '/api/user/login', { email: email[0], password: password[0] });
             if (!data) {
                 throw Error('Incorrect email or password!')
@@ -38,12 +38,14 @@ const Login = ({ setShowLogin, setShowForgotPassword }) => {
                         name='mail'
                         placeholder="Your email"
                         iconStart='fas fa-envelope'
+                        $value={email}
                     />
                     <UGBInput
                         type='password'
                         name='password'
                         placeholder="Your password"
                         iconStart='fas fa-lock'
+                        $value={password}
                     />
                     <div>Forgot&nbsp;
                         <a href="#!" onClick={(e) => {

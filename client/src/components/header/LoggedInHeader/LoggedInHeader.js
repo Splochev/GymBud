@@ -18,6 +18,16 @@ const LoggedInHeader = () => {
     const [showAddFood, setAddFood] = useState(false);
     const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
 
+    function onLogout(e) {
+        e.preventDefault()
+        postData(process.env.REACT_APP_HOST + '/api/user/logout')
+            .then(data => {
+                setStore(state => (state.user = undefined, { ...state }));
+            }, error => {
+                console.log('LOGOUT ERROR--->', error)
+            })
+    }
+
     return (
         <div className="header">
             <UGBModal
@@ -46,16 +56,8 @@ const LoggedInHeader = () => {
                     <li className="nav-item">
                         <a className={clsx("nav-link", styles.signInOrUpUrls)} href="#!">My Profile</a>
                     </li>
-                    <li className="nav-item">
-                        <a className={clsx("nav-link", styles.signInOrUpUrls)} href="#!" onClick={(e) => {
-                            e.preventDefault()
-                            postData(process.env.REACT_APP_HOST + '/api/user/logout')
-                                .then(data => {
-                                    setStore(state => (state.user = {}, { ...state }));
-                                }, error => {
-                                    console.log('LOGOUT ERROR--->', error)
-                                })
-                        }}>Logout</a>
+                    <li className="nav-item" onClick={onLogout}>
+                        <a className={clsx("nav-link", styles.signInOrUpUrls)} href="#!" onClick={onLogout}>Logout</a>
                     </li>
                     <li className="nav-item dropdown dropleft">
                         <a className={clsx('nav-link dropdown-toggle', styles.questionIcon, styles.signInOrUpUrls)} href="#!" role="button"
