@@ -8,6 +8,10 @@ import clsx from 'clsx'
 import { UGBInput } from '../Global/UGBInput';
 import { getData, postData } from '../utils/FetchUtils';
 
+function parseDate(date) {
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+}
+
 export function MaterialUIPickers({ selectedDate, setSelectedDate, maxDate, minDate }) {
 
     const handleDateChange = (date) => {
@@ -156,10 +160,13 @@ const ProgressTracker = () => {
     const [minSelectedLimitDate, setMinSelectedLimitDate] = useState(selectedOffsetDate);
 
     function fetchTableData() {
-        getData(process.env.REACT_APP_HOST + `/api/weight-tracker/get-weight-data?offsetDate=${selectedOffsetDate.toISOString().split('T')[0]}&limitDate=${selectedLimitDate.toISOString().split('T')[0]}`)
+        const offsetDate = parseDate(selectedOffsetDate);
+        const limitDate = parseDate(selectedLimitDate);
+
+        getData(process.env.REACT_APP_HOST + `/api/weight-tracker/get-weight-data?offsetDate=${offsetDate}&limitDate=${limitDate}`)
             .then(data => {
                 setRows(data.data);
-                setPage(Math.floor(data.data.length/5))
+                setPage(Math.floor(data.data.length / 5))
             }, error => {
                 setRows([]);
                 setPage(0)
@@ -170,10 +177,13 @@ const ProgressTracker = () => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const weight = formData.get("weight")
+        const parsedDate = parseDate(selectedDate);
+
         postData(process.env.REACT_APP_HOST + `/api/weight-tracker/submit-weight`, {
-            date: selectedDate,
+            date: parsedDate,
             weight: Number(weight)
         }).then(data => {
+            formData.delete('weight');
             fetchTableData()
         }, error => {
             console.log(error)
@@ -214,17 +224,21 @@ const ProgressTracker = () => {
                 </button>
             </form>
 
-            <MaterialUIPickers
-                selectedDate={selectedOffsetDate}
-                setSelectedDate={setSelectedOffsetDate}
-                maxDate={maxSelectedOffsetDate}
-            />
-            <MaterialUIPickers
-                selectedDate={selectedLimitDate}
-                setSelectedDate={setSelectedLimitDate}
-                minDate={minSelectedLimitDate}
-                maxDate={new Date()}
-            />
+            <div className="d-flex justify-content-center">
+                <MaterialUIPickers
+                    selectedDate={selectedOffsetDate}
+                    setSelectedDate={setSelectedOffsetDate}
+                    maxDate={maxSelectedOffsetDate}
+                />
+                <MaterialUIPickers
+                    selectedDate={selectedLimitDate}
+                    setSelectedDate={setSelectedLimitDate}
+                    minDate={minSelectedLimitDate}
+                    maxDate={new Date()}
+                />
+            </div>
+
+
             <DataTable
                 rows={rows}
                 headCells={headCells}
