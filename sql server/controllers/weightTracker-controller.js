@@ -4,6 +4,10 @@ const { escape } = require('mysql');
 const ErrorHandler = require('../utils/error-handler');
 const AuthHelpers = require('../utils/auth-helpers');
 
+function parseDate(date) {
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+}
+
 module.exports = class WeightTrackerController {
     constructor() {
         this.router = express.Router();
@@ -12,20 +16,20 @@ module.exports = class WeightTrackerController {
     attachEndpoints() {
         this.router.get('/get-weight-data', AuthHelpers.loggedIn, (req, res) => this.getWeightData(req, res));
         this.router.post('/submit-weight', AuthHelpers.loggedIn, (req, res) => this.submitWeight(req, res));
-
     }
 
     async getWeightData(req, res) {
         try {
             const user = req.user;
-            const today = req.query.limitDate ? new Date(req.query.limitDate) : new Date();
-            let offsetDate = req.query.offsetDate ? new Date(req.query.offsetDate) : new Date();
+            const today = req.query.limitDate ? req.query.limitDate : parseDate(new Date());
+            let offsetDate = req.query.offsetDate ? req.query.offsetDate : new Date();
 
             if (!req.query.offsetDate) {
                 offsetDate.setDate(offsetDate.getDate() - 90);
+                offsetDate = parseDate(offsetDate);
             }
 
-            if (offsetDate.getTime() > today.getTime()) {
+            if (Date.parse(offsetDate) > Date.parse(today)) {
                 res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, 'Invalid dates'));
                 return;
             }
@@ -35,7 +39,7 @@ module.exports = class WeightTrackerController {
                     weight_tracker
                 WHERE
                     user_id = ${escape(user.id)}
-                    AND date BETWEEN CAST(${escape(offsetDate.toISOString().split('T')[0])} AS DATE) AND CAST(${escape(today.toISOString().split('T')[0])} AS DATE)
+                    AND date BETWEEN CAST(${escape(offsetDate)} AS DATE) AND CAST(${escape(today)} AS DATE)
                 ORDER BY 
                     date ASC
             `);
@@ -59,8 +63,8 @@ module.exports = class WeightTrackerController {
                         5: null,
                         6: null,
                         7: null,
-                        startDate: startDateOfWeek.toISOString().split('T')[0],
-                        endDate: endDateOfWeek.toISOString().split('T')[0],
+                        startDate: parseDate(startDateOfWeek),
+                        endDate: parseDate(endDateOfWeek),
                         avgWeight: weightData[0].weight,
                         weightChange: 0
                     }]
@@ -74,12 +78,10 @@ module.exports = class WeightTrackerController {
             for (const weightEntry of weightData) {
                 mappedWeightData[new Date(weightEntry.date).getTime()] = { ...weightEntry };
             }
-
-            const weeksAmount = Math.ceil((Math.ceil((Math.abs(today - new Date(weightData[0].date))) / (1000 * 60 * 60 * 24))) / 7);
-
+            const weeksAmount = Math.ceil((Math.ceil((Math.abs(new Date(today) - new Date(weightData[0].date))) / (1000 * 60 * 60 * 24))) / 7);
 
             for (let i = 0; i < weeksAmount; i++) {
-                responseWeightData.push({ startDate: startDateOfWeek.toISOString().split('T')[0], endDate: endDateOfWeek.toISOString().split('T')[0] });
+                responseWeightData.push({ startDate: parseDate(startDateOfWeek), endDate: parseDate(endDateOfWeek) });
                 let weightSum = 0;
                 let avgWeightCounter = 0;
                 let dateCounter = 1;
@@ -88,7 +90,7 @@ module.exports = class WeightTrackerController {
                     if (mappedWeightData[startDateOfWeekAsTime]) {
                         responseWeightData[i][dateCounter] = mappedWeightData[startDateOfWeekAsTime].weight;
                         weightSum += mappedWeightData[startDateOfWeekAsTime].weight;
-                        ++avgWeightCounter;
+                        avgWeightCounter++;
                     } else {
                         responseWeightData[i][dateCounter] = null;
                     }
@@ -121,11 +123,11 @@ module.exports = class WeightTrackerController {
         try {
             const user = req.user;
             const weight = escape(req.body.weight);
-            const date = new Date(req.body.date);
+            const date = req.body.date;
 
             const weightData = await MysqlAdapter.query(`
                 INSERT INTO weight_tracker (user_id,weight,date)
-                    values (${escape(user.id)},${weight},${escape(date.toISOString().split('T')[0])})
+                    values (${escape(user.id)},${weight},${escape(date)})
                 ON DUPLICATE KEY UPDATE
                     user_id = VALUES(user_id),
                     weight = VALUES(weight),
