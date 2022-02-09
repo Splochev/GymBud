@@ -8,15 +8,37 @@ import { useStoreContext } from '../../store/Store.js';
 import clsx from 'clsx';
 import { postData } from '../../utils/FetchUtils.js';
 import { useHistory } from 'react-router-dom';
-
+import { useQuery } from '../../utils/RouteUtils.js';
+import { useEffect } from 'react';
 
 const LoggedInHeader = () => {
     const styles = useStyles();
     const [store, setStore] = useStoreContext();
     const history = useHistory();
-    const [showOneRMCalculator, setOneRMCalculator] = useState(false);
-    const [showAddFood, setAddFood] = useState(false);
+    const [showOneRMCalculator, setShowOneRMCalculator] = useState(false);
+    const [showAddFood, setShowAddFood] = useState(false);
     const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
+    const { tab } = useQuery()
+
+
+    useEffect(() => {
+        console.log(tab, showOneRMCalculator)
+        if (tab) {
+            switch (tab) {
+                case 'calorie-calculator':
+                    setShowCalorieCalculator(true);
+                    break;
+                    case 'one-rep-max-calculator':
+                    setShowOneRMCalculator(true);
+                    break;
+                case 'add-food':
+                    setShowAddFood(true);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }, [tab])
 
     function onLogout(e) {
         e.preventDefault()
@@ -32,21 +54,30 @@ const LoggedInHeader = () => {
         <div className="header">
             <UGBModal
                 open={showOneRMCalculator}
-                onClose={() => setOneRMCalculator(false)}
+                onClose={() => {
+                    history.push(window.location.pathname);
+                    setShowOneRMCalculator(false)
+                }}
                 maxWidth='sm'
             >
                 <OneRepMaxCalculator />
             </UGBModal>
             <UGBModal
                 open={showAddFood}
-                onClose={() => setAddFood(false)}
+                onClose={() => {
+                    history.push(window.location.pathname);
+                    setShowAddFood(false)
+                }}
                 maxWidth='xs'
             >
                 <AddFood />
             </UGBModal>
             <UGBModal
                 open={showCalorieCalculator}
-                onClose={() => setShowCalorieCalculator(false)}
+                onClose={() => {
+                    history.push(window.location.pathname);
+                    setShowCalorieCalculator(false)
+                }}
                 maxWidth='sm'
             >
                 <CalorieCalculator />
@@ -105,7 +136,11 @@ const LoggedInHeader = () => {
                             <li className="nav-item">
                                 <a className={clsx("nav-link", styles.navUrls)} href="#!" onClick={(e) => {
                                     e.preventDefault();
-                                    setShowCalorieCalculator(true);
+                                    history.push({
+                                        search: "?tab=calorie-calculator",
+                                        state: { fromPopup: true }
+                                    });
+
                                 }}
                                 >Calorie
                                     Calculator</a>
@@ -113,7 +148,10 @@ const LoggedInHeader = () => {
                             <li className="nav-item">
                                 <a className={clsx("nav-link", styles.navUrls)} href="#!" onClick={(e) => {
                                     e.preventDefault();
-                                    setOneRMCalculator(true);
+                                    history.push({
+                                        search: "?tab=one-rep-max-calculator",
+                                        state: { fromPopup: true }
+                                    });
                                 }}>
                                     1 Rep
                                     Max
@@ -129,7 +167,10 @@ const LoggedInHeader = () => {
                                     <a className={clsx("dropdown-item", styles.dropDown)} href="#!">My Food</a>
                                     <a className={clsx("dropdown-item", styles.dropDown)} href="#!" onClick={(e) => {
                                         e.preventDefault();
-                                        setAddFood(true);
+                                        history.push({
+                                            search: "?tab=add-food",
+                                            state: { fromPopup: true }
+                                        });
                                     }}>
                                         Add Food
                                     </a>

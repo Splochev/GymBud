@@ -51,7 +51,11 @@ const Login = ({ setShowLogin, setShowForgotPassword }) => {
                         <a href="#!" onClick={(e) => {
                             e.preventDefault();
                             setShowLogin(false);
-                            setShowForgotPassword(true);
+                            history.push({
+                                search: "?tab=forgotten-password",
+                                state: { fromPopup: true }
+                            });
+
                         }}>
                             password?
                         </a>
