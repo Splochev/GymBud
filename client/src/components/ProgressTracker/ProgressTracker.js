@@ -159,8 +159,10 @@ const ProgressTracker = () => {
         getData(process.env.REACT_APP_HOST + `/api/weight-tracker/get-weight-data?offsetDate=${selectedOffsetDate.toISOString().split('T')[0]}&limitDate=${selectedLimitDate.toISOString().split('T')[0]}`)
             .then(data => {
                 setRows(data.data);
+                setPage(Math.floor(data.data.length/5))
             }, error => {
                 setRows([]);
+                setPage(0)
             })
     }
 

@@ -134,8 +134,9 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
+        const rpp = parseInt(event.target.value, 10)
+        setRowsPerPage(rpp);
+        setPage(Math.floor(rows.length / rpp));
     };
 
     const handleOnBlur = (event, rowData, cellIndex, setShrink) => {
