@@ -16,6 +16,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import ClearIcon from '@material-ui/icons/Clear';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import clsx from 'clsx'
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -122,6 +123,8 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('');
     const [message, setMessage] = React.useState('');
+    const [today] = React.useState(Date.parse((new Date()).toISOString().split("T")[0]));
+
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -202,9 +205,10 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
     }
 
     return (
-        <Box sx={{ width: '100%', position: 'relative' }} className={styles[`tableContainerRoot${rowsPerPage}`]}>
+        <Box sx={{ width: '100%', position: 'relative' }} className={clsx(styles.container, styles[`tableContainerRoot${rowsPerPage}`])}>
             <UGBAlert open={open} setOpen={setOpen} message={message} />
             <TableContainer>
+                <div className={styles.blackStripe}></div>
                 <Table size={'medium'}>
                     <EnhancedTableHead
                         headCells={headCells}
@@ -230,7 +234,8 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                                                 title = "Edit cell"
                                                 const date = new Date(row.startDate);
                                                 date.setDate(date.getDate() + headCell.id - 1)
-                                                helperText = date.toDateString().slice(0,-4)
+                                                const parsedDate = Date.parse(date.toISOString().split("T")[0])
+                                                helperText = parsedDate <= today ? date.toDateString().slice(0, -4) : '';
                                             }
                                             const CellRender = headCell.CellRender;
                                             return (
@@ -239,19 +244,22 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                                                     key={`${row.startDate}-${row.endDate}-${headCell.id}`}
                                                     align="left"
                                                     data-toggle="tooltip"
-                                                    title={title}
+                                                    title={helperText ? title : ''}
                                                 >
                                                     {cellIndex >= 1 && cellIndex <= 7 ?
-                                                        <TableTextField
-                                                            onBlur={handleOnBlur}
-                                                            onClickIconButton={onClickIconButton}
-                                                            row={row}
-                                                            cellIndex={cellIndex}
-                                                            headCell={headCell}
-                                                            index={index}
-                                                            rowData={row}
-                                                            helperText={helperText}
-                                                        />
+                                                        !helperText ?
+                                                            ''
+                                                            :
+                                                            <TableTextField
+                                                                onBlur={handleOnBlur}
+                                                                onClickIconButton={onClickIconButton}
+                                                                row={row}
+                                                                cellIndex={cellIndex}
+                                                                headCell={headCell}
+                                                                index={index}
+                                                                rowData={row}
+                                                                helperText={helperText}
+                                                            />
                                                         :
                                                         CellRender ?
                                                             <CellRender key={`cellRender-${row.startDate}-${row.endDate}-${headCell.id}`} cellData={row[headCell.id]} rowData={row} />
