@@ -37,10 +37,43 @@ export default makeStyles(() => ({
     },
     tableContainerRoot5: {
         "& .MuiTableContainer-root": {
-
-            height: '465px'
+            minHeight: '587px'
         }
     },
+    container: {
+        "& .MuiTableCell-root": {
+            borderRight: '1px solid #E0E0E0'
+        },
+        "& .MuiTableHead-root": {
+            background: '#343A40',
+            // opacity: 0.6,
+            "& .MuiButtonBase-root": {
+                color: 'white'
+            },
+            "& .MuiSvgIcon-root": {
+                color: 'white !important'
+            }
+        },
+        "& .MuiTablePagination-root": {
+            background: '#343A40',
+            // opacity: 0.6,
+            '& .MuiTypography-root': {
+                color:'white'
+            },
+            '& .MuiInputBase-root': {
+                color: 'white'
+            },
+            "& .MuiSvgIcon-root": {
+                color: 'white !important'
+            }
+        }, 
+        marginBottom: 15
+    },
+    blackStripe: {
+        backgroundColor: 'black',
+        paddingTop: '10px',
+        // opacity: 0.6,
+    }
     // tableContainerRoot10: {
     //     "& .MuiTableContainer-root": {
     //         height: '850px'
