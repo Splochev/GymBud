@@ -1,26 +1,8 @@
 import useStyles from './styles'
-import clsx from 'clsx'
-import { useEffect } from 'react';
-import { useStoreContext } from '../store/Store';
-import { getData } from '../utils/FetchUtils';
-import { useHistory } from 'react-router-dom';
+import clsx from 'clsx';
 
 const HomePageArticles = () => {
     const styles = useStyles();
-    const [store, setStore] = useStoreContext();
-    const history = useHistory();
-
-    useEffect(() => {
-        getData(process.env.REACT_APP_HOST + '/api/user/me')
-            .then(data => {
-                if (store.returnUrl) {
-                    history.push(store.returnUrl);
-                    setStore(state => (state.returnUrl = undefined, { ...state }))
-                }
-            }, error => {
-                console.log('api/user/me:', error)
-            });
-    }, [])
 
     return (
         <div className={clsx("row", styles.homePageSection)}>

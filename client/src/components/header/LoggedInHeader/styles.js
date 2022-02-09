@@ -24,7 +24,7 @@ export default makeStyles(() => ({
     }
   },
   nav: {
-    backgroundColor: "#343a40"
+    backgroundColor: "#343a40",
   },
   logo: {
     width: '50px'
@@ -46,6 +46,7 @@ export default makeStyles(() => ({
   },
   addedFoodCounter: {
     fontSize: '12px',
-    verticalAlign: 'text-top'
+    verticalAlign: 'text-top',
+    marginLeft:'5px'
   }
 }))
