@@ -7,64 +7,7 @@ import { getData, postData } from '../utils/FetchUtils';
 import { parseDate } from '../utils/utilFunc'
 import { UGBDatePicker } from '../Global/UGBDatePicker'
 
-const headCells = [
-    {
-        id: 'dateRange',
-        label: 'Date Range',
-        CellRender: ({ rowData }) => {
-            return `${rowData.startDate} - ${rowData.endDate}`
-        }
-    },
-    {
-        id: 1,
-        numeric: true,
-        label: 'Day 1',
-    },
-    {
-        id: 2,
-        numeric: true,
-        label: 'Day 2',
-    },
-    {
-        id: 3,
-        numeric: true,
-        label: 'Day 3',
-    },
-    {
-        id: 4,
-        numeric: true,
-        label: 'Day 4',
-    },
-    {
-        id: 5,
-        numeric: true,
-        label: 'Day 5',
 
-    },
-    {
-        id: 6,
-        numeric: true,
-        label: 'Day 6',
-
-    },
-    {
-        id: 7,
-        numeric: true,
-        label: 'Day 7',
-    },
-    {
-        id: 'avgWeight',
-        label: 'Average Weight',
-
-    },
-    {
-        id: 'weightChange',
-        label: 'Weight Change(%)',
-        CellRender: ({ cellData }) => {
-            return cellData + '%';
-        }
-    }
-];
 
 const ProgressTracker = () => {
     const styles = useStyles();
@@ -79,6 +22,71 @@ const ProgressTracker = () => {
     const [selectedLimitDate, setSelectedLimitDate] = useState(new Date());
     const [maxSelectedOffsetDate, setMaxSelectedOffsetDate] = useState(selectedLimitDate);
     const [minSelectedLimitDate, setMinSelectedLimitDate] = useState(selectedOffsetDate);
+    const [headCells] = useState([
+        {
+            id: 'dateRange',
+            label: 'Date Range',
+            CellRender: ({ rowData }) => {
+                let parsedStartDate = parseDate(new Date(rowData.startDate));
+                let parsedEndDate = parseDate(new Date(rowData.endDate));
+                return (
+                    <div className={styles.dateRangeCol}>
+                        <div className={styles.startDate}>{parsedStartDate}</div>
+                        <div>{parsedEndDate}</div>
+                    </div>
+                );
+            }
+        },
+        {
+            id: 1,
+            numeric: true,
+            label: 'Day 1',
+        },
+        {
+            id: 2,
+            numeric: true,
+            label: 'Day 2',
+        },
+        {
+            id: 3,
+            numeric: true,
+            label: 'Day 3',
+        },
+        {
+            id: 4,
+            numeric: true,
+            label: 'Day 4',
+        },
+        {
+            id: 5,
+            numeric: true,
+            label: 'Day 5',
+
+        },
+        {
+            id: 6,
+            numeric: true,
+            label: 'Day 6',
+
+        },
+        {
+            id: 7,
+            numeric: true,
+            label: 'Day 7',
+        },
+        {
+            id: 'avgWeight',
+            label: 'Average Weight',
+
+        },
+        {
+            id: 'weightChange',
+            label: 'Weight Change(%)',
+            CellRender: ({ cellData }) => {
+                return cellData + '%';
+            }
+        }
+    ]);
 
     function fetchTableData() {
         const offsetDate = parseDate(selectedOffsetDate);

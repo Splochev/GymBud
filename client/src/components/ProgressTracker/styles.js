@@ -85,6 +85,15 @@ export default makeStyles(() => ({
     },
     unsortableHead: {
         color: 'white'
+    },
+    dateRangeCol: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+    },
+    startDate: {
+        borderBottom:"1px solid #757575"
     }
     // tableContainerRoot10: {
     //     "& .MuiTableContainer-root": {
