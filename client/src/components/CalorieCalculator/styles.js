@@ -7,9 +7,6 @@ export default makeStyles(() => ({
     icon: {
         fontSize: '20px'
     },
-    chooseFormula: {
-        paddingBottom: '25px'
-    },
     activityIndexDropownWrap: {
         paddingBottom: '16px'
     },
@@ -22,6 +19,9 @@ export default makeStyles(() => ({
         }
     },
     calorieCalculatorContainer: {
-        height:'695px'
+        minHeight: '735px'
+    },
+    radioGroup: {
+        display: 'flex'
     }
 }))

@@ -1,4 +1,3 @@
-import useStyles from './styles.js'
 import OneRepMaxCalculator from '../../OneRepMaxCalculator/OneRepMaxCalculator.js';
 import { useState } from 'react';
 import AddFood from '../../AddFood/AddFood.js';
@@ -10,6 +9,58 @@ import { postData } from '../../utils/FetchUtils.js';
 import { useHistory } from 'react-router-dom';
 import { useQuery } from '../../utils/RouteUtils.js';
 import { useEffect } from 'react';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+    questionIcon: {
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'none'
+        }
+    },
+    signInOrUpUrls: {
+        color: '#343a40',
+        fontSize: '20px',
+        '&:hover': {
+            textDecoration: 'underline'
+        }
+    },
+    dropDown: {
+        color: '#343a40',
+        fontSize: '20px',
+        '&:hover': {
+            color: '#343a40',
+            textDecoration: 'underline',
+            backgroundColor: 'white'
+        }
+    },
+    nav: {
+        backgroundColor: "#343a40",
+    },
+    logo: {
+        width: '50px'
+    },
+    navUrls: {
+        fontSize: '20px',
+        color: 'white',
+        '&:hover': {
+            color: 'white',
+            textDecoration: 'underline'
+        }
+    },
+    navToggler: {
+        color: 'white'
+    },
+    blackStripe: {
+        backgroundColor: 'black',
+        paddingTop: '10px'
+    },
+    addedFoodCounter: {
+        fontSize: '12px',
+        verticalAlign: 'text-top',
+        marginLeft: '5px'
+    } 
+}));
 
 const LoggedInHeader = () => {
     const styles = useStyles();
@@ -101,7 +152,6 @@ const LoggedInHeader = () => {
                     </li>
                 </ul>
             </div>
-
             <div className={clsx("nav-menu-wrapper", styles.blackStripe)}>
                 <nav className={clsx("navbar navbar-expand-lg", styles.nav)}>
                     <a className="navbar-brand" href="#!" onClick={(e) => {

@@ -1,22 +1,32 @@
-import useStyles from './styles'
 import { useState } from 'react';
-import UGBMissingFields from '../Global/UGBMissingFields'
-import { UGBInput } from '../Global/UGBInput'
-import clsx from 'clsx'
+import UGBMissingFields from '../Global/UGBMissingFields';
+import { UGBInput } from '../Global/UGBInput';
+import { makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
+
+const useStyles = makeStyles((theme) => ({
+    oneRepMaxInput: {
+        width: '30%'
+    },
+    icon: {
+        fontSize: '20px'
+    }
+}));
 
 const OneRepMaxCalculator = () => {
     const classes = useStyles();
     const [alert, setAlert] = useState('');
+    const weight = useState(undefined);
+    const reps = useState(undefined);
+    const oneRM = useState(undefined);
 
     function calculate(e) {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        const weight = formData.get('weight');
-        const reps = formData.get('reps');
-        const oneRM = document.getElementsByName('oneRMResult')[0];
+        const parsedWeight = Number(weight[0]);
+        const parsedReps = Number(reps[0]);
 
-        if ((reps <= 10 && reps >= 4) && (weight > 0)) {
-            oneRM.value = (weight / (1.0278 - 0.0278 * reps)).toFixed(2);
+        if ((parsedReps <= 10 && parsedReps >= 4) && (parsedWeight > 0)) {
+            oneRM[1]((parsedWeight / (1.0278 - 0.0278 * parsedReps)).toFixed(2));
         } else {
             setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'All fields are required!'} />)
         }
@@ -24,10 +34,8 @@ const OneRepMaxCalculator = () => {
 
     return (
         <div>
-            <div className='form-group d-flex justify-content-center row'>
-                <h4>One Rep Max Calculator</h4>
-            </div>
-            <hr></hr>
+            <h4 className='form-group d-flex justify-content-center row'>One Rep Max Calculator</h4>
+            <hr />
             <p>
                 One Rep Max(1RM) is one of the best and safest ways to measure your strength.
                 One of its key benefits is that it lets you find out how much weight you can
@@ -48,25 +56,23 @@ const OneRepMaxCalculator = () => {
                 <div className='row'>
                     <UGBInput
                         type='number'
-                        name='weight'
+                        $value={weight}
                         placeholder='Weight'
                         min='1'
                         iconStart='fas fa-balance-scale'
                     />
                     <UGBInput
                         type='number'
-                        name='reps'
+                        $value={reps}
                         placeholder='Reps'
                         min='4'
                         max='10'
                         iconStart='fas fa-sort-numeric-up'
                     />
                 </div>
+                <div className='form-group d-flex justify-content-center row'> Your one rep max is: </div>
                 <div className='form-group d-flex justify-content-center row'>
-                    <div>Your one rep max is: </div>
-                </div>
-                <div className='form-group d-flex justify-content-center row'>
-                    <input type='number' className={clsx('form-control', classes.oneRepMaxInput)} name='oneRMResult' disabled></input>
+                    <input type='number' value={oneRM[0]} className={clsx('form-control', classes.oneRepMaxInput)} name='oneRMResult' disabled />
                 </div>
                 <div className='d-flex justify-content-center row'>
                     <button type='submit' className='btn btn-success' data-toggle='tooltip' title='Calculate 1 Rep Max' >

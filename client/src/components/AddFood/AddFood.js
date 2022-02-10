@@ -1,107 +1,155 @@
 import { useState } from 'react';
 import UGBMissingFields from '../Global/UGBMissingFields';
-import useStyles from './styles'
+import { makeStyles } from '@material-ui/core';
 import { UGBInput } from '../Global/UGBInput'
 import clsx from 'clsx'
+
+const useStyles = makeStyles((theme) => ({
+    icon: {
+        fontSize: '20px',
+    },
+    calculatorBtn: {
+        borderRadius: '0px',
+        background: '#28A745',
+        color: 'white',
+        '&:hover': {
+            cursor: 'pointer',
+            backgroundColor: '#218838',
+            border: '1px solid #1E7E34',
+        },
+        '&:focus': {
+            border: '1px solid #1E7E34',
+            background: '#218838',
+            boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
+            outline: 'none'
+        },
+    }
+}));
+
+function calculateWeightAndCalories(carbs, fat, protein, req) {
+    let weight = 0;
+    let calories = 0;
+
+    const parsedCarbs = Number(carbs);
+    const parsedFat = Number(fat);
+    const parsedProtein = Number(protein);
+
+    if (parsedProtein) {
+        weight += parsedProtein;
+        calories += parsedProtein * 4;
+    }
+    if (parsedFat) {
+        weight += parsedFat;
+        calories += parsedFat * 9;
+    }
+    if (parsedCarbs) {
+        weight += parsedCarbs;
+        calories += parsedCarbs * 4
+    }
+    if (req === 'weight') {
+        return weight;
+    } else if (req === 'calories') {
+        return calories;
+    }
+    return { calories: calories, weight: weight }
+}
 
 const AddFood = () => {
     const [alert, setAlert] = useState('');
     const styles = useStyles();
+    const carbs = useState(undefined);
+    const fat = useState(undefined);
+    const protein = useState(undefined)
+    const calories = useState(undefined)
+    const foodName = useState('')
 
     function calculate(e) {
         e.preventDefault();
-        const carbs = document.getElementsByName('carbs')[0];
-        const fat = document.getElementsByName('fat')[0];
-        const protein = document.getElementsByName('protein')[0];
-        const calories = document.getElementsByName('calories')[0];
-
-        if ((Number(protein.value) + Number(carbs.value) + Number(fat.value)) <= 100 && (Number(protein.value) + Number(carbs.value) + Number(fat.value)) >= 0) {
-            calories.value = carbs.value * 4 + protein.value * 4 + fat.value * 9;
+        const weightAndCalories = calculateWeightAndCalories(carbs[0], fat[0], protein[0])
+        if (weightAndCalories.weight <= 100 && weightAndCalories.weight >= 0) {
+            calories[1](weightAndCalories.calories);
         } else {
-            calories.value = '';
-            setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'The sum of protein, fat and carbs mustn\'t exceed 100 grams.'} />)
+            calories[1](undefined);
+            setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'The sum of protein, fat and carbs must be between 0 and 100 grams.'} />)
         }
     }
 
     function addFood(e) {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        // const foodName = formData.get('food-name');
-        const carbs = formData.get('carbs');
-        const fat = formData.get('fat');
-        const protein = formData.get('protein');
-        // const calories = formData.get('calories');
-
-        if ((Number(protein) + Number(carbs) + Number(fat)) <= 100 && (Number(protein) + Number(carbs) + Number(fat)) >= 0) {
-            //adding food to server
+        const weightAndCalories = calculateWeightAndCalories(carbs[0], fat[0], protein[0])
+        if (weightAndCalories.weight <= 100 && weightAndCalories.weight >= 0 && foodName[0]) {
+            console.log('adding to server---->',
+                {
+                    foodName: foodName[0],
+                    carbs: carbs[0],
+                    fat: fat[0],
+                    protein: protein[0],
+                    calories: calories[0]
+                })
         } else {
-            setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'The sum of protein, fat and carbs mustn\'t exceed 100 grams.'} />)
+            setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'The sum of protein, fat and carbs must be between 0 and 100 grams.'} />)
         }
     }
 
     return (
         <div>
-            <div className='form-group d-flex justify-content-center row'>
-                <h4>One Rep Max Calculator</h4>
-            </div>
-            <hr></hr>
+            <h4 className='form-group d-flex justify-content-center row' >One Rep Max Calculator</h4>
+            <hr />
             {alert}
-            <div className='container mt-3'>
-                <form onSubmit={addFood}>
-                    <UGBInput
-                        type='text'
-                        name='food-name'
-                        placeholder='Food Name'
-                        iconStart='fas fa-utensils'
-                    />
-                    <UGBInput
-                        type='number'
-                        name='carbs'
-                        placeholder='Carbs per 100 grams'
-                        min='0'
-                        max='100'
-                        iconStart='fas fa-bread-slice'
-                    />
-                    <UGBInput
-                        type='number'
-                        name='fat'
-                        placeholder='Fat per 100 grams'
-                        min='0'
-                        max='100'
-                        iconStart='fas fa-fish'
-                    />
-                    <UGBInput
-                        type='number'
-                        name='protein'
-                        placeholder='Protein per 100 grams'
-                        min='0'
-                        max='100'
-                        iconStart='fas fa-drumstick-bite'
-                    />
-                    <UGBInput
-                        type='number'
-                        name='calories'
-                        placeholder='Calories Per 100 grams'
-                        min='0'
-                        max='900'
-                        iconStart='fas fa-burn'
+            <form className='container mt-3' onSubmit={addFood}>
+                <UGBInput
+                    type='text'
+                    placeholder='Food Name'
+                    iconStart='fas fa-utensils'
+                    $value={foodName}
+                />
+                <UGBInput
+                    type='number'
+                    placeholder='Carbs per 100 grams'
+                    min='0'
+                    max='100'
+                    iconStart='fas fa-bread-slice'
+                    $value={carbs}
+                />
+                <UGBInput
+                    type='number'
+                    placeholder='Fat per 100 grams'
+                    min='0'
+                    max='100'
+                    iconStart='fas fa-fish'
+                    $value={fat}
+                />
+                <UGBInput
+                    type='number'
+                    placeholder='Protein per 100 grams'
+                    min='0'
+                    max='100'
+                    iconStart='fas fa-drumstick-bite'
+                    $value={protein}
+                />
+                <UGBInput
+                    type='number'
+                    placeholder='Calories Per 100 grams'
+                    min='0'
+                    max='900'
+                    iconStart='fas fa-burn'
+                    $value={calories}
+                >
+                    <button
+                        className={clsx('input-group-text', styles.calculatorBtn,)}
+                        data-toggle="tooltip"
+                        title="Calculate the calories of the food"
+                        onClick={calculate}
                     >
-                        <button
-                            className={clsx('input-group-text', styles.calculatorBtn,)}
-                            data-toggle="tooltip"
-                            title="Calculate the calories of the food"
-                            onClick={calculate}
-                        >
-                            <i className={clsx("fas fa-calculator", styles.icon)} />
-                        </button>
-                    </UGBInput>
-                    <div className='d-flex justify-content-center'>
-                        <button type='submit' className='btn btn-success'>
-                            Add To My Food
-                        </button>
-                    </div>
-                </form>
-            </div>
+                        <i className={clsx("fas fa-calculator", styles.icon)} />
+                    </button>
+                </UGBInput>
+                <div className='d-flex justify-content-center'>
+                    <button type='submit' className='btn btn-success'>
+                        Add To My Food
+                    </button>
+                </div>
+            </form>
         </div>
     );
 }

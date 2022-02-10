@@ -17,10 +17,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import clsx from 'clsx'
-
-function parseDate(date) {
-    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-}
+import { parseDate } from '../utils/utilFunc'
 
 function descendingComparator(a, b, orderBy) {
     if (orderBy === 'dateRange') {
@@ -226,7 +223,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
     }
 
     return (
-        <Box sx={{ width: '100%', position: 'relative' }} className={clsx(styles.container, styles[`tableContainerRoot${rowsPerPage}`])}>
+        <Box className={clsx(styles.container, styles[`tableContainerRoot${rowsPerPage}`])}>
             <UGBAlert open={open} setOpen={setOpen} message={message} />
             <div className={styles.blackStripe}></div>
             <TableContainer>

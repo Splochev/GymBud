@@ -1,21 +1,20 @@
-import useStyles from './styles.js'
+import useStyles from '../../styles'
 import { useState } from 'react';
 import UGBMissingFields from '../../../Global/UGBMissingFields.js';
 import { UGBInput } from '../../../Global/UGBInput'
 
-const KnowsLbmTrue = () => {
+const KnowsLbmTrue = ({ bmr }) => {
     const classes = useStyles();
     const [alert, setAlert] = useState('');
+    const lbm = useState('')
 
     function calculate(e) {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        const lbm = formData.get('lbm');
-        const bmr = document.getElementsByName("bmr-result")[0];
-
         try {
-            if (lbm) {
-                bmr.value = (370 + (21.6 * lbm)).toFixed(2);
+            if (Number(lbm[0])) {
+                bmr[1]((370 + (21.6 * Number(lbm[0]))).toFixed(2))
+            } else {
+                throw Error("Please provide a number for weight!")
             }
         } catch (err) {
             setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'Please provide your lean body mass in kg.'} />)
@@ -23,13 +22,12 @@ const KnowsLbmTrue = () => {
     }
 
     return (
-
-        <div className="col" id="knows-lbm-true-form">
+        <div className="col">
             {alert}
             <form onSubmit={calculate}>
                 <UGBInput
                     type="number"
-                    name='lbm'
+                    $value={lbm}
                     min='1'
                     max='250'
                     placeholder="LBM"
@@ -42,10 +40,8 @@ const KnowsLbmTrue = () => {
                 </div>
                 <div className="d-flex justify-content-center">
                     <div className="form-group">
-                        <div className="d-flex justify-content-center">
-                            <label htmlFor="bmr-result">Your BMR is:</label>
-                        </div>
-                        <input type="number" className="form-control" name='bmr-result' disabled></input>
+                        <div className="d-flex justify-content-center">Your BMR is:</div>
+                        <input value={bmr[0]} type="number" className="form-control" disabled></input>
                     </div>
                 </div>
             </form>

@@ -1,26 +1,29 @@
-import useStyles from './styles'
+import useStyles from '../../styles'
 import { useState } from 'react';
 import UGBMissingFields from '../../../Global/UGBMissingFields';
 import { UGBInput } from '../../../Global/UGBInput'
+import Radio from '@material-ui/core/Radio';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { UGBRadioButtonsGroup } from '../../../Global/UGBRadioButtonsGroup'
+import clsx from 'clsx'
 
-const KnowsLbmFalse = () => {
-    const classes = useStyles();
+const KnowsLbmFalse = ({ bmr }) => {
+    const styles = useStyles();
     const [alert, setAlert] = useState('');
+    const sex = useState('male')
+    const weight = useState(undefined);
+    const height = useState(undefined);
 
     function calculate(e) {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        const height = formData.get('height');
-        const weight = formData.get('weight');
-        const bmr = document.getElementsByName("bmr-result")[0];
-        const male = document.getElementById("male-katch-mcardle-radio");
-        const female = document.getElementById("female-katch-mcardle-radio");
+        const parsedHeight = Number(height[0]);
+        const parsedWeight = Number(weight[0]);
 
         try {
-            if (male.checked) {
-                bmr.value = (370 + (21.6 * (0.407 * weight + 0.267 * height - 19.2))).toFixed(2);
-            } else if (female.checked) {
-                bmr.value = (370 + (21.6 * (0.252 * weight + 0.473 * height - 48.3))).toFixed(2);
+            if (sex[0] === 'male') {
+                bmr[1]((370 + (21.6 * (0.407 * parsedWeight + 0.267 * parsedHeight - 19.2))).toFixed(2));
+            } else if (sex[0] === 'female') {
+                bmr[1]((370 + (21.6 * (0.252 * parsedWeight + 0.473 * parsedHeight - 48.3))).toFixed(2));
             }
         } catch (err) {
             setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'Please provide your weight in kg, height in cm and select gender.'} />)
@@ -28,25 +31,28 @@ const KnowsLbmFalse = () => {
     }
 
     return (
-        <div className="col" id="knows-lbm-false-form">
+        <div className="col">
             {alert}
             <form onSubmit={calculate}>
                 <div className="d-flex justify-content-center">
-                    <span>Gender:&#160;&#160;</span>
-                    <div className="custom-control custom-radio custom-control-inline">
-                        <input type="radio" className="custom-control-input" id="male-katch-mcardle-radio" name="gender" defaultChecked></input>
-                        <label className="custom-control-label" htmlFor="male-katch-mcardle-radio"><i
-                            className={"fas fa-mars " + classes.icon}></i></label>
-                    </div>
-                    <div className="custom-control custom-radio custom-control-inline">
-                        <input type="radio" className="custom-control-input" id="female-katch-mcardle-radio" name="gender"></input>
-                        <label className="custom-control-label" htmlFor="female-katch-mcardle-radio"><i
-                            className={"fas fa-venus " + classes.icon}></i></label>
-                    </div>
+                    <UGBRadioButtonsGroup
+                        label="Sex:"
+                        display='inline'
+                        $checkedValue={sex}
+                        customMap={() => {
+                            return (
+                                <>
+                                    <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon)} />} />
+                                    <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon)} />} />
+                                </>
+                            );
+                        }}
+
+                    />
                 </div>
                 <UGBInput
                     type="number"
-                    name='weight'
+                    $value={weight}
                     min='1'
                     max='250'
                     placeholder="Weight"
@@ -54,7 +60,7 @@ const KnowsLbmFalse = () => {
                 />
                 <UGBInput
                     type='number'
-                    name='height'
+                    $value={height}
                     min='1'
                     max='275'
                     placeholder="Height"
@@ -62,15 +68,13 @@ const KnowsLbmFalse = () => {
                 />
                 <div className="d-flex justify-content-center">
                     <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate BMR">
-                        <i className={"fas fa-calculator " + classes.icon}></i>
+                        <i className={"fas fa-calculator " + styles.icon}></i>
                     </button>
                 </div>
                 <div className="d-flex justify-content-center">
                     <div className="form-group">
-                        <div className="d-flex justify-content-center">
-                            <label htmlFor="bmr-result">Your BMR is:</label>
-                        </div>
-                        <input type="number" className="form-control" name='bmr-result' disabled></input>
+                        <div className="d-flex justify-content-center">Your BMR is:</div>
+                        <input value={bmr[0]} type="number" className="form-control" disabled></input>
                     </div>
                 </div>
             </form>

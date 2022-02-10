@@ -1,4 +1,4 @@
-import useStyles from './styles.js'
+import { makeStyles } from '@material-ui/core';
 import OneRepMaxCalculator from '../../OneRepMaxCalculator/OneRepMaxCalculator.js';
 import Login from '../../Login/Login.js';
 import ForgotPassword from '../../Login/ForgotPassword/ForgotPassword.js';
@@ -10,6 +10,54 @@ import clsx from 'clsx'
 import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useQuery } from '../../utils/RouteUtils.js';
+
+
+const useStyles = makeStyles((theme) => ({
+    questionIcon: {
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'none'
+        }
+    },
+    signInOrUpUrls: {
+        color: '#343a40',
+        fontSize: '20px',
+        '&:hover': {
+            textDecoration: 'underline'
+        }
+    },
+    questionIconDropDown: {
+        color: '#343a40',
+        fontSize: '20px',
+        '&:hover': {
+            color: '#343a40',
+            textDecoration: 'underline',
+            backgroundColor: 'white'
+        }
+    },
+    nav: {
+        backgroundColor: "#343a40"
+    },
+    logo: {
+        width: '50px'
+    },
+    navUrls: {
+        fontSize: '20px',
+        color: 'white',
+        '&:hover': {
+            color: 'white',
+            textDecoration: 'underline'
+        }
+    },
+    navToggler: {
+        color: 'white'
+    },
+    blackStripe: {
+        backgroundColor: 'black',
+        paddingTop: '10px'
+    }
+}));
+
 
 const LoggedOutHeader = () => {
     const styles = useStyles();
@@ -77,7 +125,7 @@ const LoggedOutHeader = () => {
                 }}
                 maxWidth='sm'
             >
-                <Register />
+                <Register onClose={() => setShowRegister(false)} />
             </UGBModal>
             <UGBModal
                 open={showLogin}
@@ -102,7 +150,6 @@ const LoggedOutHeader = () => {
             >
                 <ForgotPassword />
             </UGBModal>
-
             <div className="nav-wrapper">
                 <ul className="nav justify-content-end">
                     <li className="nav-item">

@@ -26,7 +26,6 @@ export default function UGBAlert({ open, setOpen, message }) {
     if (reason === 'clickaway') {
       return;
     }
-
     setOpen(false);
   };
 

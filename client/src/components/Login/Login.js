@@ -4,7 +4,7 @@ import { postData } from '../utils/FetchUtils'
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 
-const Login = ({ setShowLogin, setShowForgotPassword }) => {
+const Login = ({ setShowLogin }) => {
     const [store, setStore] = useStoreContext();
     const history = useHistory();
     const email = useState('')
@@ -26,10 +26,8 @@ const Login = ({ setShowLogin, setShowForgotPassword }) => {
 
     return (
         <div>
-            <div className="form-group d-flex justify-content-center row">
-                <h4>Sign In</h4>
-            </div>
-            <hr></hr>
+            <h4 className="form-group d-flex justify-content-center row">Sign In</h4>
+            <hr />
             <div className="container mt-3">
                 <p>Please fill in this form to sign in.</p>
                 <form onSubmit={onLogin}>
@@ -55,7 +53,6 @@ const Login = ({ setShowLogin, setShowForgotPassword }) => {
                                 search: "?tab=forgotten-password",
                                 state: { fromPopup: true }
                             });
-
                         }}>
                             password?
                         </a>

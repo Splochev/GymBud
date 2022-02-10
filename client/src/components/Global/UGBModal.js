@@ -23,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 function UGBModal({ open, onClose, maxWidth, hasPadding = true, fullWidth=true, children }) {
     const styles = useStyles();
     return (

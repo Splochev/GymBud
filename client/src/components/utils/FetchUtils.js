@@ -40,8 +40,6 @@ export function deleteData(url = '', data = {}) {
     return fetchData(url, makeFetchData('DELETE', data));
 }
 
-
-
 // postData('https://example.com/answer', { answer: 42 })
 //     .then(data => {
 //         console.log(data); // JSON data parsed by `data.json()` call
