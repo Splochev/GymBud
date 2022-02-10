@@ -22,7 +22,6 @@ const LoggedInHeader = () => {
 
 
     useEffect(() => {
-        console.log(tab, showOneRMCalculator)
         if (tab) {
             switch (tab) {
                 case 'calorie-calculator':
