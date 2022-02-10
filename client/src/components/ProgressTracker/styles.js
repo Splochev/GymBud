@@ -40,8 +40,13 @@ export default makeStyles(() => ({
         }
     },
     container: {
-        "& .MuiTableCell-root": {
-            borderRight: '1px solid #E0E0E0'
+        "& .MuiTableRow-root": {
+            "& .MuiTableCell-root": {
+                borderRight: '1px solid #E0E0E0'
+            },
+            "& .MuiTableCell-root:last-child": {
+                borderRight: 'none'
+            }
         },
         "& .MuiTableHead-root": {
             background: '#343A40',
@@ -69,9 +74,9 @@ export default makeStyles(() => ({
     blackStripe: {
         backgroundColor: 'black',
         paddingTop: '10px',
+        width: '100%'
     },
     datePicker: {
-        marginRight: 10,
         "& .MuiFormLabel-root": {
             color: "black"
         },
@@ -132,6 +137,14 @@ export default makeStyles(() => ({
                 marginLeft: 0,
             },
         }
+    },
+    datesContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 10,
+    },
+    unsortableHead: {
+        color: 'white'
     }
     // tableContainerRoot10: {
     //     "& .MuiTableContainer-root": {

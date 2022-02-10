@@ -258,7 +258,7 @@ const ProgressTracker = () => {
                 </button>
             </form>
 
-            <div className="d-flex justify-content-center">
+            <div className={styles.datesContainer}>
                 <MaterialUIPickers
                     selectedDate={selectedOffsetDate}
                     setSelectedDate={setSelectedOffsetDate}
@@ -271,8 +271,6 @@ const ProgressTracker = () => {
                     maxDate={new Date()}
                 />
             </div>
-
-
             <DataTable
                 rows={rows}
                 headCells={headCells}
