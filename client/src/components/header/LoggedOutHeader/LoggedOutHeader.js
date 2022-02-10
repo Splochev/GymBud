@@ -23,7 +23,8 @@ const useStyles = makeStyles((theme) => ({
         color: '#343a40',
         fontSize: '20px',
         '&:hover': {
-            textDecoration: 'underline'
+            textDecoration: 'underline',
+            color:'#007BFF'
         }
     },
     questionIconDropDown: {

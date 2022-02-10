@@ -3,8 +3,22 @@ import { useStoreContext } from '../store/Store';
 import { postData } from '../utils/FetchUtils'
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+    link: {
+        color: '#007BFF',
+        '&:hover': {
+            textDecoration: 'underline',
+            color: '#007BFF'
+        }
+    },
+}));
+
+
 
 const Login = ({ setShowLogin }) => {
+    const styles = useStyles()
     const [store, setStore] = useStoreContext();
     const history = useHistory();
     const email = useState('')
@@ -46,7 +60,7 @@ const Login = ({ setShowLogin }) => {
                         $value={password}
                     />
                     <div>Forgot&nbsp;
-                        <a href="#!" onClick={(e) => {
+                        <a href="#!" className={styles.link} onClick={(e) => {
                             e.preventDefault();
                             setShowLogin(false);
                             history.push({

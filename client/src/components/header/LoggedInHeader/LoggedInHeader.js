@@ -22,7 +22,8 @@ const useStyles = makeStyles((theme) => ({
         color: '#343a40',
         fontSize: '20px',
         '&:hover': {
-            textDecoration: 'underline'
+            textDecoration: 'underline',
+            color: '#007BFF'
         }
     },
     dropDown: {
@@ -59,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '12px',
         verticalAlign: 'text-top',
         marginLeft: '5px'
-    } 
+    }
 }));
 
 const LoggedInHeader = () => {
@@ -78,7 +79,7 @@ const LoggedInHeader = () => {
                 case 'calorie-calculator':
                     setShowCalorieCalculator(true);
                     break;
-                    case 'one-rep-max-calculator':
+                case 'one-rep-max-calculator':
                     setShowOneRMCalculator(true);
                     break;
                 case 'add-food':
