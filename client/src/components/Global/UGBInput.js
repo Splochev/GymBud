@@ -35,6 +35,7 @@ export const UGBInput = ({ $value, type, name, placeholder, min = null, max = nu
                         required={required}
                         min={min}
                         max={max}
+                        step={type === 'number' ? '.01': null}
                     />
                     {children}
                 </div>
@@ -53,6 +54,7 @@ export const UGBInput = ({ $value, type, name, placeholder, min = null, max = nu
                         required={required}
                         min={min}
                         max={max}
+                        step={type === 'number' ? '.01' : null}
                     />
                     {children}
                 </div>
