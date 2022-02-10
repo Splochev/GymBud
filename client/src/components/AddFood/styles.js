@@ -10,7 +10,14 @@ export default makeStyles(() => ({
         color: 'white',
         '&:hover': {
             cursor: 'pointer',
-            backgroundColor: '#218838'
-        }
+            backgroundColor: '#218838',
+            border: '1px solid #1E7E34',
+        },
+        '&:focus': {
+            border: '1px solid #1E7E34',
+            background: '#218838',
+            boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
+            outline:'none'
+        },
     }
 }))

@@ -86,14 +86,14 @@ const AddFood = () => {
                         max='900'
                         iconStart='fas fa-burn'
                     >
-                        <div
+                        <button
                             className={clsx('input-group-text', styles.calculatorBtn,)}
                             data-toggle="tooltip"
                             title="Calculate the calories of the food"
                             onClick={calculate}
                         >
                             <i className={clsx("fas fa-calculator", styles.icon)} />
-                        </div>
+                        </button>
                     </UGBInput>
                     <div className='d-flex justify-content-center'>
                         <button type='submit' className='btn btn-success'>
