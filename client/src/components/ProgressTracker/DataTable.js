@@ -23,6 +23,17 @@ function parseDate(date) {
 }
 
 function descendingComparator(a, b, orderBy) {
+    if (orderBy === 'dateRange') {
+        const aDate = Date.parse(a.startDate);
+        const bDate = Date.parse(b.startDate);
+        if (bDate < aDate) {
+            return 1;
+        }
+        if (bDate > aDate) {
+            return -1;
+        }
+        return 0;
+    }
     if (b[orderBy] < a[orderBy]) {
         return -1;
     }
@@ -90,6 +101,7 @@ const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, i
 
 
 function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
+    const styles = useStyles();
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
     };
@@ -105,14 +117,18 @@ function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
                             padding={'normal'}
                             sortDirection={orderBy === headCell.id ? order : false}
                         >
-                            <TableSortLabel
-                                active={orderBy === headCell.id}
-                                direction={orderBy === headCell.id ? order : 'asc'}
-                                onClick={createSortHandler(headCell.id)}
-                                IconComponent={orderBy === headCell.id ? ArrowDropUpIcon : ArrowDropDownIcon}
-                            >
-                                {headCell.label}
-                            </TableSortLabel>
+                            {index >= 1 && index <= 7 ?
+                                <div className={styles.unsortableHead}>{headCell.label}</div>
+                                :
+                                <TableSortLabel
+                                    active={orderBy === headCell.id}
+                                    direction={orderBy === headCell.id ? order : 'asc'}
+                                    onClick={createSortHandler(headCell.id)}
+                                    IconComponent={orderBy === headCell.id ? ArrowDropUpIcon : ArrowDropDownIcon}
+                                >
+                                    {headCell.label}
+                                </TableSortLabel>
+                            }
                         </TableCell>
                     );
                 })}
@@ -212,8 +228,8 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
     return (
         <Box sx={{ width: '100%', position: 'relative' }} className={clsx(styles.container, styles[`tableContainerRoot${rowsPerPage}`])}>
             <UGBAlert open={open} setOpen={setOpen} message={message} />
+            <div className={styles.blackStripe}></div>
             <TableContainer>
-                <div className={styles.blackStripe}></div>
                 <Table size={'medium'}>
                     <EnhancedTableHead
                         headCells={headCells}
@@ -230,7 +246,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row, index) => {
                                 return (
-                                    <TableRow key={`${row.startDate}-${row.endDate}`}>
+                                    <TableRow key={`${row.startDate}-${row.endDate}-${index}`}>
                                         {headCells.map((headCell, cellIndex) => {
                                             let title = headCell.label;
                                             let helperText = '';
@@ -246,7 +262,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                                             return (
                                                 <TableCell
                                                     className={styles.textField}
-                                                    key={`${row.startDate}-${row.endDate}-${headCell.id}`}
+                                                    key={`${row.startDate}-${row.endDate}-${headCell.id}-${index}-${cellIndex}`}
                                                     align="left"
                                                     data-toggle="tooltip"
                                                     title={helperText ? title : ''}
@@ -267,7 +283,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                                                             />
                                                         :
                                                         CellRender ?
-                                                            <CellRender key={`cellRender-${row.startDate}-${row.endDate}-${headCell.id}`} cellData={row[headCell.id]} rowData={row} />
+                                                            <CellRender key={`${row.startDate}-${row.endDate}-${headCell.id}-${index}-${cellIndex}`} cellData={row[headCell.id]} rowData={row} />
                                                             :
                                                             row[headCell.id]
                                                     }
@@ -280,7 +296,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[5, 10, 15]}
+                rowsPerPageOptions={[]}
                 component="div"
                 count={rows.length}
                 rowsPerPage={rowsPerPage}
