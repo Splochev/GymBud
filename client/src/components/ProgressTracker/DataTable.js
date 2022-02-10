@@ -18,6 +18,10 @@ import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import clsx from 'clsx'
 
+function parseDate(date) {
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+}
+
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
         return -1;
@@ -53,7 +57,8 @@ const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, i
 
     return (
         <TextField
-            type='text'
+            type='number'
+            step='.01'
             onBlur={(event) => onBlur(event, row, cellIndex, setShrink)}
             label={row[headCell.id] ? `${row[headCell.id]}kg` : ''}
             key={headCell.id + "_" + cellIndex}
@@ -234,7 +239,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                                                 title = "Edit cell"
                                                 const date = new Date(row.startDate);
                                                 date.setDate(date.getDate() + headCell.id - 1)
-                                                const parsedDate = Date.parse(date.toISOString().split("T")[0])
+                                                const parsedDate = Date.parse(parseDate(date))
                                                 helperText = parsedDate <= today ? date.toDateString().slice(0, -4) : '';
                                             }
                                             const CellRender = headCell.CellRender;

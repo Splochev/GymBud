@@ -4,15 +4,30 @@ import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import useStyles from './styles'
-import clsx from 'clsx'
 import { UGBInput } from '../Global/UGBInput';
 import { getData, postData } from '../utils/FetchUtils';
+import { createTheme } from "@material-ui/core";
+import { ThemeProvider } from '@material-ui/core/styles';
 
 function parseDate(date) {
-    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    if (!year || !month || !day) {
+        return ''
+    }
+    return `${year}-${month}-${day}`
 }
 
 export function MaterialUIPickers({ selectedDate, setSelectedDate, maxDate, minDate }) {
+    const styles = useStyles();
+    const theme = createTheme({
+        props: {
+            MuiButtonBase: {
+                disableRipple: true
+            }
+        }
+    });
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
@@ -20,67 +35,83 @@ export function MaterialUIPickers({ selectedDate, setSelectedDate, maxDate, minD
 
     return (
         maxDate && minDate ?
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardDatePicker
-                    minDate={minDate}
-                    maxDate={maxDate}
-                    disableToolbar
-                    autoOk={true}
-                    variant="inline"
-                    format="yyyy-MM-dd"
-                    margin="normal"
-                    label="Choose date"
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                    minDateMessage={`Date should not be before ${minDate.toISOString().split("T")[0]}`}
-                    maxDateMessage={`Date should not be after ${maxDate.toISOString().split("T")[0]}`}
-                />
-            </MuiPickersUtilsProvider>
+            <div className={styles.datePicker}>
+                <ThemeProvider theme={theme}>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                            minDate={parseDate(minDate)}
+                            maxDate={parseDate(maxDate)}
+                            disableToolbar
+                            autoOk={true}
+                            variant="inline"
+                            format="yyyy-MM-dd"
+                            margin="normal"
+                            label="Choose date"
+                            value={selectedDate}
+                            onChange={handleDateChange}
+                            minDateMessage={`Date should not be before ${parseDate(minDate)}`}
+                            maxDateMessage={`Date should not be after ${parseDate(maxDate)}`}
+                        />
+                    </MuiPickersUtilsProvider>
+                </ThemeProvider>
+            </div >
             :
             maxDate ?
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                        maxDate={maxDate}
-                        disableToolbar
-                        autoOk={true}
-                        variant="inline"
-                        format="yyyy-MM-dd"
-                        margin="normal"
-                        label="Choose date"
-                        value={selectedDate}
-                        onChange={handleDateChange}
-                        maxDateMessage={`Date should not be after ${maxDate.toISOString().split("T")[0]}`}
-                    />
-                </MuiPickersUtilsProvider>
+                <div className={styles.datePicker}>
+                    <ThemeProvider theme={theme}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <KeyboardDatePicker
+                                maxDate={parseDate(maxDate)}
+                                disableToolbar
+                                autoOk={true}
+                                variant="inline"
+                                format="yyyy-MM-dd"
+                                margin="normal"
+                                label="Choose date"
+                                value={selectedDate}
+                                onChange={handleDateChange}
+                                maxDateMessage={`Date should not be after ${parseDate(maxDate)}`}
+                            />
+                        </MuiPickersUtilsProvider>
+                    </ThemeProvider>
+                </div>
                 :
                 minDate ?
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
-                            minDate={minDate}
-                            disableToolbar
-                            autoOk={true}
-                            variant="inline"
-                            format="yyyy-MM-dd"
-                            margin="normal"
-                            label="Choose date"
-                            value={selectedDate}
-                            onChange={handleDateChange}
-                            minDateMessage={`Date should not be before ${minDate.toISOString().split("T")[0]}`}
-                        />
-                    </MuiPickersUtilsProvider>
+                    <div className={styles.datePicker}>
+                        <ThemeProvider theme={theme}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    minDate={parseDate(minDate)}
+                                    disableToolbar
+                                    autoOk={true}
+                                    variant="inline"
+                                    format="yyyy-MM-dd"
+                                    margin="normal"
+                                    label="Choose date"
+                                    value={selectedDate}
+                                    onChange={handleDateChange}
+                                    minDateMessage={`Date should not be before ${parseDate(minDate)}`}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </ThemeProvider>
+                    </div >
                     :
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
-                            disableToolbar
-                            autoOk={true}
-                            variant="inline"
-                            format="yyyy-MM-dd"
-                            margin="normal"
-                            label="Choose date"
-                            value={selectedDate}
-                            onChange={handleDateChange}
-                        />
-                    </MuiPickersUtilsProvider>
+                    <div className={styles.datePicker}>
+                        <ThemeProvider theme={theme}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    disableToolbar
+                                    autoOk={true}
+                                    variant="inline"
+                                    format="yyyy-MM-dd"
+                                    margin="normal"
+                                    label="Choose date"
+                                    value={selectedDate}
+                                    onChange={handleDateChange}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </ThemeProvider>
+                    </div >
     );
 }
 
@@ -163,6 +194,9 @@ const ProgressTracker = () => {
         const offsetDate = parseDate(selectedOffsetDate);
         const limitDate = parseDate(selectedLimitDate);
 
+        if (!offsetDate || !limitDate) {
+            return;
+        }
         getData(process.env.REACT_APP_HOST + `/api/weight-tracker/get-weight-data?offsetDate=${offsetDate}&limitDate=${limitDate}`)
             .then(data => {
                 setRows(data.data);
@@ -219,8 +253,8 @@ const ProgressTracker = () => {
                     minDate={minSelectedDate}
                     maxDate={maxSelectedDate}
                 />
-                <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate 1 Rep Max" >
-                    <i className={clsx("fas fa-calculator", styles.icon)} ></i>
+                <button type="submit" className="btn btn-success" >
+                    Submit
                 </button>
             </form>
 
