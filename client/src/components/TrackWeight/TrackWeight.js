@@ -1,10 +1,10 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import { useState } from 'react';
 import { UGBDatePicker } from '../Global/UGBDatePicker';
 import { UGBInput } from '../Global/UGBInput';
 import { postData } from '../utils/FetchUtils';
 import { parseDate } from '../utils/utilFunc';
-import { useStoreContext } from '../store/Store';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     weightSubmission: {
@@ -21,12 +21,19 @@ const useStyles = makeStyles((theme) => ({
         "& button": {
             width: '93px'
         }
+    },
+    inputs: {
+        "& .MuiFormControl-root": {
+            width: '100%'
+        }
+    },
+    title: {
+        color:'#343A40'
     }
 }));
 
 const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
     const styles = useStyles();
-    const [store, setStore] = useStoreContext();
     const [defaultSelectedDate] = useState(new Date());
     const [maxSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate())));
     const [selectedDate, setSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate())));
@@ -59,18 +66,27 @@ const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
     return (
         <>
             <form onSubmit={onSubmitWeight}>
+                <Typography
+                    className={clsx('d-flex justify-content-center', styles.title)}
+                    variant='h6'
+                    component='div'
+                >
+                    Track Daily Weight
+                </Typography>
+                <div className={clsx('form-group col', styles.inputs)}>
+                    <UGBDatePicker
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
+                        minDate={minSelectedDate}
+                        maxDate={maxSelectedDate}
+                    />
+                </div>
                 <UGBInput
                     type='number'
                     $value={weight}
                     placeholder='Weight'
                     min='1'
                     iconStart='fas fa-balance-scale'
-                />
-                <UGBDatePicker
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
-                    minDate={minSelectedDate}
-                    maxDate={maxSelectedDate}
                 />
                 <div className={styles.actions}>
                     <button type="button" onClick={() => onClose()} className="btn btn-danger" >
