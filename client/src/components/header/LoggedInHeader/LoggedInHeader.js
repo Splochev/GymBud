@@ -10,6 +10,7 @@ import { useHistory } from 'react-router-dom';
 import { useQuery } from '../../utils/RouteUtils.js';
 import { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core';
+import TrackWeight from '../../TrackWeight/TrackWeight.js';
 
 const useStyles = makeStyles((theme) => ({
     questionIcon: {
@@ -63,13 +64,14 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const LoggedInHeader = () => {
+const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
     const styles = useStyles();
     const [store, setStore] = useStoreContext();
     const history = useHistory();
     const [showOneRMCalculator, setShowOneRMCalculator] = useState(false);
     const [showAddFood, setShowAddFood] = useState(false);
     const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
+    const [showTrackWeight, setShowTrackWeight] = useState(false);
     const { tab } = useQuery()
 
     useEffect(() => {
@@ -83,6 +85,9 @@ const LoggedInHeader = () => {
                     break;
                 case 'add-food':
                     setShowAddFood(true);
+                    break;
+                case 'track-weight':
+                    setShowTrackWeight(true);
                     break;
                 default:
                     break;
@@ -102,6 +107,23 @@ const LoggedInHeader = () => {
 
     return (
         <div className={clsx("nav-menu-wrapper", styles.blackStripe)}>
+            <UGBModal
+                open={showTrackWeight}
+                onClose={() => {
+                    history.push(window.location.pathname);
+                    setShowTrackWeight(false)
+                }}
+                maxWidth='xs'
+            >
+                <TrackWeight
+                    refreshTableData={refreshTableData}
+                    setRefreshTableData={setRefreshTableData}
+                    onClose={() => {
+                        history.push(window.location.pathname);
+                        setShowTrackWeight(false)
+                    }}
+                />
+            </UGBModal>
             <UGBModal
                 open={showOneRMCalculator}
                 onClose={() => {
