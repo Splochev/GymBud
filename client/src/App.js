@@ -9,8 +9,8 @@ import { Route, Redirect } from 'react-router';
 import { Switch, BrowserRouter, useHistory } from 'react-router-dom';
 import { getData } from './components/utils/FetchUtils'
 import { useStoreContext } from './components/store/Store'
+import { makeStyles } from '@material-ui/core/styles';
 require("dotenv").config();
-
 
 const AutoLoginComponent = ({ children }) => {
     const [state, setState] = useStoreContext();
@@ -30,10 +30,23 @@ const AutoLoginComponent = ({ children }) => {
         children
 }
 
+const useStyles = makeStyles((theme) => ({
+    pageLayout: {
+        width: '100%',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    contentContainer: {
+        overflow: 'auto',
+        height: '100%',
+    },
+}));
 
 const App = () => {
     const [storeState, setStoreState] = useState(initialStoreState);
     const [isFetchAttached, setIsFetchAttached] = useState(false);
+    const styles = useStyles();
 
     useEffect(() => {
         const originalFetch = window.fetch;
@@ -100,9 +113,9 @@ const App = () => {
                 <BrowserRouter>
                     <AutoLoginComponent>
                         {storeState.user ?
-                            <div>
+                            <div className={styles.pageLayout}>
                                 <LoggedInHeader />
-                                <div>
+                                <div className={styles.contentContainer}>
                                     <Switch>
                                         <Route exact path="/home" component={HomePageArticles} />
                                         <Route exact path="/progress-tracker" component={ProgressTracker} />
@@ -112,9 +125,9 @@ const App = () => {
                                 <Footer />
                             </div>
                             :
-                            <div>
+                            <div className={styles.pageLayout}>
                                 <LoggedOutHeader />
-                                <div>
+                                <div className={styles.contentContainer}>
                                     <Switch>
                                         <Route exact path="/home" component={HomePageArticles} />
                                         <Redirect from="*" to="/home" />

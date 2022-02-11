@@ -4,11 +4,6 @@ body,html {
     height: 100%;
 }
 
-/* body > .footer {
-  position: sticky;
-  top: 100vh;
-} */
-
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
