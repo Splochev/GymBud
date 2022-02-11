@@ -2,21 +2,14 @@ import React, { useEffect, useState } from 'react';
 import DataTable from "./DataTable";
 import 'date-fns';
 import useStyles from './styles'
-import { UGBInput } from '../Global/UGBInput';
-import { getData, postData } from '../utils/FetchUtils';
+import { getData } from '../utils/FetchUtils';
 import { parseDate } from '../utils/utilFunc'
 import { UGBDatePicker } from '../Global/UGBDatePicker'
 
-
-
-const ProgressTracker = () => {
+const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
     const styles = useStyles();
     const [page, setPage] = useState(0);
     const [rows, setRows] = useState([]);
-    const [defaultSelectedDate] = useState(new Date());
-    const [maxSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate())));
-    const [selectedDate, setSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate())));
-    const [minSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate() - 30)));
     const [today] = useState(new Date());
     const [selectedOffsetDate, setSelectedOffsetDate] = useState(new Date(today.setDate(today.getDate() - 90)));
     const [selectedLimitDate, setSelectedLimitDate] = useState(new Date());
@@ -88,6 +81,13 @@ const ProgressTracker = () => {
         }
     ]);
 
+    useEffect(() => {
+        if (refreshTableData) {
+            fetchTableData();
+            setRefreshTableData(false);
+        }
+     }, [refreshTableData])
+
     function fetchTableData() {
         const offsetDate = parseDate(selectedOffsetDate);
         const limitDate = parseDate(selectedLimitDate);
@@ -106,24 +106,6 @@ const ProgressTracker = () => {
             })
     }
 
-    function onSubmitWeight(e) {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const weight = formData.get("weight")
-        const parsedDate = parseDate(selectedDate);
-
-        postData(process.env.REACT_APP_HOST + `/api/weight-tracker/submit-weight`, {
-            date: parsedDate,
-            weight: Number(weight)
-        }).then(data => {
-            formData.delete('weight');
-            fetchTableData()
-        }, error => {
-            console.log(error)
-        })
-
-    }
-
     useEffect(() => {
         fetchTableData()
     }, [selectedOffsetDate, selectedLimitDate])
@@ -138,24 +120,6 @@ const ProgressTracker = () => {
 
     return (
         <div>
-            <form className={styles.weightSubmission} onSubmit={onSubmitWeight}>
-                <UGBInput
-                    type='number'
-                    name='weight'
-                    placeholder='Weight'
-                    min='1'
-                    iconStart='fas fa-balance-scale'
-                />
-                <UGBDatePicker
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
-                    minDate={minSelectedDate}
-                    maxDate={maxSelectedDate}
-                />
-                <button type="submit" className="btn btn-success" >
-                    Submit
-                </button>
-            </form>
             <div className={styles.datesContainer}>
                 <UGBDatePicker
                     selectedDate={selectedOffsetDate}

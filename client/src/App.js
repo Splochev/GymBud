@@ -44,9 +44,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const App = () => {
+    const styles = useStyles();
     const [storeState, setStoreState] = useState(initialStoreState);
     const [isFetchAttached, setIsFetchAttached] = useState(false);
-    const styles = useStyles();
+    const [refreshTableData, setRefreshTableData] = useState(false);
 
     useEffect(() => {
         const originalFetch = window.fetch;
@@ -87,8 +88,8 @@ const App = () => {
                     });
         }
 
-
-        setStoreState(state => (state.autoLoginLoading = true, { ...state }));
+        const location = window.location.pathname + (window.location.search || '')
+        setStoreState(state => (state.returnUrl = location, state.autoLoginLoading = true, { ...state }))
         getData(process.env.REACT_APP_HOST + '/api/user/me')
             .then(data => {
                 if (data) {
@@ -97,8 +98,6 @@ const App = () => {
                     setStoreState(state => (state.autoLoginLoading = false, { ...state }));
                 }
             })
-
-
 
         setIsFetchAttached(true);
         return () => {
@@ -114,11 +113,14 @@ const App = () => {
                     <AutoLoginComponent>
                         {storeState.user ?
                             <div className={styles.pageLayout}>
-                                <LoggedInHeader />
+                                <LoggedInHeader refreshTableData={refreshTableData} setRefreshTableData={setRefreshTableData}/>
                                 <div className={styles.contentContainer}>
                                     <Switch>
+                                        <Route
+                                            exact path='/progress-tracker'
+                                            render={props => <ProgressTracker refreshTableData={refreshTableData} setRefreshTableData={setRefreshTableData} />}
+                                        />
                                         <Route exact path="/home" component={HomePageArticles} />
-                                        <Route exact path="/progress-tracker" component={ProgressTracker} />
                                         <Redirect from="*" to="/home" />
                                     </Switch>
                                 </div>
