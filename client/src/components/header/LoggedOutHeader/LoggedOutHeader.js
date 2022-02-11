@@ -11,20 +11,11 @@ import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useQuery } from '../../utils/RouteUtils.js';
 
-
 const useStyles = makeStyles((theme) => ({
     questionIcon: {
         textDecoration: 'none',
         '&:hover': {
             textDecoration: 'none'
-        }
-    },
-    signInOrUpUrls: {
-        color: '#343a40',
-        fontSize: '20px',
-        '&:hover': {
-            textDecoration: 'underline',
-            color:'#007BFF'
         }
     },
     questionIconDropDown: {
@@ -64,12 +55,10 @@ const LoggedOutHeader = () => {
     const styles = useStyles();
     const history = useHistory();
     const [showForgotPassword, setShowForgotPassword] = useState(false);
-
     const [showOneRMCalculator, setShowOneRMCalculator] = useState(false);
     const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
-
     const { tab } = useQuery();
 
     useEffect(() => {
@@ -97,7 +86,7 @@ const LoggedOutHeader = () => {
     }, [tab])
 
     return (
-        <div className="header">
+        <div className={styles.blackStripe}>
             <UGBModal
                 open={showOneRMCalculator}
                 onClose={() => {
@@ -151,84 +140,99 @@ const LoggedOutHeader = () => {
             >
                 <ForgotPassword />
             </UGBModal>
-            <div className="nav-wrapper">
-                <ul className="nav justify-content-end">
-                    <li className="nav-item">
-                        <a className={clsx("nav-link", styles.signInOrUpUrls)} href="#!" data-toggle="modal" data-target="#login-modal" onClick={(e) => {
-                            e.preventDefault();
-                            history.push({
-                                search: "?tab=sign-in",
-                                state: { fromPopup: true }
-                            });
-                        }}>
-                            Sign In
-                        </a>
-                    </li>
-                    <li className="nav-item">
-                        <a className={clsx("nav-link", styles.signInOrUpUrls)} href="#!" onClick={(e) => {
-                            e.preventDefault();
-                            history.push({
-                                search: "?tab=sign-up",
-                                state: { fromPopup: true }
-                            });
-                        }}>Sign Up</a>
-                    </li>
-                    <li className="nav-item dropdown dropleft">
-                        <a className={clsx('nav-link dropdown-toggle', styles.questionIcon, styles.signInOrUpUrls)} href="#!" role="button" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                            <i className="far fa-question-circle"></i>
-                        </a>
-                        <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a className={clsx("dropdown-item", styles.questionIconDropDown)} href="#!">Opt1</a>
-                            <a className={clsx("dropdown-item", styles.questionIconDropDown)} href="#!">Opt2</a>
-                        </div>
-                    </li>
-
-                </ul>
-            </div>
-            <div className={clsx("nav-menu-wrapper", styles.blackStripe)}>
-                <nav className={clsx("navbar navbar-expand-lg ", styles.nav)}>
-                    <a className="navbar-brand" href="#!" onClick={(e) => {
+            <nav className={clsx("navbar navbar-expand-lg", styles.nav)}>
+                <a
+                    className="navbar-brand"
+                    href="#!"
+                    onClick={(e) => {
                         e.preventDefault();
                         history.push('/home');
                     }}>
-                        <img src="/UrGymBudLogoLight.png" alt="Logo" className={styles.logo}></img>
-                    </a>
-                    <button className={clsx("navbar-toggler", styles.navToggler)} type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span className="bars-icon"><i className="fas fa-bars"></i></span>
-                    </button>
-                    <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul className="navbar-nav mr-auto">
-                            <li className="nav-item">
-                                <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
-                                    className="fas fa-hamburger"></i> <i className="fas fa-search"></i></a>
-                            </li>
-                            <li className="nav-item">
-                                <a className={"nav-link " + styles.navUrls} href="#!" onClick={(e) => {
+                    <img src="/UrGymBudLogoLight.png" alt="Logo" className={styles.logo}></img>
+                </a>
+                <button
+                    className={clsx("navbar-toggler", styles.navToggler)}
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarSupportedContent"
+                >
+                    <i className="fas fa-bars" />
+                </button>
+                <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul className="navbar-nav mr-auto">
+                        <li className="nav-item">
+                            <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button">
+                                <i className="fas fa-hamburger" /> <i className="fas fa-search" />
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <a
+                                className={clsx("nav-link", styles.navUrls)}
+                                href="#!"
+                                onClick={(e) => {
                                     e.preventDefault();
-                                    history.push({
-                                        search: "?tab=calorie-calculator",
-                                        state: { fromPopup: true }
-                                    });
-                                }}>Calorie Calculator</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className={"nav-link " + styles.navUrls} href="#!" onClick={(e) => {
+                                    history.push({ search: "?tab=calorie-calculator", state: { fromPopup: true } });
+                                }}
+                            >
+                                Calorie Calculator
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <a
+                                className={clsx("nav-link", styles.navUrls)}
+                                href="#!"
+                                onClick={(e) => {
                                     e.preventDefault();
-                                    history.push({
-                                        search: "?tab=one-rep-max-calculator",
-                                        state: { fromPopup: true }
-                                    });
-                                }}>1 Rep
-                                    Max
-                                    Calculator
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-            </div>
+                                    history.push({ search: "?tab=one-rep-max-calculator", state: { fromPopup: true } });
+                                }}
+                            >
+                                1 Rep Max Calculator
+                            </a>
+                        </li>
+                    </ul>
+                    <ul className="nav justify-content-end">
+                        <li className="nav-item">
+                            <a
+                                className={clsx("nav-link", styles.navUrls)}
+                                href="#!"
+                                data-toggle="modal"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    history.push({ search: "?tab=sign-in", state: { fromPopup: true } });
+                                }}
+                            >
+                                Sign In
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <a
+                                className={clsx("nav-link", styles.navUrls)}
+                                href="#!"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    history.push({ search: "?tab=sign-up", state: { fromPopup: true } });
+                                }}
+                            >
+                                Sign Up
+                            </a>
+                        </li>
+                        <li className="nav-item dropdown dropleft">
+                            <a
+                                className={clsx('nav-link dropdown-toggle', styles.questionIcon, styles.navUrls)}
+                                href="#!"
+                                role="button"
+                                data-toggle="dropdown"
+                            >
+                                <i className="far fa-question-circle" />
+                            </a>
+                            <div className="dropdown-menu">
+                                <a className={clsx("dropdown-item", styles.questionIconDropDown)} href="#!">Opt1</a>
+                                <a className={clsx("dropdown-item", styles.questionIconDropDown)} href="#!">Opt2</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
         </div>
     );
 }
