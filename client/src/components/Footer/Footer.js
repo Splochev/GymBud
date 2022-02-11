@@ -4,6 +4,7 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import ClearIcon from '@material-ui/icons/Clear';
 import clsx from 'clsx';
 import { useState } from 'react';
+import { useStoreContext } from '../store/Store';
 
 const useStyles = makeStyles((theme) => ({
     copyrightNav: {
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 const Footer = () => {
     const styles = useStyles();
     const [open, setOpen] = useState(false);
+    const [store, setStore] = useStoreContext();
 
     const handleOpen = () => {
         setOpen(true);
@@ -63,20 +65,27 @@ const Footer = () => {
                     &copy; 2021 Stanislav Plochev
                 </a>
             </div>
-            <a
-                className={clsx("btn btn-outline-light btn-floating m-1", styles.assignmentIcon)}
-                href="#!"
-                rel="noreferrer"
-                role="button"
-                onClick={(e) => {
-                    e.preventDefault()
-                    setOpen(!open)
-                }}
-                onMouseEnter={handleOpen}
-            >
-                <i className={styles.icon} >{open ? <ClearIcon /> : <AssignmentIcon />} </i>
-            </a>
-            <SpeedDialTooltipOpen open={open} handleOpen={handleOpen} handleClose={handleClose} />
+
+            {store.user ?
+                <>
+                    <a
+                        className={clsx("btn btn-outline-light btn-floating m-1", styles.assignmentIcon)}
+                        href="#!"
+                        rel="noreferrer"
+                        role="button"
+                        onClick={(e) => {
+                            e.preventDefault()
+                            setOpen(!open)
+                        }}
+                        onMouseEnter={handleOpen}
+                    >
+                        <i className={styles.icon} >{open ? <ClearIcon /> : <AssignmentIcon />} </i>
+                    </a>
+                    <SpeedDialTooltipOpen open={open} handleOpen={handleOpen} handleClose={handleClose} />
+                </>
+                :
+                <div />
+            }
         </div>
     );
 }

@@ -7,6 +7,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import PrintIcon from '@material-ui/icons/Print';
 import ShareIcon from '@material-ui/icons/Share';
 import FavoriteIcon from '@material-ui/icons/Favorite';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -21,20 +22,29 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden'
     },
     toolTip: {
-        color:'red !important'
-    }
+        color: 'red !important'
+    },
+
 }));
 
 const actions = [
-    { icon: <FileCopyIcon />, name: 'Copy' },
-    { icon: <SaveIcon />, name: 'Save' },
-    { icon: <PrintIcon />, name: 'Print' },
-    { icon: <ShareIcon />, name: 'Share' },
-    { icon: <FavoriteIcon />, name: 'Like' },
+    { icon: <i class="fa-solid fa-weight-scale" style={{ fontSize: 20 }} />, name: 'Track Weight' },
 ];
 
 export default function SpeedDialTooltipOpen({ open, handleOpen, handleClose }) {
     const styles = useStyles();
+    const history = useHistory();
+
+    function onClickIcon(name) {
+        switch (name) {
+            case 'Track Weight':
+                history.push({ search: "?tab=track-weight", state: { fromPopup: true } });
+                break;
+            default:
+                break;
+        }
+        handleClose()
+    }
 
     return (
         <>
@@ -51,7 +61,7 @@ export default function SpeedDialTooltipOpen({ open, handleOpen, handleClose }) 
                         key={action.name}
                         icon={action.icon}
                         tooltipTitle={action.name}
-                        onClick={handleClose}
+                        onClick={() => onClickIcon(action.name)}
                     />
                 ))}
             </SpeedDial>
