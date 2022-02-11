@@ -30,10 +30,6 @@ export default makeStyles(() => ({
             }
         }
     },
-    weightSubmission: {
-        display: 'flex',
-        alignItems: 'baseline',
-    },
     tableContainerRoot5: {
         "& .MuiTableContainer-root": {
             minHeight: '587px'
