@@ -8,6 +8,7 @@ import PrintIcon from '@material-ui/icons/Print';
 import ShareIcon from '@material-ui/icons/Share';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import { useHistory } from 'react-router-dom';
+import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,6 +30,8 @@ const useStyles = makeStyles((theme) => ({
 
 const actions = [
     { icon: <i class="fa-solid fa-weight-scale" style={{ fontSize: 20 }} />, name: 'Track Weight' },
+    { icon: <i class="fas fa-calculator" style={{ fontSize: 20, }} />, name: 'Calorie Calculator' },
+    { icon: <FitnessCenterIcon style={{ fontSize: 20, }} />, name: '1 Rep Max Calculator' },
 ];
 
 export default function SpeedDialTooltipOpen({ open, handleOpen, handleClose }) {
@@ -39,6 +42,12 @@ export default function SpeedDialTooltipOpen({ open, handleOpen, handleClose }) 
         switch (name) {
             case 'Track Weight':
                 history.push({ search: "?tab=track-weight", state: { fromPopup: true } });
+                break;
+            case 'Calorie Calculator':
+                history.push({ search: "?tab=calorie-calculator", state: { fromPopup: true } });
+                break;
+            case '1 Rep Max Calculator':
+                history.push({ search: "?tab=one-rep-max-calculator", state: { fromPopup: true } });
                 break;
             default:
                 break;

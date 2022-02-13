@@ -32,6 +32,11 @@ const useStyles = makeStyles((theme) => ({
     },
     assignmentIcon: {
         marginRight: '20px !important'
+    },
+    fill: {
+        width: '50px',
+        height: '50px',
+        marginLeft: '20px !important'
     }
 }));
 
@@ -51,7 +56,7 @@ const Footer = () => {
 
     return (
         <div className={styles.footer}>
-            <div />
+            <div className={styles.fill}/>
             <div className={styles.copyrightNav}>
                 <div >
                     <a className="btn btn-outline-light btn-floating m-1" href="https://www.linkedin.com/in/stanislav-p-14023a155" rel="noreferrer" target="_blank" role="button">
@@ -79,14 +84,18 @@ const Footer = () => {
                         }}
                         onMouseEnter={handleOpen}
                     >
-                        <i className={styles.icon} >{open ? <ClearIcon /> : <AssignmentIcon />} </i>
+                        {open ?
+                            <i className={styles.icon} ><ClearIcon /></i>
+                            :
+                            <i className={clsx(styles.icon, "fa-solid fa-screwdriver-wrench")} />
+                        }
                     </a>
                     <SpeedDialTooltipOpen open={open} handleOpen={handleOpen} handleClose={handleClose} />
                 </>
                 :
                 <div />
             }
-        </div>
+        </div >
     );
 }
 
