@@ -3,14 +3,12 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     articleCardTextWoman: {
-        paddingBottom: '60px'
-    },
-    articleCardTextComputer: {
         paddingBottom: '30px'
     },
     homePageSection: {
         marginRight: 0,
-        marginLeft: 0
+        marginLeft: 0,
+        marginTop: 30,
     },
     postcard: {
         flexWrap: 'wrap',
@@ -130,7 +128,7 @@ const HomePageArticles = () => {
                         <article className={styles.postcard}>
                             <img className={styles.postcardImg} src="/analytics.png" alt="computer screen and chart" />
                             <div className={styles.postCardText}>
-                                <div className={clsx(styles.articleCardTextComputer, styles.postCardPreviewText)}>
+                                <div className={styles.postCardPreviewText}>
                                     <div className={styles.postCardBar}></div>
                                     <ul>
                                         <li>Calculate your total daily energy expenditure calories.</li>
