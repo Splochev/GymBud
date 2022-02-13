@@ -5,7 +5,6 @@ import { TableBody } from '@material-ui/core';
 import { TableCell } from '@material-ui/core';
 import { TableContainer } from '@material-ui/core';
 import { TableHead } from '@material-ui/core';
-import { TablePagination } from '@material-ui/core';
 import { TableRow } from '@material-ui/core';
 import { TableSortLabel } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
@@ -16,8 +15,26 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import ClearIcon from '@material-ui/icons/Clear';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import clsx from 'clsx'
 import { parseDate } from '../utils/utilFunc'
+import Pagination from '@material-ui/lab/Pagination';
+import { createTheme } from "@material-ui/core";
+import { ThemeProvider } from '@material-ui/core/styles';
+
+const theme = createTheme({
+    palette: {
+        secondary: {
+            main: '#28A745',
+            light: 'red',
+            dark: '#218838',
+            contrastText: 'white',
+        },
+    },
+    props: {
+        MuiButtonBase: {
+            disableRipple: true
+        }
+    }
+});
 
 function descendingComparator(a, b, orderBy) {
     if (orderBy === 'dateRange') {
@@ -107,9 +124,17 @@ function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
         <TableHead>
             <TableRow>
                 {headCells.map((headCell, index) => {
+                    let cellStyle = '';
+                    if (index === 0) {
+                        cellStyle = 'borderedCellRight'
+                    } else if (index === 8 || index === 9) {
+                        cellStyle = 'borderedCellLeft'
+                    }
+
                     return (
                         <TableCell
                             key={`${headCell.id}-${index}`}
+                            classes={{ root: styles[cellStyle] }}
                             align={'left'}
                             padding={'normal'}
                             sortDirection={orderBy === headCell.id ? order : false}
@@ -142,7 +167,6 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
     const [orderBy, setOrderBy] = React.useState('');
     const [message, setMessage] = React.useState('');
     const [today] = React.useState(Date.parse((new Date()).toISOString().split("T")[0]));
-
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -223,9 +247,9 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
     }
 
     return (
-        <Box className={clsx(styles.container, styles[`tableContainerRoot${rowsPerPage}`])}>
+        <Box className={styles.container}>
             <UGBAlert open={open} setOpen={setOpen} message={message} />
-            <div className={styles.blackStripe}></div>
+
             <TableContainer>
                 <Table size={'medium'}>
                     <EnhancedTableHead
@@ -240,7 +264,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                     />
                     <TableBody>
                         {stableSort(rows, getComparator(order, orderBy))
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                             .map((row, index) => {
                                 return (
                                     <TableRow key={`${row.startDate}-${row.endDate}-${index}`}>
@@ -255,10 +279,18 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                                                 const parsedDate = Date.parse(parseDate(date))
                                                 helperText = parsedDate <= today ? date.toDateString().slice(0, -4) : '';
                                             }
+
+                                            let cellStyle = '';
+                                            if (cellIndex === 0) {
+                                                cellStyle = 'borderedCellRight'
+                                            } else if (cellIndex === 8 || cellIndex === 9) {
+                                                cellStyle = 'borderedCellLeft'
+                                            }
                                             const CellRender = headCell.CellRender;
                                             return (
                                                 <TableCell
                                                     className={styles.textField}
+                                                    classes={{ root: styles[cellStyle] }}
                                                     key={`${row.startDate}-${row.endDate}-${headCell.id}-${index}-${cellIndex}`}
                                                     align="left"
                                                     data-toggle="tooltip"
@@ -284,7 +316,8 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                                                             :
                                                             row[headCell.id]
                                                     }
-                                                </TableCell>);
+                                                </TableCell>
+                                            );
                                         })}
                                     </TableRow>
                                 );
@@ -292,15 +325,22 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                     </TableBody>
                 </Table>
             </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-        </Box>
+            <div className={styles.greenStripe}></div>
+
+            <div className={styles.pagination}>
+                <ThemeProvider theme={theme}>
+                    <Pagination
+                        count={Math.ceil(rows.length / rowsPerPage)}
+                        page={page}
+                        shape="rounded"
+                        onChange={handleChangePage}
+                        showFirstButton={true}
+                        showLastButton={true}
+                        siblingCount={0}
+                        color="secondary"
+                    />
+                </ThemeProvider>
+            </div>
+        </Box >
     );
 }

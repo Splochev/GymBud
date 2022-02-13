@@ -2,15 +2,15 @@ import { makeStyles } from '@material-ui/core';
 
 export default makeStyles(() => ({
     textField: {
-        "& .MuiFormControl-root": {
-            width: '89px',
-        },
+        // "& .MuiFormControl-root": {
+        //     width: '90px',
+        // },
         "& .MuiFormLabel-root": {
             color: "#868686"
         },
-        "& .MuiInputBase-input": {
-            minWidth: '45px',
-        },
+        // "& .MuiInputBase-input": {
+        //     minWidth: '45px',
+        // },
         "& .MuiInput-underline": {
             '&::before': {
                 transition: 'none',
@@ -18,7 +18,7 @@ export default makeStyles(() => ({
             },
             '&::after': {
                 transition: 'none',
-                borderBottom: '1px solid #868686 !important'
+                borderBottom: '1px solid black !important'
             },
         },
     },
@@ -30,48 +30,41 @@ export default makeStyles(() => ({
             }
         }
     },
-    tableContainerRoot5: {
-        "& .MuiTableContainer-root": {
-            minHeight: '587px'
-        }
-    },
     container: {
-        width: '100%',
-        position: 'relative',
-        "& .MuiTableRow-root": {
-            "& .MuiTableCell-root": {
-                borderRight: '1px solid #E0E0E0'
-            },
-            "& .MuiTableCell-root:last-child": {
-                borderRight: 'none'
-            }
+        "& .MuiTableContainer-root": {
+            minHeight: '601px',
+            borderRadius: '5px 5px 0 0',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+            width: '1250px',
         },
         "& .MuiTableHead-root": {
-            background: '#343A40',
+            background: '#28A745',
             "& .MuiButtonBase-root": {
                 color: 'white'
             },
             "& .MuiSvgIcon-root": {
-                color: 'white !important'
+                color: 'white !important',
+                fontSize: '20px'
+            },
+            "& .MuiTableCell-root": {
+                borderBottom: '1px solid #343A40',
             }
         },
-        "& .MuiTablePagination-root": {
-            background: '#343A40',
-            '& .MuiTypography-root': {
-                color: 'white'
-            },
-            '& .MuiInputBase-root': {
-                color: 'white'
-            },
-            "& .MuiSvgIcon-root": {
-                color: 'white !important'
+        "& .MuiTableBody-root": {
+            "& .MuiTableRow-root": {
+                '&:nth-child(even)': {
+                    background: '#DFF2E3',
+                },
+                "& .MuiTableCell-root": {
+                    borderBottom: '1px solid #343A40',
+                    borderTop: '1px solid #343A40',
+                }
             }
-        },
-        marginBottom: 15
+        }
     },
-    blackStripe: {
-        backgroundColor: 'black',
-        paddingTop: '10px',
+    greenStripe: {
+        backgroundColor: '#28A745',
+        paddingTop: '3px',
         width: '100%'
     },
     datesContainer: {
@@ -89,16 +82,31 @@ export default makeStyles(() => ({
         flexDirection: 'column',
     },
     startDate: {
-        borderBottom:"1px solid #757575"
+        borderBottom: "1px solid #757575"
+    },
+    progressTrackerContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        padding: 10,
+        justifyContent: 'space-between',
+        gap: 20,
+        alignItems: 'center',
+        flexWrap: 'wrap'
+    },
+    leftSide: {
+        height: '100%',
+        background: 'green',
+        padding: 300
+    },
+    borderedCellRight: {
+        borderRight: '1px solid #343A40'
+    },
+    borderedCellLeft: {
+        borderLeft: '1px solid #343A40'
+    },
+    pagination: {
+        marginTop: 10,
+        display: 'flex',
+        justifyContent: 'center'
     }
-    // tableContainerRoot10: {
-    //     "& .MuiTableContainer-root": {
-    //         height: '850px'
-    //     }
-    // },
-    // tableContainerRoot15: {
-    //     "& .MuiTableContainer-root": {
-    //         height: '1150px'
-    //     }
-    // }
 }))

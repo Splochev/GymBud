@@ -86,7 +86,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
             fetchTableData();
             setRefreshTableData(false);
         }
-     }, [refreshTableData])
+    }, [refreshTableData])
 
     function fetchTableData() {
         const offsetDate = parseDate(selectedOffsetDate);
@@ -99,7 +99,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
         getData(process.env.REACT_APP_HOST + `/api/weight-tracker/get-weight-data?offsetDate=${offsetDate}&limitDate=${limitDate}`)
             .then(data => {
                 setRows(data.data);
-                setPage(Math.floor(data.data.length / 5))
+                setPage(Math.ceil(data.data.length / 5))
             }, error => {
                 setRows([]);
                 setPage(0)
@@ -119,28 +119,33 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
     }, [selectedOffsetDate])
 
     return (
-        <div>
-            <div className={styles.datesContainer}>
-                <UGBDatePicker
-                    selectedDate={selectedOffsetDate}
-                    setSelectedDate={setSelectedOffsetDate}
-                    maxDate={maxSelectedOffsetDate}
-                />
-                <UGBDatePicker
-                    selectedDate={selectedLimitDate}
-                    setSelectedDate={setSelectedLimitDate}
-                    minDate={minSelectedLimitDate}
-                    maxDate={new Date()}
+
+        <div className={styles.progressTrackerContainer}>
+            <div className={styles.leftSide}></div>
+            <div className={styles.rightSide}>
+                <div className={styles.datesContainer}>
+                    <UGBDatePicker
+                        selectedDate={selectedOffsetDate}
+                        setSelectedDate={setSelectedOffsetDate}
+                        maxDate={maxSelectedOffsetDate}
+                    />
+                    <UGBDatePicker
+                        selectedDate={selectedLimitDate}
+                        setSelectedDate={setSelectedLimitDate}
+                        minDate={minSelectedLimitDate}
+                        maxDate={new Date()}
+                    />
+                </div>
+                <DataTable
+                    rows={rows}
+                    headCells={headCells}
+                    page={page}
+                    setPage={setPage}
+                    setRows={setRows}
                 />
             </div>
-            <DataTable
-                rows={rows}
-                headCells={headCells}
-                page={page}
-                setPage={setPage}
-                setRows={setRows}
-            />
         </div>
+
     );
 }
 
