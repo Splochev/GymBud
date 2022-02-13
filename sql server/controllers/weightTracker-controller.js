@@ -78,7 +78,8 @@ module.exports = class WeightTrackerController {
             for (const weightEntry of weightData) {
                 mappedWeightData[new Date(weightEntry.date).getTime()] = { ...weightEntry };
             }
-            const weeksAmount = Math.ceil((Math.ceil((Math.abs(new Date(today) - new Date(weightData[0].date))) / (1000 * 60 * 60 * 24))) / 7);
+
+            const weeksAmount = Math.ceil(Object.keys(mappedWeightData).length / 7);
 
             for (let i = 0; i < weeksAmount; i++) {
                 responseWeightData.push({ startDate: parseDate(startDateOfWeek), endDate: parseDate(endDateOfWeek) });
