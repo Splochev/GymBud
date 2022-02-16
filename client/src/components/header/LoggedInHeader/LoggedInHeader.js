@@ -210,8 +210,7 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                                 href="#!"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    history.push('?tab=calorie-calculator')
-                                    // history.push({ search: "?tab=calorie-calculator", state: { fromPopup: true } });
+                                    history.push({ search: "?tab=calorie-calculator", state: { fromPopup: true } });
                                 }}
                             >
                                 Calorie Calculator
