@@ -158,7 +158,7 @@ function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
     );
 }
 
-export default function DataTable({ rows, headCells, page, setPage, setRows, selectedLimitDate}) {
+export default function DataTable({ rows, headCells, page, setPage, setRows, selectedLimitDate, changes, setChanges }) {
     const styles = useStyles();
     const [open, setOpen] = React.useState(false);
     const [order, setOrder] = React.useState('asc');
@@ -195,6 +195,10 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, sel
             calculateRowAvgWeight(rowData)
             calculateWeightChanges()
             setRows([...rows])
+
+            const date = new Date(rowData.startDate);
+            date.setDate(date.getDate() + cellIndex - 1)
+            setChanges(changes => (changes[parseDate(date)] = inputValue, { ...changes }))
             element.value = ''
         }
         setShrink(false)
@@ -230,6 +234,9 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, sel
     }
 
     const onClickIconButton = (index, headCell, rowData) => {
+        const date = new Date(rowData.startDate);
+        date.setDate(date.getDate() + headCell.id - 1)
+        setChanges(changes => (changes[parseDate(date)] = null, { ...changes }))
         const tempRows = [...rows];
         tempRows[rows.indexOf(rowData)][headCell.id] = null;
         calculateRowAvgWeight(tempRows[rows.indexOf(rowData)]);

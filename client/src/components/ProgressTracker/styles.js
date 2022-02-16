@@ -113,5 +113,13 @@ export default makeStyles(() => ({
                 width: '100% !important'
             }
         },
+    },
+    toolbar: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+        '& button': {
+            marginLeft: 10
+        }
     }
 }))

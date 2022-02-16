@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import DataTable from "./DataTable";
 import 'date-fns';
 import useStyles from './styles'
-import { getData } from '../utils/FetchUtils';
+import { getData, putData } from '../utils/FetchUtils';
 import { parseDate } from '../utils/utilFunc'
 import { UGBDatePicker } from '../Global/UGBDatePicker'
 import { UGBVerticalBarsChart } from '../Global/UGBCharts'
 import { Typography } from '@material-ui/core';
-
+import { useHistory } from 'react-router-dom';
 
 function getWeeksAmount(dt2, dt1) {
     var diff = (dt2 - dt1) / 1000;
@@ -17,6 +17,7 @@ function getWeeksAmount(dt2, dt1) {
 
 const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
     const styles = useStyles();
+    const history = useHistory();
     const [firstRenderDone, setFirstRenderDone] = useState(false);
     const [isFetched, setIsFetched] = useState(false);
     const [page, setPage] = useState(0);
@@ -32,6 +33,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
     const [chartLabels, setChartLabels] = useState([]);
     const [chartValues, setChartValues] = useState([]);
     const [lineChartValues, setLineChartValues] = useState([]);
+    const [changes, setChanges] = useState({});
     const [headCells] = useState([
         {
             id: 'dateRange',
@@ -230,6 +232,16 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
         setMinSelectedLimitDate(selectedOffsetDate);
     }, [selectedOffsetDate])
 
+    function saveChanges() {
+        putData(process.env.REACT_APP_HOST + `/api/weight-tracker/submit-weights`, changes)
+            .then(data => {
+                fetchTableData();
+                setChanges({});
+            }, error => {
+
+            })
+    }
+
     return (
         <div style={{ padding: 30 }}>
             <div className={styles.topSide}>
@@ -274,7 +286,29 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                     </div>
                 </div>
             </div>
-            <Typography variant='h6' component='div' style={{ marginTop: 15, marginBottom: 15, color: '#343A40' }} >Weight Entries: </Typography>
+            <div className={styles.toolbar}>
+                <Typography variant='h6' component='div' style={{ marginTop: 15, marginBottom: 15, color: '#343A40' }} >Weight Entries: </Typography>
+                <div>
+                    <button
+                        className='btn btn-success'
+                        data-toggle='tooltip'
+                        title='Submit your daily weight'
+                        onClick={() => {
+                            history.push({ search: "?tab=track-weight", state: { fromPopup: true } });
+                        }}
+                    >
+                        Track weight
+                    </button>
+                    <button
+                        className='btn btn-success'
+                        data-toggle='tooltip'
+                        title='Save changes from table'
+                        onClick={() => saveChanges()}
+                    >
+                        Save Changes
+                    </button>
+                </div>
+            </div>
             <DataTable
                 rows={rows}
                 headCells={headCells}
@@ -282,6 +316,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                 selectedLimitDate={selectedLimitDate}
                 setPage={setPage}
                 setRows={setRows}
+                setChanges={setChanges}
             />
         </div>
 

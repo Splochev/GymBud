@@ -16,6 +16,7 @@ module.exports = class WeightTrackerController {
     attachEndpoints() {
         this.router.get('/get-weight-data', AuthHelpers.loggedIn, (req, res) => this.getWeightData(req, res));
         this.router.post('/submit-weight', AuthHelpers.loggedIn, (req, res) => this.submitWeight(req, res));
+        this.router.put('/submit-weights', AuthHelpers.loggedIn, (req, res) => this.submitWeights(req, res));
     }
 
     async getWeightData(req, res) {
@@ -134,7 +135,6 @@ module.exports = class WeightTrackerController {
         }
     };
 
-
     async submitWeight(req, res) {
         try {
             const user = req.user;
@@ -143,7 +143,7 @@ module.exports = class WeightTrackerController {
 
             const weightData = await MysqlAdapter.query(`
                 INSERT INTO weight_tracker (user_id,weight,date)
-                    values (${escape(user.id)},${weight},${escape(date)})
+                    VALUES (${escape(user.id)},${weight},${escape(date)})
                 ON DUPLICATE KEY UPDATE
                     user_id = VALUES(user_id),
                     weight = VALUES(weight),
@@ -155,6 +155,55 @@ module.exports = class WeightTrackerController {
             console.log(error)
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
         }
+    };
+
+
+    async submitWeights(req, res) {
+        try {
+            const user = req.user;
+            const weightEntries = Object.entries(req.body);
+            const forDeletionEntries = [];
+            const forUpdateEntries = [];
+
+            for (const entry of weightEntries) {
+                if (entry[1] === null) {
+                    forDeletionEntries.push(escape(entry[0]));
+                } else {
+                    forUpdateEntries.push(entry);
+                }
+            }
+
+            let deletedWeightData = 0;
+            if (forDeletionEntries.length > 0) {
+                deletedWeightData = await MysqlAdapter.query(`
+                    DELETE FROM 
+                        weight_tracker
+                    WHERE
+                        user_id=${escape(user.id)} 
+                            AND
+                        date IN (${forDeletionEntries.join(',')})
+                `);
+            }
+
+            let weightData = 0;
+            if (forUpdateEntries.length > 0) {
+                weightData = await MysqlAdapter.query(`
+                    INSERT INTO weight_tracker (user_id,weight,date)
+                        VALUES ${forUpdateEntries.map(entry => `(${escape(user.id)},${escape(entry[1])},${escape(entry[0])})`)}
+                    ON DUPLICATE KEY UPDATE
+                        user_id = VALUES(user_id),
+                        weight = VALUES(weight),
+                        date = VALUES(date)
+                `);
+            }
+
+            res.json({ updatedData: weightData, deletedWeightData: deletedWeightData });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+
+
     };
 
 
