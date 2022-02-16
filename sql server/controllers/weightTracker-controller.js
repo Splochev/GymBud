@@ -78,8 +78,9 @@ module.exports = class WeightTrackerController {
             for (const weightEntry of weightData) {
                 mappedWeightData[new Date(weightEntry.date).getTime()] = { ...weightEntry };
             }
-
-            const weeksAmount = Math.ceil(Object.keys(mappedWeightData).length / 7);
+            const mappedWeightDataKeys = Object.keys(mappedWeightData);
+            const daysDifference = (new Date(today).getTime() - mappedWeightDataKeys[mappedWeightDataKeys.length - 1]) / (1000 * 3600 * 24);
+            const weeksAmount = Math.ceil((mappedWeightDataKeys.length + daysDifference) / 7);
 
             for (let i = 0; i < weeksAmount; i++) {
                 responseWeightData.push({ startDate: parseDate(startDateOfWeek), endDate: parseDate(endDateOfWeek) });
@@ -112,7 +113,21 @@ module.exports = class WeightTrackerController {
                 endDateOfWeek.setDate(endDateOfWeek.getDate() + 7);
             }
 
-            res.json({ data: responseWeightData });
+            if (req.query.getMinOffsetDate) {
+                const minOffsetDate = await MysqlAdapter.query(`
+                    SELECT date FROM 
+                        weight_tracker
+                    WHERE
+                        user_id = ${escape(user.id)}
+                    ORDER BY 
+                        date ASC
+                    limit 1; 
+                `);
+
+                res.json({ data: responseWeightData, minOffsetDate: minOffsetDate[0].date });
+            } else {
+                res.json({ data: responseWeightData });
+            }
         } catch (error) {
             console.log(error);
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
