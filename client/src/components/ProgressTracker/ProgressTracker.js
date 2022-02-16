@@ -27,6 +27,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
     const [minSelectedOffsetDate, setMinSelectedOffsetDate] = useState(selectedOffsetDate);
     const [maxSelectedOffsetDate, setMaxSelectedOffsetDate] = useState(selectedLimitDate);
     const [minSelectedOffsetDateIsSet, setMinSelectedOffsetDateIsSet] = useState(false);
+    const [fillTable, setFillTable] = useState(true);
     const [minSelectedLimitDate, setMinSelectedLimitDate] = useState(selectedOffsetDate);
     const [chartLabels, setChartLabels] = useState([]);
     const [chartValues, setChartValues] = useState([]);
@@ -137,6 +138,11 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
 
         getData(process.env.REACT_APP_HOST + `/api/weight-tracker/get-weight-data?offsetDate=${offsetDate}&limitDate=${limitDate}${!minSelectedOffsetDateIsSet ? `&getMinOffsetDate=${!minSelectedOffsetDateIsSet}` : ''}`)
             .then(data => {
+                if (!data.data.length) {
+                    setFillTable(false);
+                } else {
+                    setFillTable(true);
+                }
                 setRows(data.data);
                 setPage(Math.ceil(data.data.length / 5));
 
@@ -151,7 +157,8 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                 }
             }, error => {
                 setRows([]);
-                setPage(0)
+                setPage(0);
+                setFillTable(true);
             })
     }
 
@@ -163,6 +170,12 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
         if (rows.length > 0) {
             return;
         }
+
+        if (!fillTable) {
+            setFillTable(false);
+            return;
+        }
+
         const parsedSelectedOffsetDateToTime = selectedOffsetDate.getTime();
         const parsedSelectedLimitDateToTime = selectedLimitDate.getTime();
         if (parsedSelectedOffsetDateToTime < parsedSelectedLimitDateToTime) {
@@ -235,7 +248,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                     />
                 </div>
                 <div className={styles.charts}>
-                    <div style={{ width:'100%' }}>
+                    <div style={{ width: '100%' }}>
                         <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#343A40' }} >Average Weight Tracker:</Typography>
                         <UGBVerticalBarsChart
                             data={rows}
