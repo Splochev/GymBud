@@ -1,8 +1,5 @@
 import { makeStyles } from '@material-ui/core';
 import SpeedDialTooltipOpen from '../Global/SpeedDial';
-import AssignmentIcon from '@material-ui/icons/Assignment';
-import ClearIcon from '@material-ui/icons/Clear';
-import clsx from 'clsx';
 import { useState } from 'react';
 import { useStoreContext } from '../store/Store';
 
@@ -30,20 +27,15 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         alignItems: 'center'
     },
-    assignmentIcon: {
-        marginRight: '20px !important'
-    },
     fill: {
-        width: '50px',
-        height: '50px',
-        marginLeft: '20px !important'
+        marginLeft: '20px'
     }
 }));
 
 const Footer = () => {
     const styles = useStyles();
     const [open, setOpen] = useState(false);
-    const [store, setStore] = useStoreContext();
+    const [store] = useStoreContext();
 
     const handleOpen = () => {
         setOpen(true);
@@ -56,7 +48,7 @@ const Footer = () => {
 
     return (
         <div className={styles.footer}>
-            <div className={styles.fill}/>
+            <div className={styles.fill} />
             <div className={styles.copyrightNav}>
                 <div >
                     <a className="btn btn-outline-light btn-floating m-1" href="https://www.linkedin.com/in/stanislav-p-14023a155" rel="noreferrer" target="_blank" role="button">
@@ -70,28 +62,8 @@ const Footer = () => {
                     &copy; 2021 Stanislav Plochev
                 </a>
             </div>
-
             {store.user ?
-                <>
-                    <a
-                        className={clsx("btn btn-outline-light btn-floating m-1", styles.assignmentIcon)}
-                        href="#!"
-                        rel="noreferrer"
-                        role="button"
-                        onClick={(e) => {
-                            e.preventDefault()
-                            setOpen(!open)
-                        }}
-                        onMouseEnter={handleOpen}
-                    >
-                        {open ?
-                            <i className={styles.icon} ><ClearIcon /></i>
-                            :
-                            <i className={clsx(styles.icon, "fa-solid fa-screwdriver-wrench")} />
-                        }
-                    </a>
-                    <SpeedDialTooltipOpen open={open} handleOpen={handleOpen} handleClose={handleClose} />
-                </>
+                <SpeedDialTooltipOpen open={open} handleOpen={handleOpen} handleClose={handleClose} />
                 :
                 <div />
             }

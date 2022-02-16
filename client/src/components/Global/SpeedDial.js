@@ -2,40 +2,66 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
-import FileCopyIcon from '@material-ui/icons/FileCopyOutlined';
-import SaveIcon from '@material-ui/icons/Save';
-import PrintIcon from '@material-ui/icons/Print';
-import ShareIcon from '@material-ui/icons/Share';
-import FavoriteIcon from '@material-ui/icons/Favorite';
 import { useHistory } from 'react-router-dom';
 import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
+import Backdrop from '@material-ui/core/Backdrop';
+import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
+import { createTheme } from "@material-ui/core";
+import { ThemeProvider } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStylesTest = makeStyles((theme) => ({
     root: {
-        height: 380,
         transform: 'translateZ(0px)',
-        flexGrow: 1,
+        '& .MuiSpeedDialAction-staticTooltipLabel': {
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '187px',
+            height: '30px',
+            color: 'black'
+        },
+        '& .MuiButtonBase-root:first-child': {
+            width: '47px',
+            height: '47px',
+            background: '#343A40',
+            color: 'white',
+            border: '1px solid white',
+            borderRadius: '0.25rem',
+            '&:focus': {
+                outline: 'none',
+                boxShadow: '#969A9D 0px 0px 0px 3px',
+            },
+            '&:hover': {
+                background: 'white',
+                color: '#343A40',
+            },
+        }
     },
     speedDial: {
         position: 'absolute',
-        bottom: theme.spacing(7.5),
-        right: theme.spacing(2.5),
-        overflow: 'hidden'
+        bottom: theme.spacing(-1.3),
+        right: theme.spacing(2),
     },
-    toolTip: {
-        color: 'red !important'
-    },
-
 }));
 
+const theme = createTheme({
+    props: {
+        MuiButtonBase: {
+            disableRipple: true
+        }
+    }
+});
+
 const actions = [
-    { icon: <i class="fa-solid fa-weight-scale" style={{ fontSize: 20 }} />, name: 'Track Weight' },
-    { icon: <i class="fas fa-calculator" style={{ fontSize: 20, }} />, name: 'Calorie Calculator' },
-    { icon: <FitnessCenterIcon style={{ fontSize: 20, }} />, name: '1 Rep Max Calculator' },
+    { icon: <i className="fa-solid fa-weight-scale" style={{ fontSize: 20, color: 'black' }} />, name: 'Track Weight' },
+    { icon: <i className="fas fa-calculator" style={{ fontSize: 20, color: 'black' }} />, name: 'Calorie Calculator' },
+    { icon: <FitnessCenterIcon style={{ fontSize: 20, color: 'black' }} />, name: '1 Rep Max Calculator' },
 ];
 
-export default function SpeedDialTooltipOpen({ open, handleOpen, handleClose }) {
-    const styles = useStyles();
+export default function SpeedDialTooltipOpen() {
+    const classes = useStylesTest();
+    const [open, setOpen] = React.useState(false);
     const history = useHistory();
 
     function onClickIcon(name) {
@@ -55,25 +81,37 @@ export default function SpeedDialTooltipOpen({ open, handleOpen, handleClose }) 
         handleClose()
     }
 
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
-        <>
-            <SpeedDial
-                ariaLabel="SpeedDial tooltip example"
-                className={styles.speedDial}
-                hidden={true}
-                open={open}
-            >
-                {actions.map((action) => (
-                    <SpeedDialAction
-                        onMouseEnter={handleOpen}
-                        onMouseLeave={handleClose}
-                        key={action.name}
-                        icon={action.icon}
-                        tooltipTitle={action.name}
-                        onClick={() => onClickIcon(action.name)}
-                    />
-                ))}
-            </SpeedDial>
-        </>
+        <div className={classes.root}>
+            <ThemeProvider theme={theme}>
+                <Backdrop open={open} />
+                <SpeedDial
+                    ariaLabel="SpeedDial-tooltip"
+                    className={classes.speedDial}
+                    icon={<SpeedDialIcon />}
+                    onClose={handleClose}
+                    onOpen={handleOpen}
+                    open={open}
+                >
+                    {actions.map((action) => (
+                        <SpeedDialAction
+                            key={action.name}
+                            icon={action.icon}
+                            tooltipTitle={action.name}
+                            tooltipOpen
+                            onClick={() => onClickIcon(action.name)}
+                        />
+                    ))}
+                </SpeedDial>
+            </ThemeProvider >
+        </div>
     );
 }
