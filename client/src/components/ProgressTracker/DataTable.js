@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Box } from '@material-ui/core';
 import { Table } from '@material-ui/core';
 import { TableBody } from '@material-ui/core';
 import { TableCell } from '@material-ui/core';
@@ -159,14 +158,12 @@ function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
     );
 }
 
-export default function DataTable({ rows, headCells, page, setPage, setRows, }) {
+export default function DataTable({ rows, headCells, page, setPage, setRows, selectedLimitDate}) {
     const styles = useStyles();
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [open, setOpen] = React.useState(false);
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('');
     const [message, setMessage] = React.useState('');
-    const [today] = React.useState(Date.parse((new Date()).toISOString().split("T")[0]));
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -176,12 +173,6 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        const rpp = parseInt(event.target.value, 10)
-        setRowsPerPage(rpp);
-        setPage(Math.floor(rows.length / rpp));
     };
 
     const handleOnBlur = (event, rowData, cellIndex, setShrink) => {
@@ -247,7 +238,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
     }
 
     return (
-        <Box className={styles.container}>
+        <div className={styles.container}>
             <UGBAlert open={open} setOpen={setOpen} message={message} />
 
             <TableContainer>
@@ -264,7 +255,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                     />
                     <TableBody>
                         {stableSort(rows, getComparator(order, orderBy))
-                            .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
+                            .slice((page - 1) * 5, (page - 1) * 5 + 5)
                             .map((row, index) => {
                                 return (
                                     <TableRow key={`${row.startDate}-${row.endDate}-${index}`}>
@@ -277,7 +268,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                                                 const date = new Date(row.startDate);
                                                 date.setDate(date.getDate() + headCell.id - 1)
                                                 const parsedDate = Date.parse(parseDate(date))
-                                                helperText = parsedDate <= today ? date.toDateString().slice(0, -4) : '';
+                                                helperText = parsedDate <= selectedLimitDate ? date.toDateString().slice(0, -4) : '';
                                             }
 
                                             let cellStyle = '';
@@ -330,7 +321,7 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
             <div className={styles.pagination}>
                 <ThemeProvider theme={theme}>
                     <Pagination
-                        count={Math.ceil(rows.length / rowsPerPage)}
+                        count={Math.ceil(rows.length / 5)}
                         page={page}
                         shape="rounded"
                         onChange={handleChangePage}
@@ -341,6 +332,6 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, }) 
                     />
                 </ThemeProvider>
             </div>
-        </Box >
+        </div >
     );
 }

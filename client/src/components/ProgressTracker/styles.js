@@ -2,9 +2,9 @@ import { makeStyles } from '@material-ui/core';
 
 export default makeStyles(() => ({
     textField: {
-        // "& .MuiFormControl-root": {
-        //     width: '90px',
-        // },
+        "& .MuiFormControl-root": {
+            width: '92px',
+        },
         "& .MuiFormLabel-root": {
             color: "#868686"
         },
@@ -32,10 +32,9 @@ export default makeStyles(() => ({
     },
     container: {
         "& .MuiTableContainer-root": {
-            minHeight: '601px',
+            minHeight: '577px',
             borderRadius: '5px 5px 0 0',
             boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-            width: '1250px',
         },
         "& .MuiTableHead-root": {
             background: '#28A745',
@@ -69,8 +68,12 @@ export default makeStyles(() => ({
     },
     datesContainer: {
         display: 'flex',
+        alignItems: 'center',
         justifyContent: 'center',
-        gap: 10,
+        gap: 5
+    },
+    dateLabel: {
+        marginTop: '25px'
     },
     unsortableHead: {
         color: 'white'
@@ -80,23 +83,10 @@ export default makeStyles(() => ({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
+        width: '73px'
     },
     startDate: {
         borderBottom: "1px solid #757575"
-    },
-    progressTrackerContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        padding: 10,
-        justifyContent: 'space-between',
-        gap: 20,
-        alignItems: 'center',
-        flexWrap: 'wrap'
-    },
-    leftSide: {
-        height: '100%',
-        background: 'green',
-        padding: 300
     },
     borderedCellRight: {
         borderRight: '1px solid #343A40'
@@ -108,5 +98,20 @@ export default makeStyles(() => ({
         marginTop: 10,
         display: 'flex',
         justifyContent: 'center'
+    },
+    charts: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        gap: 30,
+        "& canvas": {
+            width: '100% !important'
+        },
+        '@media (max-width: 1000px)': {
+            flexDirection: 'column',
+            "& canvas": {
+                width: '100% !important'
+            }
+        },
     }
 }))
