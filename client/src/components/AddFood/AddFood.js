@@ -93,7 +93,7 @@ const AddFood = () => {
 
     return (
         <div>
-            <h4 className='form-group d-flex justify-content-center row' >One Rep Max Calculator</h4>
+            <h4 className='form-group d-flex justify-content-center row' >Add Food</h4>
             <hr />
             {alert}
             <form className='container mt-3' onSubmit={addFood}>
