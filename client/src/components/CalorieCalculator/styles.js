@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core';
 export default makeStyles(() => ({
     activityIndexDropownButton: {
         backgroundColor: '#343a40',
+        width:'230px'
     },
     icon: {
         fontSize: '20px'
