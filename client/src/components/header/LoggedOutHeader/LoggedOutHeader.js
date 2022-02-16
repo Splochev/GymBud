@@ -62,26 +62,29 @@ const LoggedOutHeader = () => {
     const { tab } = useQuery();
 
     useEffect(() => {
-        if (tab) {
-            switch (tab) {
-                case 'calorie-calculator':
-                    setShowCalorieCalculator(true);
-                    break;
-                case 'one-rep-max-calculator':
-                    setShowOneRMCalculator(true);
-                    break;
-                case 'sign-in':
-                    setShowLogin(true);
-                    break;
-                case 'sign-up':
-                    setShowRegister(true);
-                    break;
-                case 'forgotten-password':
-                    setShowForgotPassword(true);
-                    break;
-                default:
-                    break;
-            }
+        switch (tab) {
+            case 'calorie-calculator':
+                setShowCalorieCalculator(true);
+                break;
+            case 'one-rep-max-calculator':
+                setShowOneRMCalculator(true);
+                break;
+            case 'sign-in':
+                setShowLogin(true);
+                break;
+            case 'sign-up':
+                setShowRegister(true);
+                break;
+            case 'forgotten-password':
+                setShowForgotPassword(true);
+                break;
+            default:
+                setShowCalorieCalculator(false);
+                setShowOneRMCalculator(false);
+                setShowLogin(false);
+                setShowRegister(false);
+                setShowForgotPassword(false);
+                break;
         }
     }, [tab])
 

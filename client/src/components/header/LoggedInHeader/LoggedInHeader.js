@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 
 const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
     const styles = useStyles();
-    const [store, setStore] = useStoreContext();
+    const store = useStoreContext();
     const history = useHistory();
     const [showOneRMCalculator, setShowOneRMCalculator] = useState(false);
     const [showAddFood, setShowAddFood] = useState(false);
@@ -75,23 +75,25 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
     const { tab } = useQuery()
 
     useEffect(() => {
-        if (tab) {
-            switch (tab) {
-                case 'calorie-calculator':
-                    setShowCalorieCalculator(true);
-                    break;
-                case 'one-rep-max-calculator':
-                    setShowOneRMCalculator(true);
-                    break;
-                case 'add-food':
-                    setShowAddFood(true);
-                    break;
-                case 'track-weight':
-                    setShowTrackWeight(true);
-                    break;
-                default:
-                    break;
-            }
+        switch (tab) {
+            case 'calorie-calculator':
+                setShowCalorieCalculator(true);
+                break;
+            case 'one-rep-max-calculator':
+                setShowOneRMCalculator(true);
+                break;
+            case 'add-food':
+                setShowAddFood(true);
+                break;
+            case 'track-weight':
+                setShowTrackWeight(true);
+                break;
+            default:
+                setShowCalorieCalculator(false);
+                setShowOneRMCalculator(false);
+                setShowAddFood(false);
+                setShowTrackWeight(false);
+                break;
         }
     }, [tab])
 
@@ -99,7 +101,7 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
         e.preventDefault()
         postData(process.env.REACT_APP_HOST + '/api/user/logout')
             .then(data => {
-                setStore(state => (state.user = undefined, { ...state }));
+                store[1](state => (state.user = undefined, { ...state }));
             }, error => {
                 console.log('LOGOUT ERROR--->', error)
             })
@@ -208,7 +210,8 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                                 href="#!"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    history.push({ search: "?tab=calorie-calculator", state: { fromPopup: true } });
+                                    history.push('?tab=calorie-calculator')
+                                    // history.push({ search: "?tab=calorie-calculator", state: { fromPopup: true } });
                                 }}
                             >
                                 Calorie Calculator
