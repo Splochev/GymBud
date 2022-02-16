@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Login = ({ setShowLogin }) => {
     const styles = useStyles()
-    const [store, setStore] = useStoreContext();
+    const store = useStoreContext();
     const history = useHistory();
     const email = useState('')
     const password = useState('')
@@ -31,7 +31,7 @@ const Login = ({ setShowLogin }) => {
             if (!data) {
                 throw Error('Incorrect email or password!')
             }
-            setStore(state => (state.user = data, { ...state }))
+            store[1](state => (state.user = data, { ...state }))
             history.push('/');
         } catch (err) {
             console.log(err.message);
