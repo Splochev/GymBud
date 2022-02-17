@@ -80,6 +80,12 @@ const useStyles = makeStyles((theme) => ({
                 background: 'white'
             },
         }
+    },
+    avatarFocused: {
+        '& .MuiAvatar-root': {
+            color: '#343A40',
+            background: 'white'
+        },
     }
 }));
 
@@ -490,7 +496,7 @@ const UserAndMore = () => {
     return (
         <ul className={clsx("nav justify-content-end", styles.usersAndMore)}>
             <Button
-                className={styles.avatarRoot}
+                className={clsx(styles.avatarRoot, anchorUser ? styles.avatarFocused : null)}
                 onClick={(e) => setAnchorUser(e.currentTarget)}
                 component="span" disableTouchRipple
             >
