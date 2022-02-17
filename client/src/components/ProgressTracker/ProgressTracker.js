@@ -233,7 +233,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
     }, [selectedOffsetDate])
 
     function saveChanges() {
-        putData(process.env.REACT_APP_HOST + `/api/weight-tracker/submit-weights`, changes)
+        putData(process.env.REACT_APP_HOST + `/api/weight-tracker/edit-weights`, changes)
             .then(data => {
                 fetchTableData();
                 setChanges({});

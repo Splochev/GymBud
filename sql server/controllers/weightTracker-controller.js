@@ -16,7 +16,7 @@ module.exports = class WeightTrackerController {
     attachEndpoints() {
         this.router.get('/get-weight-data', AuthHelpers.loggedIn, (req, res) => this.getWeightData(req, res));
         this.router.post('/submit-weight', AuthHelpers.loggedIn, (req, res) => this.submitWeight(req, res));
-        this.router.put('/submit-weights', AuthHelpers.loggedIn, (req, res) => this.submitWeights(req, res));
+        this.router.put('/edit-weights', AuthHelpers.loggedIn, (req, res) => this.submitWeights(req, res));
     }
 
     async getWeightData(req, res) {
