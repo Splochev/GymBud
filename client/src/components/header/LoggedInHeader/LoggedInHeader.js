@@ -67,6 +67,19 @@ const useStyles = makeStyles((theme) => ({
         '& .MuiButtonBase-root': {
             padding: 0
         }
+    },
+    avatarRoot: {
+        '& .MuiAvatar-root': {
+            color: 'white',
+            border: '1px solid white',
+            background: '#343A40',
+        },
+        '&:hover': {
+            '& .MuiAvatar-root': {
+                color: '#343A40',
+                background: 'white'
+            },
+        }
     }
 }));
 
@@ -477,6 +490,7 @@ const UserAndMore = () => {
     return (
         <ul className={clsx("nav justify-content-end", styles.usersAndMore)}>
             <Button
+                className={styles.avatarRoot}
                 onClick={(e) => setAnchorUser(e.currentTarget)}
                 component="span" disableTouchRipple
             >
