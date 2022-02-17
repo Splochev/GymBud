@@ -40,7 +40,7 @@ const useStylesTest = makeStyles((theme) => ({
     },
     speedDial: {
         position: 'absolute',
-        bottom: theme.spacing(-1.3),
+        bottom: theme.spacing(-2.1),
         right: theme.spacing(2),
     },
 }));

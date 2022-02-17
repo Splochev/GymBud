@@ -12,20 +12,20 @@ const useStyles = makeStyles((theme) => ({
     },
     copyrightUrl: {
         color: 'white',
-        fontSize: '20px',
+        fontSize: '15px',
         '&:hover': {
             color: 'white'
         }
     },
     icon: {
-        fontSize: '24px'
+        fontSize: '20px'
     },
     footer: {
-        padding: 5,
         backgroundColor: '#343a40',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        borderTop:'1px solid black'
     },
     fill: {
         marginLeft: '20px'
