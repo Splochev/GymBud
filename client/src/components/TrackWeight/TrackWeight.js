@@ -55,7 +55,7 @@ const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
             weight: Number(weight[0])
         }).then(data => {
             weight[1]('')
-            if (window.location.pathname === '/progress-tracker') {
+            if (window.location.pathname === '/progress') {
                 setRefreshTableData(true);
             }
         }, error => {

@@ -117,7 +117,7 @@ const App = () => {
                                 <div className={styles.contentContainer}>
                                     <Switch>
                                         <Route
-                                            exact path='/progress-tracker'
+                                            exact path='/progress'
                                             render={props => <ProgressTracker refreshTableData={refreshTableData} setRefreshTableData={setRefreshTableData} />}
                                         />
                                         <Route exact path="/home" component={HomePageArticles} />
