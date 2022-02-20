@@ -1,32 +1,13 @@
 import { makeStyles } from '@material-ui/core';
 
 export default makeStyles((theme) => ({
-    activityIndexDropownButton: {
-        backgroundColor: '#343a40',
-        width: '230px'
-    },
     icon: {
         fontSize: '20px'
     },
-    activityIndexDropownWrap: {
-        paddingBottom: '16px'
-    },
-    dropdownItem: {
-        color: '#343a40',
-        '&:hover': {
-            color: '#343a40',
-            textDecoration: 'underline',
-            backgroundColor: 'white'
-        }
-    },
     calorieCalculatorContainer: {
-        
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
-    },
-    radioGroup: {
-        display: 'flex'
     },
     tdeeResult: {
         marginBottom: 10,

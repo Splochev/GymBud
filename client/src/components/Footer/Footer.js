@@ -11,9 +11,6 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    icon: {
-        fontSize: '20px'
-    },
     footer: {
         backgroundColor: '#343a40',
         display: 'flex',

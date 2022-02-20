@@ -72,9 +72,6 @@ export default makeStyles(() => ({
         justifyContent: 'center',
         gap: 5
     },
-    dateLabel: {
-        marginTop: '25px'
-    },
     unsortableHead: {
         color: 'white'
     },
@@ -87,12 +84,6 @@ export default makeStyles(() => ({
     },
     startDate: {
         borderBottom: "1px solid #757575"
-    },
-    borderedCellRight: {
-        borderRight: '1px solid #343A40'
-    },
-    borderedCellLeft: {
-        borderLeft: '1px solid #343A40'
     },
     pagination: {
         marginTop: 10,

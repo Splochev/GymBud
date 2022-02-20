@@ -31,25 +31,6 @@ const useStyles = makeStyles((theme) => ({
         },
         alignItems: 'center'
     },
-    avatarRoot: {
-        '& .MuiAvatar-root': {
-            color: 'white',
-            border: '1px solid white',
-            background: '#343A40',
-        },
-        '&:hover': {
-            '& .MuiAvatar-root': {
-                color: '#343A40',
-                background: 'white'
-            },
-        }
-    },
-    avatarFocused: {
-        '& .MuiAvatar-root': {
-            color: '#343A40',
-            background: 'white'
-        },
-    },
     logoContainer: {
         display: 'flex',
         gap: 10,

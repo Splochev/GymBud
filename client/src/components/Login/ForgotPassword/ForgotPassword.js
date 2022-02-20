@@ -15,12 +15,6 @@ const useStyles = makeStyles((theme) => ({
     hr: {
         width: '100%',
     },
-    forgotPass: {
-        width: '100%',
-        display: 'flex',
-        gap: 5,
-        justifyContent: 'start'
-    },
     actions: {
         width: '100%',
         display: 'flex',
