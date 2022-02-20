@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import { IconButton, makeStyles } from '@material-ui/core';
 import OneRepMaxCalculator from '../../OneRepMaxCalculator/OneRepMaxCalculator.js';
 import Login from '../../Login/Login.js';
 import ForgotPassword from '../../Login/ForgotPassword/ForgotPassword.js';
@@ -10,43 +10,50 @@ import clsx from 'clsx'
 import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useQuery } from '../../utils/RouteUtils.js';
+import useWindowSize from '../../utils/useWindowSize.js';
+import UGBLogo from '../../Global/UGBLogo.js';
+import UGBButton from '../../Global/UGBButton.js';
+import LiItem from '../../Global/UGBLiItem.js';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 const useStyles = makeStyles((theme) => ({
-    questionIcon: {
-        textDecoration: 'none',
-        '&:hover': {
-            textDecoration: 'none'
-        }
-    },
-    questionIconDropDown: {
-        color: '#343a40',
-        fontSize: '20px',
-        '&:hover': {
-            color: '#343a40',
-            textDecoration: 'underline',
-            backgroundColor: 'white'
-        }
-    },
     nav: {
-        backgroundColor: "#343a40"
+        backgroundColor: "#343a40",
+        padding: 0,
+        paddingLeft: '10px',
     },
-    logo: {
-        width: '50px'
+    shrinkNav: {
+        paddingBottom: '10px'
     },
-    navUrls: {
-        fontSize: '20px',
-        color: 'white',
-        '&:hover': {
+    auth: {
+        '& .MuiButtonBase-root': {
+            padding: 0
+        },
+        alignItems: 'center'
+    },
+    avatarRoot: {
+        '& .MuiAvatar-root': {
             color: 'white',
-            textDecoration: 'underline'
+            border: '1px solid white',
+            background: '#343A40',
+        },
+        '&:hover': {
+            '& .MuiAvatar-root': {
+                color: '#343A40',
+                background: 'white'
+            },
         }
     },
-    navToggler: {
-        color: 'white'
+    avatarFocused: {
+        '& .MuiAvatar-root': {
+            color: '#343A40',
+            background: 'white'
+        },
     },
-    blackStripe: {
-        backgroundColor: 'black',
-        paddingTop: '10px'
+    logoContainer: {
+        display: 'flex',
+        gap: 10,
+        alignItems: 'center'
     }
 }));
 
@@ -60,6 +67,7 @@ const LoggedOutHeader = () => {
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
     const { tab } = useQuery();
+    const size = useWindowSize();
 
     useEffect(() => {
         switch (tab) {
@@ -89,153 +97,140 @@ const LoggedOutHeader = () => {
     }, [tab])
 
     return (
-        <div className={styles.blackStripe}>
-            <UGBModal
-                open={showOneRMCalculator}
-                onClose={() => {
-                    history.push(window.location.pathname);
-                    setShowOneRMCalculator(false)
-                }}
-                maxWidth='sm'
-            >
-                <OneRepMaxCalculator />
-            </UGBModal>
-            <UGBModal
-                open={showCalorieCalculator}
-                onClose={() => {
-                    history.push(window.location.pathname);
-                    setShowCalorieCalculator(false)
-                }}
-                maxWidth='sm'
-            >
-                <CalorieCalculator />
-            </UGBModal>
-            <UGBModal
-                open={showRegister}
-                onClose={() => {
-                    history.push(window.location.pathname);
-                    setShowRegister(false)
-                }}
-                maxWidth='sm'
-            >
-                <Register onClose={() => setShowRegister(false)} />
-            </UGBModal>
-            <UGBModal
-                open={showLogin}
-                onClose={() => {
-                    history.push(window.location.pathname);
-                    setShowLogin(false)
-                }}
-                maxWidth='sm'
-            >
-                <Login
-                    setShowForgotPassword={setShowForgotPassword}
-                    setShowLogin={setShowLogin}
-                />
-            </UGBModal>
-            <UGBModal
-                open={showForgotPassword}
-                onClose={() => {
-                    history.push(window.location.pathname);
-                    setShowForgotPassword(false)
-                }}
-                maxWidth='sm'
-            >
-                <ForgotPassword />
-            </UGBModal>
-            <nav className={clsx("navbar navbar-expand-lg", styles.nav)}>
-                <a
-                    className="navbar-brand"
-                    href="#!"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        history.push('/home');
-                    }}>
-                    <img src="/UrGymBudLogoLight.png" alt="Logo" className={styles.logo}></img>
-                </a>
-                <button
-                    className={clsx("navbar-toggler", styles.navToggler)}
-                    type="button"
-                    data-toggle="collapse"
-                    data-target="#navbarSupportedContent"
+        <>
+            <>
+                <UGBModal
+                    open={showOneRMCalculator}
+                    onClose={() => {
+                        history.push(window.location.pathname);
+                        setShowOneRMCalculator(false)
+                    }}
+                    maxWidth='sm'
                 >
-                    <i className="fas fa-bars" />
-                </button>
+                    <OneRepMaxCalculator />
+                </UGBModal>
+                <UGBModal
+                    open={showCalorieCalculator}
+                    onClose={() => {
+                        history.push(window.location.pathname);
+                        setShowCalorieCalculator(false)
+                    }}
+                    maxWidth='sm'
+                >
+                    <CalorieCalculator />
+                </UGBModal>
+                <UGBModal
+                    open={showRegister}
+                    onClose={() => {
+                        history.push(window.location.pathname);
+                        setShowRegister(false)
+                    }}
+                    maxWidth='sm'
+                >
+                    <Register onClose={() => setShowRegister(false)} />
+                </UGBModal>
+                <UGBModal
+                    open={showLogin}
+                    onClose={() => {
+                        history.push(window.location.pathname);
+                        setShowLogin(false)
+                    }}
+                    maxWidth='sm'
+                >
+                    <Login
+                        setShowForgotPassword={setShowForgotPassword}
+                        setShowLogin={setShowLogin}
+                    />
+                </UGBModal>
+                <UGBModal
+                    open={showForgotPassword}
+                    onClose={() => {
+                        history.push(window.location.pathname);
+                        setShowForgotPassword(false)
+                    }}
+                    maxWidth='sm'
+                >
+                    <ForgotPassword />
+                </UGBModal>
+            </>
+            <nav className={clsx("navbar navbar-expand-custom", styles.nav)}>
+                <div className={size.width < 970 ? styles.logoContainer : null}>
+                    <UGBLogo />
+                    {size.width < 970 ?
+                        < Auth />
+                        :
+                        null
+                    }
+                </div>
+                <UGBButton
+                    btnType='toggler'
+                    icon='fas fa-bars'
+                    dataTarget='#navbarSupportedContent'
+                />
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav mr-auto">
-                        <li className="nav-item">
-                            <a className="btn btn-outline-light btn-floating m-1" href="#!" role="button">
-                                <i className="fas fa-hamburger" /> <i className="fas fa-search" />
-                            </a>
-                        </li>
-                        <li className="nav-item">
-                            <a
-                                className={clsx("nav-link", styles.navUrls)}
-                                href="#!"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    history.push({ search: "?tab=calorie-calculator", state: { fromPopup: true } });
-                                }}
-                            >
-                                Calorie Calculator
-                            </a>
-                        </li>
-                        <li className="nav-item">
-                            <a
-                                className={clsx("nav-link", styles.navUrls)}
-                                href="#!"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    history.push({ search: "?tab=one-rep-max-calculator", state: { fromPopup: true } });
-                                }}
-                            >
-                                1 Rep Max Calculator
-                            </a>
-                        </li>
+                    <ul className={clsx("navbar-nav mr-auto", size.width < 970 ? styles.shrinkNav : null)}>
+                        <LiItem >Find Food</LiItem>
+                        <LiItem
+                            path='?tab=calorie-calculator'
+                            active={tab === 'calorie-calculator'}
+                        >
+                            Calorie Calculator
+                        </LiItem>
+                        <LiItem
+                            path='?tab=one-rep-max-calculator'
+                            active={tab === 'one-rep-max-calculator'}
+                        >
+                            1 Rep Max Calculator
+                        </LiItem>
                     </ul>
-                    <ul className="nav justify-content-end">
-                        <li className="nav-item">
-                            <a
-                                className={clsx("nav-link", styles.navUrls)}
-                                href="#!"
-                                data-toggle="modal"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    history.push({ search: "?tab=sign-in", state: { fromPopup: true } });
-                                }}
-                            >
-                                Sign In
-                            </a>
-                        </li>
-                        <li className="nav-item">
-                            <a
-                                className={clsx("nav-link", styles.navUrls)}
-                                href="#!"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    history.push({ search: "?tab=sign-up", state: { fromPopup: true } });
-                                }}
-                            >
-                                Sign Up
-                            </a>
-                        </li>
-                        <li className="nav-item dropdown dropleft">
-                            <a
-                                className={clsx('nav-link dropdown-toggle', styles.questionIcon, styles.navUrls)}
-                                href="#!"
-                                role="button"
-                                data-toggle="dropdown"
-                            >
-                                <i className="far fa-question-circle" />
-                            </a>
-                            <div className="dropdown-menu">
-                                <a className={clsx("dropdown-item", styles.questionIconDropDown)} href="#!">Opt1</a>
-                                <a className={clsx("dropdown-item", styles.questionIconDropDown)} href="#!">Opt2</a>
-                            </div>
-                        </li>
-                    </ul>
+                    {size.width >= 970 ?
+                        < Auth />
+                        :
+                        null
+                    }
                 </div>
             </nav>
+        </>
+    );
+}
+
+const Auth = () => {
+    const styles = useStyles();
+    const { tab } = useQuery();
+    const [anchorMore, setAnchorMore] = useState(null);
+    const [moreSelectItems] = useState([{ label: 'Opt1', path: '/home' }, { label: 'Opt2', path: '/home' }])
+
+    return (
+        <div className={clsx("nav justify-content-end", styles.auth)}>
+            <LiItem
+                path='?tab=sign-in'
+                active={tab === 'sign-in' || tab === 'forgotten-password'}
+                shrinkUrl={false}
+            >
+                Sign In
+            </LiItem>
+            <LiItem
+                path='?tab=sign-up'
+                active={tab === 'sign-up'}
+                shrinkUrl={false}
+            >
+                Sign Up
+            </LiItem>
+            <LiItem
+                type='select'
+                anchor={anchorMore}
+                setAnchor={setAnchorMore}
+                menuItems={moreSelectItems}
+                customLabel={true}
+                shrinkUrl={false}
+            >
+                <IconButton
+                    onClick={(e) => setAnchorMore(e.currentTarget)}
+                    component="span" disableTouchRipple
+                >
+                    <MoreVertIcon fontSize='large' style={{ color: 'white' }} />
+                </IconButton>
+            </LiItem>
         </div>
     );
 }

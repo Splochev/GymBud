@@ -12,13 +12,13 @@ import { useEffect } from 'react';
 import { IconButton, makeStyles } from '@material-ui/core';
 import TrackWeight from '../../TrackWeight/TrackWeight.js';
 import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
-import { NavLink } from 'react-router-dom';
-import Link from '@material-ui/core/Link';
-import { Avatar, MenuList, Popover } from '@material-ui/core';
+import { Avatar } from '@material-ui/core';
 import { ArrowDropDown } from '@material-ui/icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import useWindowSize from '../../utils/useWindowSize.js';
+import UGBLogo from '../../Global/UGBLogo.js';
+import UGBButton from '../../Global/UGBButton.js';
+import LiItem from '../../Global/UGBLiItem.js';
 
 const useStyles = makeStyles((theme) => ({
     nav: {
@@ -26,42 +26,8 @@ const useStyles = makeStyles((theme) => ({
         padding: 0,
         paddingLeft: '10px',
     },
-    logo: {
-        height: '42px',
-    },
-    active: {
-        color: '#28A745 !important',
-        borderBottom: '2px solid #28A745 !important',
-        '& .MuiSvgIcon-root': {
-            color: '#28A745 !important',
-        },
-    },
-    shrinkUrl: {
-        width: '143px'
-    },
     shrinkNav: {
         paddingBottom: '10px'
-    },
-    navUrls: {
-        fontSize: '20px',
-        color: 'white',
-        height: '100%',
-        borderBottom: '2px solid #343A40',
-        '&:hover': {
-            color: '#1E7E34 !important',
-            borderBottom: '2px solid #1E7E34 !important',
-            '& .MuiSvgIcon-root': {
-                color: '#1E7E34 !important',
-            },
-        }
-    },
-    navToggler: {
-        color: 'white'
-    },
-    addedFoodCounter: {
-        fontSize: '12px',
-        verticalAlign: 'text-top',
-        marginLeft: '5px'
     },
     usersAndMore: {
         '& .MuiButtonBase-root': {
@@ -86,34 +52,34 @@ const useStyles = makeStyles((theme) => ({
             color: '#343A40',
             background: 'white'
         },
+    },
+    logoContainer: {
+        display: 'flex',
+        gap: 10,
+        alignItems: 'center'
     }
 }));
 
 const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
     const styles = useStyles();
+    const size = useWindowSize();
+    const history = useHistory();
+    const { tab } = useQuery();
     const [showOneRMCalculator, setShowOneRMCalculator] = useState(false);
     const [showAddFood, setShowAddFood] = useState(false);
     const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
     const [showTrackWeight, setShowTrackWeight] = useState(false);
-    const { tab } = useQuery()
-    const history = useHistory();
     const [anchorWorkout, setAnchorWorkout] = useState(null);
     const [anchorMeals, setAnchorMeals] = useState(null);
     const [anchorFood, setAnchorFood] = useState(null);
     const [anchorCalculators, setAnchorCalculators] = useState(null);
+    const [calculatorSelectItems] = useState([{ label: 'Calorie Calculator', path: '?tab=calorie-calculator' }, { label: '1 Rep Max Calculator', path: '?tab=one-rep-max-calculator' }])
+    const [foodSelectItems] = useState([{ label: 'My Food', path: '/home' }, { label: 'Add Food', path: '?tab=add-food' }])
+    const [mealsSelectItems] = useState([{ label: 'My Meals', path: '/home' }, { label: 'My Meal Plans', path: '/home' }])
+    const [workoutSelectItems] = useState([{ label: 'Workout Journal', path: '/home' }, { label: 'Add Workout Journal', path: '/home' }])
 
-
-
-    const size = useWindowSize();
 
     useEffect(() => {
-        if (size.width <= 991) {
-            console.log('in')
-        }
-    }, [size])
-
-    useEffect(() => {
-
         switch (tab) {
             case 'calorie-calculator':
                 setShowCalorieCalculator(true);
@@ -138,334 +104,117 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
 
     return (
         <>
-            <UGBModal
-                open={showTrackWeight}
-                onClose={() => {
-                    history.push(window.location.pathname);
-                    setShowTrackWeight(false)
-                }}
-                maxWidth='xs'
-            >
-                <TrackWeight
-                    refreshTableData={refreshTableData}
-                    setRefreshTableData={setRefreshTableData}
+            <>
+                <UGBModal
+                    open={showTrackWeight}
                     onClose={() => {
                         history.push(window.location.pathname);
                         setShowTrackWeight(false)
                     }}
-                />
-            </UGBModal>
-            <UGBModal
-                open={showOneRMCalculator}
-                onClose={() => {
-                    history.push(window.location.pathname);
-                    setShowOneRMCalculator(false)
-                }}
-                maxWidth='sm'
-            >
-                <OneRepMaxCalculator />
-            </UGBModal>
-            <UGBModal
-                open={showAddFood}
-                onClose={() => {
-                    history.push(window.location.pathname);
-                    setShowAddFood(false)
-                }}
-                maxWidth='xs'
-            >
-                <AddFood />
-            </UGBModal>
-            <UGBModal
-                open={showCalorieCalculator}
-                onClose={() => {
-                    history.push(window.location.pathname);
-                    setShowCalorieCalculator(false)
-                }}
-                maxWidth='sm'
-            >
-                <CalorieCalculator />
-            </UGBModal>
-            <nav className={clsx("navbar navbar-expand-xl", styles.nav)}>
-                {size.width >= 1200 ?
-                    <a
-                        className="navbar-brand"
-                        href="#!"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            history.push('/home');
-                        }}
-                    >
-                        <img src="/UrGymBudLogoLight.png" alt="Logo" className={styles.logo}></img>
-                    </a>
-                    :
-                    <div style={{ display: 'flex', gap: 10 }}>
-                        <a
-                            className="navbar-brand"
-                            href="#!"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                history.push('/home');
-                            }}
-                        >
-                            <img src="/UrGymBudLogoLight.png" alt="Logo" className={styles.logo}></img>
-                        </a>
-                        < UserAndMore />
-                    </div>
-                }
-                <button
-                    className={clsx("navbar-toggler", styles.navToggler)}
-                    type="button"
-                    data-toggle="collapse"
-                    data-target="#navbarSupportedContent"
+                    maxWidth='xs'
                 >
-                    <i className="fas fa-bars" />
-                </button>
+                    <TrackWeight
+                        refreshTableData={refreshTableData}
+                        setRefreshTableData={setRefreshTableData}
+                        onClose={() => {
+                            history.push(window.location.pathname);
+                            setShowTrackWeight(false)
+                        }}
+                    />
+                </UGBModal>
+                <UGBModal
+                    open={showOneRMCalculator}
+                    onClose={() => {
+                        history.push(window.location.pathname);
+                        setShowOneRMCalculator(false)
+                    }}
+                    maxWidth='sm'
+                >
+                    <OneRepMaxCalculator />
+                </UGBModal>
+                <UGBModal
+                    open={showAddFood}
+                    onClose={() => {
+                        history.push(window.location.pathname);
+                        setShowAddFood(false)
+                    }}
+                    maxWidth='xs'
+                >
+                    <AddFood />
+                </UGBModal>
+                <UGBModal
+                    open={showCalorieCalculator}
+                    onClose={() => {
+                        history.push(window.location.pathname);
+                        setShowCalorieCalculator(false)
+                    }}
+                    maxWidth='sm'
+                >
+                    <CalorieCalculator />
+                </UGBModal>
+            </>
+            <nav className={clsx("navbar navbar-expand-custom", styles.nav)}>
+                <div className={size.width < 970 ? styles.logoContainer : null}>
+                    <UGBLogo />
+                    {size.width < 970 ?
+                        < UserAndMore />
+                        :
+                        null
+                    }
+                </div>
+                <UGBButton
+                    btnType='toggler'
+                    icon='fas fa-bars'
+                    dataTarget='#navbarSupportedContent'
+                />
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className={clsx("navbar-nav mr-auto", size.width < 1200 ? styles.shrinkNav : null)}>
-                        <li className="nav-item">
-                            <a className={clsx("nav-link", styles.navUrls, size.width < 1200 ? styles.shrinkUrl : null)}
-                                href="#!"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                }}
-                            >
-                                Find Food
-                            </a>
-                        </li>
-                        <li className="nav-item">
-                            <a className={clsx("nav-link", styles.navUrls, size.width < 1200 ? styles.shrinkUrl : null)}
-                                href="#!"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                }}
-                            >
-                                Meal Planner
-                                <span className={clsx("badge badge-pill badge-secondary", styles.addedFoodCounter)}>
-                                    0
-                                </span>
-                            </a>
-                        </li>
-                        <li className="nav-item">
-                            <a
-                                className={clsx("nav-link",
-                                    styles.navUrls,
-                                    (history.location.pathname === '/progress' && !tab && !anchorCalculators && !anchorFood && !anchorMeals && !anchorWorkout) || tab === 'track-weight' ? styles.active : null,
-                                    size.width < 1200 ? styles.shrinkUrl : null
-                                )}
-                                href="#!"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    history.push('/progress');
-                                }}
-                            >
-                                Progress
-                            </a>
-                        </li>
-                        <li className="nav-item">
-                            <a
-                                className={clsx(
-                                    "nav-link",
-                                    styles.navUrls,
-                                    anchorCalculators || tab === 'calorie-calculator' || tab === 'one-rep-max-calculator' ? styles.active : null,
-                                    size.width < 1200 ? styles.shrinkUrl : null)}
-                                href="#!"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setAnchorCalculators(e.currentTarget)
-                                }}
-                            >
-                                Calculators
-                                <ArrowDropDown style={{ color: '#FFFFFF' }} />
-                            </a>
-                            <Popover
-                                anchorEl={anchorCalculators}
-                                keepMounted
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
-                                open={Boolean(anchorCalculators)}
-                                onClose={() => setAnchorCalculators(null)}
-                            >
-                                <MenuList>
-                                    <MenuItem>
-                                        <Link
-                                            component={NavLink}
-                                            exact={true}
-                                            to={'?tab=calorie-calculator'}
-                                            onClick={() => setAnchorCalculators(null)}
-                                        >
-                                            Calorie Calculator
-                                        </Link>
-                                    </MenuItem>
-                                    <MenuItem>
-                                        <Link
-                                            component={NavLink}
-                                            exact={true}
-                                            to={'?tab=one-rep-max-calculator'}
-                                            onClick={() => setAnchorCalculators(null)}
-                                        >
-                                            1 Rep Max Calculator
-                                        </Link>
-                                    </MenuItem>
-                                </MenuList>
-                            </Popover>
-                        </li>
-                        <li className="nav-item">
-                            <a
-                                className={clsx(
-                                    "nav-link",
-                                    styles.navUrls,
-                                    anchorFood || tab === 'add-food' ? styles.active : null,
-                                    size.width < 1200 ? styles.shrinkUrl : null)}
-                                href="#!"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setAnchorFood(e.currentTarget)
-                                }}
-                            >
-                                Food
-                                <ArrowDropDown style={{ color: '#FFFFFF' }} />
-                            </a>
-                            <Popover
-                                anchorEl={anchorFood}
-                                keepMounted
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
-                                open={Boolean(anchorFood)}
-                                onClose={() => setAnchorFood(null)}
-                            >
-                                <MenuList>
-                                    <MenuItem>
-                                        <Link
-                                            component={NavLink}
-                                            exact={true}
-                                            to={'/home'}
-                                        >
-                                            My Food
-                                        </Link>
-                                    </MenuItem>
-                                    <MenuItem>
-                                        <Link
-                                            component={NavLink}
-                                            exact={true}
-                                            to={'?tab=add-food'}
-                                            onClick={() => setAnchorFood(null)}
-                                        >
-                                            Add Food
-                                        </Link>
-                                    </MenuItem>
-                                </MenuList>
-                            </Popover>
-                        </li>
-                        <li className="nav-item">
-                            <a
-                                className={clsx("nav-link", styles.navUrls, anchorMeals ? styles.active : null, size.width < 1200 ? styles.shrinkUrl : null)}
-                                href="#!"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setAnchorMeals(e.currentTarget)
-                                }}
-                            >
-                                Meals
-                                <ArrowDropDown style={{ color: '#FFFFFF' }} />
-                            </a>
-                            <Popover
-                                anchorEl={anchorMeals}
-                                keepMounted
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
-                                open={Boolean(anchorMeals)}
-                                onClose={() => setAnchorMeals(null)}
-                            >
-                                <MenuList>
-                                    <MenuItem>
-                                        <Link
-                                            component={NavLink}
-                                            exact={true}
-                                            to={'/home'}
-                                        >
-                                            My Meals
-                                        </Link>
-                                    </MenuItem>
-                                    <MenuItem>
-                                        <Link
-                                            component={NavLink}
-                                            exact={true}
-                                            to={'/home'}
-                                        >
-                                            My Meal Plans
-                                        </Link>
-                                    </MenuItem>
-                                </MenuList>
-                            </Popover>
-                        </li>
-                        <li className="nav-item">
-                            <a
-                                className={clsx("nav-link", styles.navUrls, anchorWorkout ? styles.active : null, size.width < 1200 ? styles.shrinkUrl : null)}
-                                href="#!"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setAnchorWorkout(e.currentTarget)
-                                }}
-                            >
-                                Workout
-                                <ArrowDropDown style={{ color: '#FFFFFF' }} />
-                            </a>
-                            <Popover
-                                anchorEl={anchorWorkout}
-                                keepMounted
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
-                                open={Boolean(anchorWorkout)}
-                                onClose={() => setAnchorWorkout(null)}
-                            >
-                                <MenuList>
-                                    <MenuItem>
-                                        <Link
-                                            component={NavLink}
-                                            exact={true}
-                                            to={'/home'}
-                                        >
-                                            Workout Journal
-                                        </Link>
-                                    </MenuItem>
-                                    <MenuItem>
-                                        <Link
-                                            component={NavLink}
-                                            exact={true}
-                                            to={'/home'}
-                                        >
-                                            Add Workout Journal
-                                        </Link>
-                                    </MenuItem>
-                                </MenuList>
-                            </Popover>
-                        </li>
+                    <ul className={clsx("navbar-nav mr-auto", size.width < 970 ? styles.shrinkNav : null)}>
+                        <LiItem >Find Food</LiItem>
+                        <LiItem badge={0}>Meal Planner</LiItem>
+                        <LiItem
+                            path='/progress'
+                            active={(history.location.pathname === '/progress' && !tab && !anchorCalculators && !anchorFood && !anchorMeals && !anchorWorkout) || tab === 'track-weight'}
+                        >
+                            Progress
+                        </LiItem>
+                        <LiItem
+                            type='select'
+                            anchor={anchorCalculators}
+                            setAnchor={setAnchorCalculators}
+                            menuItems={calculatorSelectItems}
+                            active={anchorCalculators || tab === 'calorie-calculator' || tab === 'one-rep-max-calculator' ? true : null}
+                        >
+                            Calculators
+                        </LiItem>
+                        <LiItem
+                            type='select'
+                            anchor={anchorFood}
+                            setAnchor={setAnchorFood}
+                            menuItems={foodSelectItems}
+                            active={anchorFood || tab === 'add-food' ? true : null}
+                        >
+                            Food
+                        </LiItem>
+                        <LiItem
+                            type='select'
+                            anchor={anchorMeals}
+                            setAnchor={setAnchorMeals}
+                            menuItems={mealsSelectItems}
+                            active={anchorMeals ? true : null}
+                        >
+                            Meals
+                        </LiItem>
+                        <LiItem
+                            type='select'
+                            anchor={anchorWorkout}
+                            setAnchor={setAnchorWorkout}
+                            menuItems={workoutSelectItems}
+                            active={anchorWorkout ? true : null}
+                        >
+                            Workout
+                        </LiItem>
                     </ul>
-                    {size.width >= 1200 ?
+                    {size.width >= 970 ?
                         < UserAndMore />
                         :
                         null
@@ -478,12 +227,14 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
 
 const UserAndMore = () => {
     const styles = useStyles();
+    const store = useStoreContext();
     const [anchorUser, setAnchorUser] = useState(null);
     const [anchorMore, setAnchorMore] = useState(null);
-    const store = useStoreContext();
+    const [userSelectItems] = useState([{ label: 'My user', path: '/home' }, { label: 'Logout', path: null, onClick: onLogout }])
+    const [moreSelectItems] = useState([{ label: 'Opt1', path: '/home' }, { label: 'Opt2', path: '/home' }])
 
-    function onLogout(e) {
-        e.preventDefault()
+    function onLogout() {
+        setAnchorUser(null);
         postData(process.env.REACT_APP_HOST + '/api/user/logout')
             .then(data => {
                 store[1](state => (state.user = undefined, { ...state }));
@@ -492,88 +243,39 @@ const UserAndMore = () => {
             })
     }
 
-
     return (
-        <ul className={clsx("nav justify-content-end", styles.usersAndMore)}>
-            <Button
-                className={clsx(styles.avatarRoot, anchorUser ? styles.avatarFocused : null)}
-                onClick={(e) => setAnchorUser(e.currentTarget)}
-                component="span" disableTouchRipple
+        <div className={clsx("nav justify-content-end", styles.usersAndMore)}>
+            <LiItem
+                type='select'
+                anchor={anchorUser}
+                setAnchor={setAnchorUser}
+                menuItems={userSelectItems}
+                customLabel={true}
             >
-                <Avatar>{store[0].user.first_name.charAt(0) + store[0].user.last_name.charAt(0)}</Avatar>
-                <ArrowDropDown style={{ color: '#FFFFFF' }} />
-            </Button>
-            <Popover
-                anchorEl={anchorUser}
-                keepMounted
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
-                open={Boolean(anchorUser)}
-                onClose={() => setAnchorUser(null)}
+                <Button
+                    className={clsx(styles.avatarRoot, anchorUser ? styles.avatarFocused : null)}
+                    onClick={(e) => setAnchorUser(e.currentTarget)}
+                    component="span" disableTouchRipple
+                >
+                    <Avatar>{store[0].user.first_name.charAt(0) + store[0].user.last_name.charAt(0)}</Avatar>
+                    <ArrowDropDown style={{ color: '#FFFFFF' }} />
+                </Button>
+            </LiItem>
+            <LiItem
+                type='select'
+                anchor={anchorMore}
+                setAnchor={setAnchorMore}
+                menuItems={moreSelectItems}
+                customLabel={true}
             >
-                <MenuList>
-                    <MenuItem>
-                        <Link
-                            component={NavLink}
-                            exact={true}
-                            to={'/home'}
-                        >
-                            My user
-                        </Link>
-                    </MenuItem>
-                    <MenuItem>
-                        <Link onClick={onLogout}>Logout</Link>
-                    </MenuItem>
-                </MenuList>
-            </Popover>
-            <IconButton
-                onClick={(e) => setAnchorMore(e.currentTarget)}
-                component="span" disableTouchRipple
-            >
-                <MoreVertIcon fontSize='large' style={{ color: 'white' }} />
-            </IconButton>
-            <Popover
-                anchorEl={anchorMore}
-                keepMounted
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
-                open={Boolean(anchorMore)}
-                onClose={() => setAnchorMore(null)}
-            >
-                <MenuList>
-                    <MenuItem>
-                        <Link
-                            component={NavLink}
-                            exact={true}
-                            to={'/home'}
-                        >
-                            Opt1
-                        </Link>
-                    </MenuItem>
-                    <MenuItem>
-                        <Link
-                            component={NavLink}
-                            exact={true}
-                            to={'/home'}
-                        >
-                            Opt1
-                        </Link>
-                    </MenuItem>
-                </MenuList>
-            </Popover>
-        </ul>
+                <IconButton
+                    onClick={(e) => setAnchorMore(e.currentTarget)}
+                    component="span" disableTouchRipple
+                >
+                    <MoreVertIcon fontSize='large' style={{ color: 'white' }} />
+                </IconButton>
+            </LiItem>
+        </div>
     );
 }
 
