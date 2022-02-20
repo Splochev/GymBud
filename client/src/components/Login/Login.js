@@ -3,22 +3,46 @@ import { useStoreContext } from '../store/Store';
 import { postData } from '../utils/FetchUtils'
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { Typography } from '@material-ui/core';
+import UGBLink from '../Global/UGBLink';
+import UGBButton from '../Global/UGBButton';
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
-    link: {
-        color: '#007BFF',
-        '&:hover': {
-            textDecoration: 'underline',
-            color: '#007BFF'
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    hr: {
+        width: '100%',
+    },
+    forgotPass: {
+        width: '100%',
+        display: 'flex',
+        gap: 5,
+        justifyContent: 'start'
+    },
+    actions: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: "flex-end",
+        marginTop: theme.spacing(2),
+        "& button:first-child": {
+            marginRight: theme.spacing(2),
+        },
+        "& button": {
+            width: '93px'
         }
     },
 }));
 
 
 
+
 const Login = ({ setShowLogin }) => {
-    const styles = useStyles()
+    const styles = useStyles();
     const store = useStoreContext();
     const history = useHistory();
     const email = useState('')
@@ -39,49 +63,65 @@ const Login = ({ setShowLogin }) => {
     }
 
     return (
-        <div>
-            <h4 className="form-group d-flex justify-content-center row">Sign In</h4>
-            <hr />
-            <div className="container mt-3">
-                <p>Please fill in this form to sign in.</p>
-                <form onSubmit={onLogin}>
-                    <UGBInput
-                        type='text'
-                        name='mail'
-                        placeholder="Your email"
-                        iconStart='fas fa-envelope'
-                        $value={email}
-                    />
-                    <UGBInput
-                        type='password'
-                        name='password'
-                        placeholder="Your password"
-                        iconStart='fas fa-lock'
-                        $value={password}
-                    />
-                    <div>Forgot&nbsp;
-                        <a href="#!" className={styles.link} onClick={(e) => {
-                            e.preventDefault();
-                            setShowLogin(false);
-                            history.push({
-                                search: "?tab=forgotten-password",
-                                state: { fromPopup: true }
-                            });
-                        }}>
-                            password?
-                        </a>
-                    </div>
-                    <div className="d-flex justify-content-center">
-                        <button
-                            type="submit"
-                            className="btn btn-success"
-                        >
-                            Sign In
-                        </button>
-                    </div>
-                </form>
+        <form className={styles.form} onSubmit={onLogin}>
+            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Sign In:</Typography>
+            <hr className={styles.hr} />
+            <Typography
+                variant='inherit'
+                component='div'
+                style={{
+                    color: '#343A40',
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'start',
+                    marginBottom: 10,
+                }}
+            >
+                Please fill in this form to sign in.
+            </Typography>
+            <UGBInput
+                type='text'
+                name='mail'
+                placeholder="Your email"
+                iconStart='fas fa-envelope'
+                $value={email}
+            />
+            <UGBInput
+                type='password'
+                name='password'
+                placeholder="Your password"
+                iconStart='fas fa-lock'
+                $value={password}
+            />
+            <div className={styles.forgotPass}>
+                <div>Forgot</div>
+                <UGBLink
+                    label='password?'
+                    color='blue'
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setShowLogin(false);
+                        history.push("?tab=forgotten-password");
+                    }}
+                />
             </div>
-        </div>
+            <div className={styles.actions}>
+                <UGBButton
+                    onClick={() => {
+                        history.push(history.pathName);
+                    }}
+                    btnType='danger'
+                >
+                    Cancel
+                </UGBButton>
+                <UGBButton
+                    btnType='success'
+                    type='submit'
+                >
+                    Sign In
+                </UGBButton>
+            </div>
+        </form>
     );
 }
 

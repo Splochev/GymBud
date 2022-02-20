@@ -1,18 +1,42 @@
-import { FormControlLabel, Radio } from '@material-ui/core';
+import { FormControlLabel, Radio, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { UGBInput } from '../Global/UGBInput';
 import { UGBRadioButtonsGroup } from '../Global/UGBRadioButtonsGroup';
 import { postData } from '../utils/FetchUtils';
 import { makeStyles } from '@material-ui/core';
+import UGBButton from '../Global/UGBButton';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
         fontSize: '20px'
     },
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    hr: {
+        width: '100%',
+    },
+    actions: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: "flex-end",
+        marginTop: theme.spacing(2),
+        "& button:first-child": {
+            marginRight: theme.spacing(2),
+        },
+        "& button": {
+            width: '93px'
+        }
+    },
 }));
 
 const Register = ({ onClose }) => {
+    const history = useHistory();
     const styles = useStyles();
     const email = useState('');
     const password = useState('');
@@ -43,66 +67,82 @@ const Register = ({ onClose }) => {
     }
 
     return (
-        <div>
-            <h4 className="form-group d-flex justify-content-center row">Sign Up</h4>
-            <hr />
-            <div className="container mt-3">
-                <p>Please sign this form to create an account.</p>
-                <form onSubmit={register}>
-                    <UGBInput
-                        type='text'
-                        placeholder="Your email"
-                        $value={email}
-                        iconStart='fas fa-envelope'
-                    />
-                    <UGBInput
-                        type='password'
-                        $value={password}
-                        placeholder='Your password'
-                        iconStart='fas fa-lock'
-                    />
-                    <UGBInput
-                        type='password'
-                        $value={repeatPassword}
-                        placeholder='Repeat password'
-                        iconStart='fas fa-lock'
-                    />
-                    <UGBInput
-                        type='text'
-                        $value={firstName}
-                        placeholder='Your first name'
-                        iconStart='fa-solid fa-file-signature'
-                    />
-                    <UGBInput
-                        type='text'
-                        $value={lastName}
-                        placeholder='Your last name'
-                        iconStart='fa-solid fa-file-signature'
-                    />
-                    <div className="d-flex justify-content-center">
-                        <UGBRadioButtonsGroup
-                            label="Sex:"
-                            display='inline'
-                            $checkedValue={sex}
-                            customMap={() => {
-                                return (
-                                    <>
-                                        <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon)} />} />
-                                        <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon)} />} />
-                                    </>
-                                );
-                            }}
+        <form className={styles.form} onSubmit={register}>
+            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Sign Up</Typography>
+            <hr className={styles.hr} />
+            <Typography
+                variant='inherit'
+                component='div'
+                style={{
+                    color: '#343A40',
+                    width: '100%',
+                    marginBottom: 10,
+                }}
+            >
+                Please sign this form to create an account.
+            </Typography>
+            <UGBInput
+                type='text'
+                placeholder="Your email"
+                $value={email}
+                iconStart='fas fa-envelope'
+            />
+            <UGBInput
+                type='password'
+                $value={password}
+                placeholder='Your password'
+                iconStart='fas fa-lock'
+            />
+            <UGBInput
+                type='password'
+                $value={repeatPassword}
+                placeholder='Repeat password'
+                iconStart='fas fa-lock'
+            />
+            <UGBInput
+                type='text'
+                $value={firstName}
+                placeholder='Your first name'
+                iconStart='fa-solid fa-file-signature'
+            />
+            <UGBInput
+                type='text'
+                $value={lastName}
+                placeholder='Your last name'
+                iconStart='fa-solid fa-file-signature'
+            />
+            <UGBRadioButtonsGroup
+                label="Sex:"
+                display='inline'
+                $checkedValue={sex}
+                customMap={() => {
+                    return (
+                        <>
+                            <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon)} />} />
+                            <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon)} />} />
+                        </>
+                    );
+                }}
 
-                        />
-                    </div>
-                    <div className="d-flex justify-content-center">
-                        <button type="submit" className="btn btn-success">
-                            Sign Up
-                        </button>
-                    </div>
-                </form>
+            />
+            <div className={styles.actions}>
+                <UGBButton
+                    onClick={() => {
+                        history.push(history.pathName);
+                        onClose()
+                    }}
+                    btnType='danger'
+                >
+                    Cancel
+                </UGBButton>
+                <UGBButton
+                    type="submit"
+                    btnType='success'
+                >
+                    Sign Up
+                </UGBButton>
             </div>
-        </div>
+        </form>
     );
 }
 

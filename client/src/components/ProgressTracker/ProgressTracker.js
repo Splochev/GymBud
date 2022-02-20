@@ -6,6 +6,7 @@ import { getData, putData } from '../utils/FetchUtils';
 import { parseDate } from '../utils/utilFunc'
 import { UGBDatePicker } from '../Global/UGBDatePicker'
 import { UGBVerticalBarsChart } from '../Global/UGBCharts'
+import UGBButton from '../Global/UGBButton'
 import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 
@@ -289,24 +290,22 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
             <div className={styles.toolbar}>
                 <Typography variant='h6' component='div' style={{ marginTop: 15, marginBottom: 15, color: '#343A40' }} >Weight Entries: </Typography>
                 <div>
-                    <button
-                        className='btn btn-success'
-                        data-toggle='tooltip'
+                    <UGBButton
+                        btnType='success'
                         title='Submit your daily weight'
                         onClick={() => {
                             history.push({ search: "?tab=track-weight", state: { fromPopup: true } });
                         }}
                     >
                         Track weight
-                    </button>
-                    <button
-                        className='btn btn-success'
-                        data-toggle='tooltip'
+                    </UGBButton>
+                    <UGBButton
+                        btnType='success'
                         title='Save changes from table'
                         onClick={() => saveChanges()}
                     >
                         Save Changes
-                    </button>
+                    </UGBButton>
                 </div>
             </div>
             <DataTable

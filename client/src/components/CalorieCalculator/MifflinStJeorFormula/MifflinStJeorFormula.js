@@ -7,6 +7,8 @@ import Radio from '@material-ui/core/Radio';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { UGBRadioButtonsGroup } from '../../Global/UGBRadioButtonsGroup'
 import clsx from 'clsx';
+import UGBButton from '../../Global/UGBButton';
+import { Typography } from '@material-ui/core';
 
 const MifflinStJeorFormula = ({ bmr }) => {
     const styles = useStyles();
@@ -40,65 +42,60 @@ const MifflinStJeorFormula = ({ bmr }) => {
             setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={err.message} />)
         }
     }
-
     return (
-
-        <div className="d-flex justify-content-center" >
+        <form className={styles.form} onSubmit={calculate}>
             {alert}
-            <form onSubmit={calculate}>
-                <div className="d-flex justify-content-center">
-                    <UGBRadioButtonsGroup
-                        label="Sex:"
-                        display='inline'
-                        $checkedValue={sex}
-                        customMap={() => {
-                            return (
-                                <>
-                                    <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon)} />} />
-                                    <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon)} />} />
-                                </>
-                            );
-                        }}
+            <UGBRadioButtonsGroup
+                label="Sex:"
+                display='inline'
+                $checkedValue={sex}
+                customMap={() => {
+                    return (
+                        <>
+                            <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon)} />} />
+                            <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon)} />} />
+                        </>
+                    );
+                }}
 
-                    />
-                </div>
-                <UGBInput
-                    type='number'
-                    $value={weight}
-                    placeholder="Weight"
-                    min='1'
-                    max='250'
-                    iconStart='fas fa-weight'
-                />
-                <UGBInput
-                    type='number'
-                    $value={height}
-                    placeholder="height"
-                    min='1'
-                    max='275'
-                    iconStart='fas fa-ruler'
-                />
-                <UGBInput
-                    type='number'
-                    $value={age}
-                    placeholder="Age"
-                    min='1'
-                    max='125'
-                    iconStart='fas fa-user-clock'
-                />
-                <div className="d-flex justify-content-center">
-                    <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate BMR">
-                        <i className={"fas fa-calculator " + styles.icon}></i>
-                    </button>
-                </div>
-                <div className="d-flex justify-content-center">
-                    <div className="form-group">
-                        <div className="d-flex justify-content-center">Your BMR is:</div>
-                        <input value={bmr[0]} type="number" className="form-control" disabled></input>
-                    </div>
-                </div>
-            </form>
-        </div>
+            />
+            <UGBInput
+                type='number'
+                $value={weight}
+                placeholder="Weight"
+                min='1'
+                max='250'
+                iconStart='fas fa-weight'
+            />
+            <UGBInput
+                type='number'
+                $value={height}
+                placeholder="height"
+                min='1'
+                max='275'
+                iconStart='fas fa-ruler'
+            />
+            <UGBInput
+                type='number'
+                $value={age}
+                placeholder="Age"
+                min='1'
+                max='125'
+                iconStart='fas fa-user-clock'
+            />
+            <UGBButton
+                icon='fas fa-calculator'
+                title="Calculate BMR"
+                type="submit"
+                btnType='success'
+            />
+            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Your BMR is:</Typography>
+            <UGBInput
+                $value={bmr}
+                type='number'
+                disabled={true}
+            />
+        </form>
     );
 }
 

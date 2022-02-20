@@ -6,6 +6,8 @@ import Radio from '@material-ui/core/Radio';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { UGBRadioButtonsGroup } from '../../../Global/UGBRadioButtonsGroup'
 import clsx from 'clsx'
+import UGBButton from '../../../Global/UGBButton';
+import { Typography } from '@material-ui/core';
 
 const KnowsLbmFalse = ({ bmr }) => {
     const styles = useStyles();
@@ -32,24 +34,21 @@ const KnowsLbmFalse = ({ bmr }) => {
 
     return (
         <div className="col">
-            {alert}
-            <form onSubmit={calculate}>
-                <div className="d-flex justify-content-center">
-                    <UGBRadioButtonsGroup
-                        label="Sex:"
-                        display='inline'
-                        $checkedValue={sex}
-                        customMap={() => {
-                            return (
-                                <>
-                                    <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon)} />} />
-                                    <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon)} />} />
-                                </>
-                            );
-                        }}
-
-                    />
-                </div>
+            <form className={styles.form} onSubmit={calculate}>
+                {alert}
+                <UGBRadioButtonsGroup
+                    label="Sex:"
+                    display='inline'
+                    $checkedValue={sex}
+                    customMap={() => {
+                        return (
+                            <>
+                                <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon)} />} />
+                                <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon)} />} />
+                            </>
+                        );
+                    }}
+                />
                 <UGBInput
                     type="number"
                     $value={weight}
@@ -66,17 +65,18 @@ const KnowsLbmFalse = ({ bmr }) => {
                     placeholder="Height"
                     iconStart='fas fa-ruler'
                 />
-                <div className="d-flex justify-content-center">
-                    <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate BMR">
-                        <i className={"fas fa-calculator " + styles.icon}></i>
-                    </button>
-                </div>
-                <div className="d-flex justify-content-center">
-                    <div className="form-group">
-                        <div className="d-flex justify-content-center">Your BMR is:</div>
-                        <input value={bmr[0]} type="number" className="form-control" disabled></input>
-                    </div>
-                </div>
+                <UGBButton
+                    icon='fas fa-calculator'
+                    title="Calculate BMR"
+                    type="submit"
+                    btnType='success'
+                />
+                <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Your BMR is:</Typography>
+                <UGBInput
+                    $value={bmr}
+                    type='number'
+                    disabled={true}
+                />
             </form>
         </div>
     );

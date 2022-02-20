@@ -3,62 +3,78 @@ import MifflinStJeorFormula from './MifflinStJeorFormula/MifflinStJeorFormula'
 import { useState } from 'react';
 import useStyles from './styles.js'
 import UGBMissingFields from '../Global/UGBMissingFields';
-import clsx from 'clsx'
 import { UGBRadioButtonsGroup } from '../Global/UGBRadioButtonsGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
+import UGBButton from '../Global/UGBButton';
+import { Typography } from '@material-ui/core';
+import LiItem from '../Global/UGBLiItem';
+import { useHistory } from 'react-router-dom';
+import { UGBInput } from '../Global/UGBInput';
 
 const CalorieCalculator = () => {
-    const classes = useStyles();
+    const styles = useStyles();
+    const history = useHistory();
     const formula = useState('KatchMcardleFormula');
     const [alert, setAlert] = useState('');
     const tdee = useState(undefined);
     const bmr = useState(undefined);
-
-    function onSelectedActivityIndex(event) {
-        event.preventDefault();
-        const indexValue = event.target.id;
-        const indexInput = document.getElementById("activity-index");
-        indexInput.textContent = 'Chosen Activity Index: ' + indexValue;
-    }
+    const activityIndex = useState(1.2);
+    const [anchor, setAnchor] = useState(null);
+    const [selectItems] = useState([
+        {
+            label: '1.2 - If you rarely exercise', path: null, onClick: () => {
+                setAnchor(null);
+                activityIndex[1](1.2);
+            }
+        },
+        {
+            label: '1.375 - If you exercise on 1 to 3 days per week', path: null, onClick: () => {
+                setAnchor(null);
+                activityIndex[1](1.375);
+            }
+        },
+        {
+            label: '1.55 - If you exercise on 3 to 5 days per week', path: null, onClick: () => {
+                setAnchor(null);
+                activityIndex[1](1.55);
+            }
+        },
+        {
+            label: '1.725 - If you exercise 6 to 7 days per week', path: null, onClick: () => {
+                setAnchor(null);
+                activityIndex[1](1.725);
+            }
+        },
+        {
+            labels: ['1.9 - If you exercise every day and have a', 'physical job or if you often exercise twice a day'], path: null, onClick: () => {
+                setAnchor(null);
+                activityIndex[1](1.9);
+            }
+        }
+    ])
 
     function calculate() {
-        const indexInput = document.getElementById("activity-index").textContent.substring(23);
+        const activityIndexes = { '1.2': 1, '1.375': 1, '1.55': 1, '1.725': 1, '1.9': 1 };
+        const indexInput = activityIndex[0];
         const parsedBmr = Number(bmr[0]);
-
         try {
-            if (parsedBmr) {
-                switch (indexInput) {
-                    case '1.2':
-                        tdee[1](parsedBmr * 1.2)
-                        break;
-                    case '1.375':
-                        tdee[1](parsedBmr * 1.375)
-                        break;
-                    case '1.55':
-                        tdee[1](parsedBmr * 1.55)
-                        break;
-                    case '1.725':
-                        tdee[1](parsedBmr * 1.725)
-                        break;
-                    case '1.9':
-                        tdee[1](parsedBmr * 1.9)
-                        break;
-                    default:
-                        throw new Error('Please select an activity index.')
-                }
-            } else {
+            if (!parsedBmr) {
                 throw new Error('BMR result must not be empty.')
             }
+            if (!activityIndexes[indexInput]) {
+                throw new Error('Please select an activity index.')
+            }
+            tdee[1](parsedBmr * indexInput)
         } catch (err) {
             setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={err.message} />)
         }
     }
 
     return (
-        <div className={classes.calorieCalculatorContainer}>
-            <h4 className="form-group d-flex justify-content-center row">Calorie Calculator</h4>
-            <div className={clsx("d-flex justify-content-center")}>
+        <div className={styles.calorieCalculatorContainer}>
+            <div className={styles.container}>
+                <Typography variant='h5' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Calorie Calculator</Typography>
                 <UGBRadioButtonsGroup
                     label=""
                     display='inline'
@@ -72,44 +88,52 @@ const CalorieCalculator = () => {
                         );
                     }}
                 />
-            </div>
-            <hr />
-            <h4 className="d-flex justify-content-center">BMR calculator:</h4>
-            {formula[0] === 'KatchMcardleFormula' ? <KatchMcardleFormula bmr={bmr} /> : null}
-            {formula[0] === 'MifflinStJeorFormula' ? <MifflinStJeorFormula bmr={bmr} /> : null}
-            <hr />
-            <h4 className="d-flex justify-content-center">TDEE calculator:</h4>
-            {alert}
-
-
-            <div className="d-flex justify-content-center">
-                <div className={clsx('dropdown dropright', classes.activityIndexDropownWrap)} id="dropdown-activity-index">
-                    <button type="button" className={clsx("btn btn-secondary", classes.activityIndexDropownButton)} id="activity-index" data-toggle="dropdown">
-                        Choose Activity Index
-                    </button>
-                    <div className="dropdown-menu">
-                        <a className={clsx("dropdown-item", classes.dropdownItem)} href="#!" id='1.2' onClick={onSelectedActivityIndex}>1.2 - If you rarely exercise</a>
-                        <a className={clsx("dropdown-item", classes.dropdownItem)} href="#!" id='1.375' onClick={onSelectedActivityIndex}>1.375 - If you exercise on 1 to 3 days per week</a>
-                        <a className={clsx("dropdown-item", classes.dropdownItem)} href="#!" id='1.55' onClick={onSelectedActivityIndex}>1.55 - If you exercise on 3 to 5 days per week</a>
-                        <a className={clsx("dropdown-item", classes.dropdownItem)} href="#!" id='1.725' onClick={onSelectedActivityIndex}>1.725 - If you exercise 6 to 7 days per week</a>
-                        <a className={clsx("dropdown-item", classes.dropdownItem)} href="#!" id='1.9' onClick={onSelectedActivityIndex}>1.9 - If you exercise every day and have<br></br>a physical job or if
-                            you
-                            often exercise twice a day</a>
-                    </div>
+                <hr className={styles.hr} />
+                <Typography variant='h6' component='div' style={{ marginBottom: 10, textAlign: 'center', color: '#343A40' }} >BMR calculator</Typography>
+                {formula[0] === 'KatchMcardleFormula' ? <KatchMcardleFormula bmr={bmr} /> : null}
+                {formula[0] === 'MifflinStJeorFormula' ? <MifflinStJeorFormula bmr={bmr} /> : null}
+                <hr className={styles.hr} />
+                <div className={styles.tdeeResult}>
+                    <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >TDEE calculator:</Typography>
+                    <LiItem
+                        type='select'
+                        anchor={anchor}
+                        setAnchor={setAnchor}
+                        menuItems={selectItems}
+                        customLabel={true}
+                        variant='div'
+                    >
+                        <UGBButton
+                            onClick={(e) => setAnchor(e.currentTarget)}
+                            btnType='secondary'
+                        >
+                            Chosen Activity Index: {activityIndex[0]}
+                        </UGBButton>
+                    </LiItem>
+                    <UGBButton
+                        btnType='success'
+                        icon='fas fa-calculator'
+                        title="Calculate TDEE"
+                        onClick={calculate}
+                    />
+                    <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Your TDEE is:</Typography>
+                    <UGBInput
+                        $value={tdee}
+                        type='number'
+                        disabled={true}
+                    />
                 </div>
+                {alert}
             </div>
-
-
-            <div className="d-flex justify-content-center">
-                <button type="button" className="btn btn-success" data-toggle="tooltip" title="Calculate TDEE" onClick={calculate}>
-                    <i className={"fas fa-calculator " + classes.icon}></i>
-                </button>
-            </div>
-            <div className="d-flex justify-content-center">
-                <div className="form-group">
-                    <div className="d-flex justify-content-center">Your TDEE is:</div>
-                    <input value={tdee[0]} type="number" className="form-control" disabled></input>
-                </div>
+            <div className={styles.actions}>
+                <UGBButton
+                    onClick={() => {
+                        history.push(history.pathName);
+                    }}
+                    btnType='danger'
+                >
+                    Close
+                </UGBButton>
             </div>
         </div>
     );

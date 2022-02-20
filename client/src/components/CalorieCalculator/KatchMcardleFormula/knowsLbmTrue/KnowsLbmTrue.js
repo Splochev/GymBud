@@ -2,9 +2,11 @@ import useStyles from '../../styles'
 import { useState } from 'react';
 import UGBMissingFields from '../../../Global/UGBMissingFields.js';
 import { UGBInput } from '../../../Global/UGBInput'
+import UGBButton from '../../../Global/UGBButton';
+import { Typography } from '@material-ui/core';
 
 const KnowsLbmTrue = ({ bmr }) => {
-    const classes = useStyles();
+    const styles = useStyles();
     const [alert, setAlert] = useState('');
     const lbm = useState('')
 
@@ -23,8 +25,8 @@ const KnowsLbmTrue = ({ bmr }) => {
 
     return (
         <div className="col">
-            {alert}
-            <form onSubmit={calculate}>
+            <form className={styles.form} onSubmit={calculate}>
+                {alert}
                 <UGBInput
                     type="number"
                     $value={lbm}
@@ -33,17 +35,18 @@ const KnowsLbmTrue = ({ bmr }) => {
                     placeholder="LBM"
                     iconStart='fas fa-weight'
                 />
-                <div className="d-flex justify-content-center">
-                    <button type="submit" className="btn btn-success" data-toggle="tooltip" title="Calculate BMR">
-                        <i className={"fas fa-calculator " + classes.icon}></i>
-                    </button>
-                </div>
-                <div className="d-flex justify-content-center">
-                    <div className="form-group">
-                        <div className="d-flex justify-content-center">Your BMR is:</div>
-                        <input value={bmr[0]} type="number" className="form-control" disabled></input>
-                    </div>
-                </div>
+                <UGBButton
+                    icon='fas fa-calculator'
+                    title="Calculate BMR"
+                    type="submit"
+                    btnType='success'
+                />
+                <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Your BMR is:</Typography>
+                <UGBInput
+                    $value={bmr}
+                    type='number'
+                    disabled={true}
+                />
             </form>
         </div>
     );

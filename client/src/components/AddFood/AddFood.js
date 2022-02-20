@@ -1,35 +1,36 @@
 import { useState } from 'react';
 import UGBMissingFields from '../Global/UGBMissingFields';
-import { makeStyles } from '@material-ui/core';
 import { UGBInput } from '../Global/UGBInput'
-import clsx from 'clsx'
+import { Typography } from '@material-ui/core';
+import UGBButton from '../Global/UGBButton';
+import { makeStyles } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
-    icon: {
-        fontSize: '20px',
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    calculatorBtn: {
-        borderRadius: '0px',
-        background: '#28A745',
-        color: 'white',
-        '&:hover': {
-            cursor: 'pointer',
-            backgroundColor: '#218838',
-            border: '1px solid #1E7E34',
+    hr: {
+        width: '100%',
+    },
+    actions: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: "flex-end",
+        marginTop: theme.spacing(2),
+        "& button:first-child": {
+            marginRight: theme.spacing(2),
         },
-        '&:focus': {
-            border: '1px solid #1E7E34',
-            background: '#218838',
-            boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
-            outline: 'none'
-        },
-    }
+    },
 }));
+
 
 function calculateWeightAndCalories(carbs, fat, protein, req) {
     let weight = 0;
     let calories = 0;
-
     const parsedCarbs = Number(carbs);
     const parsedFat = Number(fat);
     const parsedProtein = Number(protein);
@@ -55,8 +56,9 @@ function calculateWeightAndCalories(carbs, fat, protein, req) {
 }
 
 const AddFood = () => {
-    const [alert, setAlert] = useState('');
     const styles = useStyles();
+    const history = useHistory();
+    const [alert, setAlert] = useState('');
     const carbs = useState(undefined);
     const fat = useState(undefined);
     const protein = useState(undefined)
@@ -92,65 +94,73 @@ const AddFood = () => {
     }
 
     return (
-        <div>
-            <h4 className='form-group d-flex justify-content-center row' >Add Food</h4>
-            <hr />
+        <form className={styles.form} onSubmit={addFood}>
+            <Typography variant='h5' component='div' style={{ textAlign: 'center', marginBottom: 15, color: '#343A40' }} >Add Food</Typography>
+            <hr className={styles.hr} />
             {alert}
-            <form className='container mt-3' onSubmit={addFood}>
-                <UGBInput
-                    type='text'
-                    placeholder='Food Name'
-                    iconStart='fas fa-utensils'
-                    $value={foodName}
+            <UGBInput
+                type='text'
+                placeholder='Food Name'
+                iconStart='fas fa-utensils'
+                $value={foodName}
+            />
+            <UGBInput
+                type='number'
+                placeholder='Carbs per 100 grams'
+                min='0'
+                max='100'
+                iconStart='fas fa-bread-slice'
+                $value={carbs}
+            />
+            <UGBInput
+                type='number'
+                placeholder='Fat per 100 grams'
+                min='0'
+                max='100'
+                iconStart='fas fa-fish'
+                $value={fat}
+            />
+            <UGBInput
+                type='number'
+                placeholder='Protein per 100 grams'
+                min='0'
+                max='100'
+                iconStart='fas fa-drumstick-bite'
+                $value={protein}
+            />
+            <UGBInput
+                type='number'
+                placeholder='Calories Per 100 grams'
+                min='0'
+                max='900'
+                iconStart='fas fa-burn'
+                $value={calories}
+            >
+                <UGBButton
+                    btnType='inputButton'
+                    title='Calculate the calories of the food'
+                    icon='fas fa-calculator'
+                    onClick={calculate}
+                    variant='success'
                 />
-                <UGBInput
-                    type='number'
-                    placeholder='Carbs per 100 grams'
-                    min='0'
-                    max='100'
-                    iconStart='fas fa-bread-slice'
-                    $value={carbs}
-                />
-                <UGBInput
-                    type='number'
-                    placeholder='Fat per 100 grams'
-                    min='0'
-                    max='100'
-                    iconStart='fas fa-fish'
-                    $value={fat}
-                />
-                <UGBInput
-                    type='number'
-                    placeholder='Protein per 100 grams'
-                    min='0'
-                    max='100'
-                    iconStart='fas fa-drumstick-bite'
-                    $value={protein}
-                />
-                <UGBInput
-                    type='number'
-                    placeholder='Calories Per 100 grams'
-                    min='0'
-                    max='900'
-                    iconStart='fas fa-burn'
-                    $value={calories}
+            </UGBInput>
+            <div className={styles.actions}>
+                <UGBButton
+                    onClick={() => {
+                        history.push(history.pathName);
+                    }}
+                    btnType='danger'
                 >
-                    <button
-                        className={clsx('input-group-text', styles.calculatorBtn,)}
-                        data-toggle="tooltip"
-                        title="Calculate the calories of the food"
-                        onClick={calculate}
-                    >
-                        <i className={clsx("fas fa-calculator", styles.icon)} />
-                    </button>
-                </UGBInput>
-                <div className='d-flex justify-content-center'>
-                    <button type='submit' className='btn btn-success'>
-                        Add To My Food
-                    </button>
-                </div>
-            </form>
-        </div>
+                    Cancel
+                </UGBButton>
+                <UGBButton
+                    btnType='success'
+                    type='submit'
+                >
+                    Add To My Food
+                </UGBButton>
+            </div>
+        </form>
     );
 }
 

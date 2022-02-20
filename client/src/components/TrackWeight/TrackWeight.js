@@ -1,20 +1,17 @@
 import { makeStyles, Typography } from '@material-ui/core';
 import { useState } from 'react';
 import { UGBDatePicker } from '../Global/UGBDatePicker';
+import UGBButton from '../Global/UGBButton';
 import { UGBInput } from '../Global/UGBInput';
 import { postData } from '../utils/FetchUtils';
 import { parseDate } from '../utils/utilFunc';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
-    weightSubmission: {
-        display: 'flex',
-        alignItems: 'baseline',
-    },
     actions: {
         display: 'flex',
         justifyContent: "flex-end",
-        marginTop: theme.spacing(7),
+        marginTop: theme.spacing(2),
         "& button:first-child": {
             marginRight: theme.spacing(2),
         },
@@ -28,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     title: {
-        color:'#343A40'
+        color: '#343A40'
     }
 }));
 
@@ -64,40 +61,45 @@ const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
     }
 
     return (
-        <>
-            <form onSubmit={onSubmitWeight}>
-                <Typography
-                    className={clsx('d-flex justify-content-center', styles.title)}
-                    variant='h6'
-                    component='div'
-                >
-                    Track Daily Weight
-                </Typography>
-                <div className={clsx('form-group col', styles.inputs)}>
-                    <UGBDatePicker
-                        selectedDate={selectedDate}
-                        setSelectedDate={setSelectedDate}
-                        minDate={minSelectedDate}
-                        maxDate={maxSelectedDate}
-                    />
-                </div>
-                <UGBInput
-                    type='number'
-                    $value={weight}
-                    placeholder='Weight'
-                    min='1'
-                    iconStart='fas fa-balance-scale'
+        <form onSubmit={onSubmitWeight}>
+            <Typography
+                className={clsx('d-flex justify-content-center', styles.title)}
+                variant='h6'
+                component='div'
+            >
+                Track Daily Weight
+            </Typography>
+            <hr />
+            <div className={clsx('form-group col', styles.inputs)}>
+                <UGBDatePicker
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                    minDate={minSelectedDate}
+                    maxDate={maxSelectedDate}
                 />
-                <div className={styles.actions}>
-                    <button type="button" onClick={() => onClose()} className="btn btn-danger" >
-                        Cancel
-                    </button>
-                    <button type="submit" className="btn btn-success" >
-                        Save
-                    </button>
-                </div>
-            </form>
-        </>
+            </div>
+            <UGBInput
+                type='number'
+                $value={weight}
+                placeholder='Weight'
+                min='1'
+                iconStart='fas fa-balance-scale'
+            />
+            <div className={styles.actions}>
+                <UGBButton
+                    onClick={() => onClose()}
+                    btnType='danger'
+                >
+                    Cancel
+                </UGBButton>
+                <UGBButton
+                    btnType='success'
+                    type="submit"
+                >
+                    Save
+                </UGBButton>
+            </div>
+        </form>
     );
 }
 

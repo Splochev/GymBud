@@ -247,7 +247,6 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, sel
     return (
         <div className={styles.container}>
             <UGBAlert open={open} setOpen={setOpen} message={message} />
-
             <TableContainer>
                 <Table size={'medium'}>
                     <EnhancedTableHead
@@ -324,7 +323,6 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, sel
                 </Table>
             </TableContainer>
             <div className={styles.greenStripe}></div>
-
             <div className={styles.pagination}>
                 <ThemeProvider theme={theme}>
                     <Pagination

@@ -13,11 +13,11 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const UGBInput = ({ $value, type, name, placeholder, min = null, max = null, required = true, iconStart, children }) => {
+export const UGBInput = ({ $value, type, name, placeholder, min = null, max = null, required = true, disabled = false, iconStart, children }) => {
     const styles = useStyles();
 
     return (
-        $value ?
+        iconStart ?
             <div className='form-group col'>
                 <div className='input-group-prepend'>
                     <div className={clsx('input-group-text', styles.cornerless, styles.iconPrepend)}>
@@ -25,9 +25,7 @@ export const UGBInput = ({ $value, type, name, placeholder, min = null, max = nu
                     </div>
                     <input
                         value={$value[0]}
-                        onChange={(e) => {
-                            $value[1](e.target.value)
-                        }}
+                        onChange={disabled ? null : (e) => $value[1](e.target.value)}
                         type={type}
                         className={clsx('form-control', styles.cornerless)}
                         name={name}
@@ -35,29 +33,25 @@ export const UGBInput = ({ $value, type, name, placeholder, min = null, max = nu
                         required={required}
                         min={min}
                         max={max}
-                        step={type === 'number' ? '.01': null}
-                    />
-                    {children}
-                </div>
-            </div>
-            :
-            <div className='form-group col'>
-                <div className='input-group-prepend'>
-                    <div className={clsx('input-group-text', styles.cornerless, styles.iconPrepend)}>
-                        <i className={clsx(iconStart, styles.icon)} />
-                    </div>
-                    <input
-                        type={type}
-                        className={clsx('form-control', styles.cornerless)}
-                        name={name}
-                        placeholder={placeholder}
-                        required={required}
-                        min={min}
-                        max={max}
+                        disabled={disabled}
                         step={type === 'number' ? '.01' : null}
                     />
                     {children}
                 </div>
             </div>
+            :
+            <input
+                value={$value[0]}
+                onChange={disabled ? null : (e) => $value[1](e.target.value)}
+                type={type}
+                className={'form-control'}
+                name={name}
+                placeholder={placeholder}
+                required={required}
+                min={min}
+                max={max}
+                disabled={disabled}
+                step={type === 'number' ? '.01' : null}
+            />
     );
 }
