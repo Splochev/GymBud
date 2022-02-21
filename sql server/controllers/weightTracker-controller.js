@@ -22,75 +22,68 @@ module.exports = class WeightTrackerController {
     async getWeightData(req, res) {
         try {
             const user = req.user;
-            const today = req.query.limitDate ? req.query.limitDate : parseDate(new Date());
+            const limit = req.query.limitDate ? req.query.limitDate : parseDate(new Date());
+            const minSelectedOffsetDateIsSet = req.query.getMinOffsetDate;
             let offsetDate = req.query.offsetDate ? req.query.offsetDate : new Date();
 
             if (!req.query.offsetDate) {
                 offsetDate.setDate(offsetDate.getDate() - 90);
                 offsetDate = parseDate(offsetDate);
             }
-
-            if (Date.parse(offsetDate) > Date.parse(today)) {
+            if (new Date(offsetDate).getTime() > new Date(limit).getTime()) {
                 res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, 'Invalid dates'));
                 return;
             }
 
             const weightData = await MysqlAdapter.query(`
-                SELECT * FROM 
+                SELECT date, weight FROM 
                     weight_tracker
                 WHERE
                     user_id = ${escape(user.id)}
-                    AND date BETWEEN CAST(${escape(offsetDate)} AS DATE) AND CAST(${escape(today)} AS DATE)
+                    AND date BETWEEN CAST(${escape(offsetDate)} AS DATE) AND CAST(${escape(limit)} AS DATE)
                 ORDER BY 
                     date ASC
             `);
 
-            if (!weightData.length) {
-                res.json({ data: [] })
-                return;
-            }
+            let minOffsetDate = await MysqlAdapter.query(`
+                SELECT date FROM 
+                    weight_tracker
+                WHERE
+                    user_id = ${escape(user.id)}
+                ORDER BY 
+                    date ASC
+                limit 1; 
+            `)
+            minOffsetDate = minOffsetDate[0].date
 
-            const startDateOfWeek = new Date(weightData[0].date);
-            const endDateOfWeek = new Date(weightData[0].date);
-            endDateOfWeek.setDate(endDateOfWeek.getDate() + 6);
-
-            if (weightData.length === 1) {
-                res.json({
-                    data: [{
-                        1: weightData[0].weight,
-                        2: null,
-                        3: null,
-                        4: null,
-                        5: null,
-                        6: null,
-                        7: null,
-                        startDate: parseDate(startDateOfWeek),
-                        endDate: parseDate(endDateOfWeek),
-                        avgWeight: weightData[0].weight,
-                        weightChange: 0
-                    }]
-                });
-                return;
-            }
-
-            const responseWeightData = [];
             const mappedWeightData = {};
+            let startDateOfWeek = !minSelectedOffsetDateIsSet && new Date(minOffsetDate).getTime() < new Date(offsetDate).getTime() ? new Date(offsetDate) : new Date(weightData[0].date);
+            const parsedLimit = new Date(limit).getTime();
+
+            while (startDateOfWeek.getTime() <= parsedLimit) {
+                mappedWeightData[startDateOfWeek.getTime()] = 1;
+                startDateOfWeek.setDate(startDateOfWeek.getDate() + 1);
+            }
 
             for (const weightEntry of weightData) {
                 mappedWeightData[new Date(weightEntry.date).getTime()] = { ...weightEntry };
             }
-            const mappedWeightDataKeys = Object.keys(mappedWeightData);
-            const daysDifference = (new Date(today).getTime() - mappedWeightDataKeys[mappedWeightDataKeys.length - 1]) / (1000 * 3600 * 24);
-            const weeksAmount = Math.ceil((mappedWeightDataKeys.length + daysDifference) / 7);
+
+            const weeksAmount = Math.ceil(Object.keys(mappedWeightData).length / 7);
+            startDateOfWeek = !minSelectedOffsetDateIsSet && new Date(minOffsetDate).getTime() < new Date(offsetDate).getTime() ? new Date(offsetDate) : new Date(weightData[0].date);
+            const endDateOfWeek = !minSelectedOffsetDateIsSet && new Date(minOffsetDate).getTime() < new Date(offsetDate).getTime() ? new Date(offsetDate) : new Date(weightData[0].date);
+            endDateOfWeek.setDate(endDateOfWeek.getDate() + 6);
+            const responseWeightData = [];
 
             for (let i = 0; i < weeksAmount; i++) {
                 responseWeightData.push({ startDate: parseDate(startDateOfWeek), endDate: parseDate(endDateOfWeek) });
                 let weightSum = 0;
                 let avgWeightCounter = 0;
                 let dateCounter = 1;
+
                 while (startDateOfWeek.getTime() <= endDateOfWeek.getTime()) {
                     const startDateOfWeekAsTime = startDateOfWeek.getTime();
-                    if (mappedWeightData[startDateOfWeekAsTime]) {
+                    if (mappedWeightData[startDateOfWeekAsTime] && mappedWeightData[startDateOfWeekAsTime] !== 1) {
                         responseWeightData[i][dateCounter] = mappedWeightData[startDateOfWeekAsTime].weight;
                         weightSum += mappedWeightData[startDateOfWeekAsTime].weight;
                         avgWeightCounter++;
@@ -109,26 +102,20 @@ module.exports = class WeightTrackerController {
                 if (i === 0) {
                     responseWeightData[i].weightChange = 0;
                 } else {
-                    responseWeightData[i].weightChange = !responseWeightData[i].avgWeight ? 0 : Math.round(((responseWeightData[i].avgWeight - responseWeightData[i - 1].avgWeight) / responseWeightData[i - 1].avgWeight * 100) * 100) / 100;
+                    if (responseWeightData[i].avgWeight) {
+                        let result = Math.round(((responseWeightData[i].avgWeight - responseWeightData[i - 1].avgWeight) / responseWeightData[i - 1].avgWeight * 100) * 100) / 100;
+                        if (isNaN(result) || result == 'Infinity' || result == '-Infinity') {
+                            result = 0;
+                        }
+                        responseWeightData[i].weightChange = result;
+                    } else {
+                        responseWeightData[i].weightChange = 0
+                    }
                 }
                 endDateOfWeek.setDate(endDateOfWeek.getDate() + 7);
             }
 
-            if (req.query.getMinOffsetDate) {
-                const minOffsetDate = await MysqlAdapter.query(`
-                    SELECT date FROM 
-                        weight_tracker
-                    WHERE
-                        user_id = ${escape(user.id)}
-                    ORDER BY 
-                        date ASC
-                    limit 1; 
-                `);
-
-                res.json({ data: responseWeightData, minOffsetDate: minOffsetDate[0].date });
-            } else {
-                res.json({ data: responseWeightData });
-            }
+            res.json({ data: responseWeightData, minOffsetDate: minOffsetDate });
         } catch (error) {
             console.log(error);
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
