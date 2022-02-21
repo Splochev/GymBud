@@ -24,7 +24,7 @@ const useStylesTest = makeStyles((theme) => ({
         '& .MuiButtonBase-root:first-child': {
             width: '47px',
             height: '47px',
-            background: '#343A40',
+            background: '#1B1B1B',
             color: 'white',
             border: '1px solid white',
             borderRadius: '0.25rem',
@@ -34,7 +34,7 @@ const useStylesTest = makeStyles((theme) => ({
             },
             '&:hover': {
                 background: 'white',
-                color: '#343A40',
+                color: '#1B1B1B',
             },
         }
     },
@@ -57,6 +57,7 @@ const actions = [
     { icon: <i className="fa-solid fa-weight-scale" style={{ fontSize: 20, color: 'black' }} />, name: 'Track Weight' },
     { icon: <i className="fas fa-calculator" style={{ fontSize: 20, color: 'black' }} />, name: 'Calorie Calculator' },
     { icon: <FitnessCenterIcon style={{ fontSize: 20, color: 'black' }} />, name: '1 Rep Max Calculator' },
+    { icon: <i className="fa-solid fa-carrot" style={{ fontSize: 20, color: 'black' }} />, name: 'Add Food' },
 ];
 
 export default function SpeedDialTooltipOpen() {
@@ -67,18 +68,20 @@ export default function SpeedDialTooltipOpen() {
     function onClickIcon(name) {
         switch (name) {
             case 'Track Weight':
-                history.push({ search: "?tab=track-weight", state: { fromPopup: true } });
+                history.push("?tab=track-weight");
                 break;
             case 'Calorie Calculator':
-                history.push({ search: "?tab=calorie-calculator", state: { fromPopup: true } });
+                history.push("?tab=calorie-calculator");
                 break;
             case '1 Rep Max Calculator':
-                history.push({ search: "?tab=one-rep-max-calculator", state: { fromPopup: true } });
+                history.push("?tab=one-rep-max-calculator");
+                break;
+            case 'Add Food':
+                history.push("?tab=add-food");
                 break;
             default:
                 break;
         }
-        handleClose()
     }
 
     const handleOpen = () => {

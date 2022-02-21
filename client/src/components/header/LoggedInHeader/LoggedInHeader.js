@@ -22,7 +22,7 @@ import LiItem from '../../Global/UGBLiItem.js';
 
 const useStyles = makeStyles((theme) => ({
     nav: {
-        backgroundColor: "#343a40",
+        backgroundColor: "#1B1B1B",
         padding: 0,
         paddingLeft: '10px',
     },
@@ -38,18 +38,18 @@ const useStyles = makeStyles((theme) => ({
         '& .MuiAvatar-root': {
             color: 'white',
             border: '1px solid white',
-            background: '#343A40',
+            background: '#1B1B1B',
         },
         '&:hover': {
             '& .MuiAvatar-root': {
-                color: '#343A40',
+                color: '#1B1B1B',
                 background: 'white'
             },
         }
     },
     avatarFocused: {
         '& .MuiAvatar-root': {
-            color: '#343A40',
+            color: '#1B1B1B',
             background: 'white'
         },
     },

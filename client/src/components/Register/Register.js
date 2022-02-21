@@ -68,13 +68,13 @@ const Register = ({ onClose }) => {
 
     return (
         <form className={styles.form} onSubmit={register}>
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Sign Up</Typography>
+            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Sign Up</Typography>
             <hr className={styles.hr} />
             <Typography
                 variant='inherit'
                 component='div'
                 style={{
-                    color: '#343A40',
+                    color: '#1B1B1B',
                     width: '100%',
                     marginBottom: 10,
                 }}

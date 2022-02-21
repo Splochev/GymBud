@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     title: {
-        color: '#343A40'
+        color: '#1B1B1B'
     }
 }));
 

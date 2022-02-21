@@ -33,13 +33,13 @@ const ForgotPassword = () => {
 
     return (
         <form className={styles.form}>
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Reset Your Password</Typography>
+            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Reset Your Password</Typography>
             <hr className={styles.hr} />
             <Typography
                 variant='inherit'
                 component='div'
                 style={{
-                    color: '#343A40',
+                    color: '#1B1B1B',
                     width: '100%',
                     display: 'flex',
                     justifyContent: 'start',

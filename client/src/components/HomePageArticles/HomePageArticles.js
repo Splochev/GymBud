@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
             right: 0,
             bottom: 0,
             left: 0,
-            backgroundImage: 'linear-gradient(-70deg, #343a40, transparent 60%)',
+            backgroundImage: 'linear-gradient(-70deg, #1B1B1B, transparent 60%)',
             opacity: 1
         },
         '&:hover': {
@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
         height: '10px',
         margin: '10px 20px',
         borderRadius: '5px',
-        backgroundColor: '#343a40',
+        backgroundColor: '#1B1B1B',
         transition: 'width 0.2s ease'
     },
     postCardText: {
@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
             padding: '3rem',
             width: '100%',
             '&::before': {
-                background: '#343a40',
+                background: '#1B1B1B',
                 content: '""',
                 position: 'absolute',
                 display: 'block',

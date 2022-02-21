@@ -46,7 +46,7 @@ export default makeStyles(() => ({
                 fontSize: '20px'
             },
             "& .MuiTableCell-root": {
-                borderBottom: '1px solid #343A40',
+                borderBottom: '1px solid #1B1B1B',
             }
         },
         "& .MuiTableBody-root": {
@@ -55,8 +55,8 @@ export default makeStyles(() => ({
                     background: '#DFF2E3',
                 },
                 "& .MuiTableCell-root": {
-                    borderBottom: '1px solid #343A40',
-                    borderTop: '1px solid #343A40',
+                    borderBottom: '1px solid #1B1B1B',
+                    borderTop: '1px solid #1B1B1B',
                 }
             }
         }

@@ -262,7 +262,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                 </div>
                 <div className={styles.charts}>
                     <div style={{ width: '100%' }}>
-                        <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#343A40' }} >Average Weight Tracker:</Typography>
+                        <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Average Weight Tracker:</Typography>
                         <UGBVerticalBarsChart
                             data={rows}
                             tooltipLabel='Average Weight'
@@ -274,7 +274,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                         />
                     </div>
                     <div style={{ width: '100%' }}>
-                        <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#343A40' }} >Weight Change(%) Tracker:</Typography>
+                        <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Weight Change(%) Tracker:</Typography>
                         <UGBVerticalBarsChart
                             data={rows}
                             tooltipLabel='Average Weight'
@@ -288,7 +288,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                 </div>
             </div>
             <div className={styles.toolbar}>
-                <Typography variant='h6' component='div' style={{ marginTop: 15, marginBottom: 15, color: '#343A40' }} >Weight Entries: </Typography>
+                <Typography variant='h6' component='div' style={{ marginTop: 15, marginBottom: 15, color: '#1B1B1B' }} >Weight Entries: </Typography>
                 <div>
                     <UGBButton
                         btnType='success'

@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core';
-import SpeedDialTooltipOpen from '../Global/SpeedDial';
+import SpeedDialTooltipOpen from '../Global/UGBSpeedDial';
 import { useState } from 'react';
 import { useStoreContext } from '../store/Store';
 import UGBLink from '../Global/UGBLink';
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     footer: {
-        backgroundColor: '#343a40',
+        backgroundColor: '#1B1B1B',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',

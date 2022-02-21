@@ -74,7 +74,7 @@ const CalorieCalculator = () => {
     return (
         <div className={styles.calorieCalculatorContainer}>
             <div className={styles.container}>
-                <Typography variant='h5' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Calorie Calculator</Typography>
+                <Typography variant='h5' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Calorie Calculator</Typography>
                 <UGBRadioButtonsGroup
                     label=""
                     display='inline'
@@ -89,12 +89,12 @@ const CalorieCalculator = () => {
                     }}
                 />
                 <hr className={styles.hr} />
-                <Typography variant='h6' component='div' style={{ marginBottom: 10, textAlign: 'center', color: '#343A40' }} >BMR calculator</Typography>
+                <Typography variant='h6' component='div' style={{ marginBottom: 10, textAlign: 'center', color: '#1B1B1B' }} >BMR calculator</Typography>
                 {formula[0] === 'KatchMcardleFormula' ? <KatchMcardleFormula bmr={bmr} /> : null}
                 {formula[0] === 'MifflinStJeorFormula' ? <MifflinStJeorFormula bmr={bmr} /> : null}
                 <hr className={styles.hr} />
                 <div className={styles.tdeeResult}>
-                    <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >TDEE calculator:</Typography>
+                    <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >TDEE calculator:</Typography>
                     <LiItem
                         type='select'
                         anchor={anchor}
@@ -116,7 +116,7 @@ const CalorieCalculator = () => {
                         title="Calculate TDEE"
                         onClick={calculate}
                     />
-                    <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Your TDEE is:</Typography>
+                    <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your TDEE is:</Typography>
                     <UGBInput
                         $value={tdee}
                         type='number'

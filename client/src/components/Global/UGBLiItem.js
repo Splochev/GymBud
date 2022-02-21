@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '20px',
         color: 'white',
         height: '100%',
-        borderBottom: '2px solid #343A40',
+        borderBottom: '2px solid #1B1B1B',
         '&:hover': {
             color: '#1E7E34 !important',
             borderBottom: '2px solid #1E7E34 !important',
@@ -84,29 +84,30 @@ const LiItem = ({ path, active, badge, type = 'link', anchor, setAnchor, menuIte
                 >
                     {menuItems ?
                         <MenuList>
-                            {menuItems.map(item => {
+                            {menuItems.map((item, index) => {
                                 return (
-                                    <MenuItem key={item.label}>
+                                    <MenuItem key={item.label + index}>
                                         {item.path ?
                                             <Link
+                                                key={item.label + index + index}
                                                 component={NavLink}
                                                 exact={true}
                                                 to={item.path}
                                                 onClick={() => setAnchor(null)}
                                             >
                                                 {item.labels ?
-                                                    item.labels.map(l => (
-                                                        <div>{l}</div>
+                                                    item.labels.map((l, i) => (
+                                                        <div key={item.label + l + i}>{l}</div>
                                                     ))
                                                     :
                                                     item.label
                                                 }
                                             </Link>
                                             :
-                                            <Link key={item.label} onClick={item.onClick}>
+                                            <Link key={item.label + index} onClick={item.onClick}>
                                                 {item.labels ?
-                                                    item.labels.map(l => (
-                                                        <div key={item.l}>{l}</div>
+                                                    item.labels.map((l, i) => (
+                                                        <div key={item.label + l + i}>{l}</div>
                                                     ))
                                                     :
                                                     item.label

@@ -64,13 +64,13 @@ const Login = ({ setShowLogin }) => {
 
     return (
         <form className={styles.form} onSubmit={onLogin}>
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Sign In:</Typography>
+            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Sign In:</Typography>
             <hr className={styles.hr} />
             <Typography
                 variant='inherit'
                 component='div'
                 style={{
-                    color: '#343A40',
+                    color: '#1B1B1B',
                     width: '100%',
                     display: 'flex',
                     justifyContent: 'start',

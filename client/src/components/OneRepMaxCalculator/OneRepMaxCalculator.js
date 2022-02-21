@@ -61,13 +61,13 @@ const OneRepMaxCalculator = () => {
 
     return (
         <form className={styles.form} onSubmit={calculate}>
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >One Rep Max Calculator</Typography>
+            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >One Rep Max Calculator</Typography>
             <hr className={styles.hr} />
             <Typography
                 variant='inherit'
                 component='div'
                 style={{
-                    color: '#343A40',
+                    color: '#1B1B1B',
                     width: '100%',
                     marginBottom: 10,
                     display: 'flex',
@@ -113,7 +113,7 @@ const OneRepMaxCalculator = () => {
                     iconStart='fas fa-sort-numeric-up'
                 />
             </div>
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Your one rep max is:</Typography>
+            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your one rep max is:</Typography>
             <input type='number' value={oneRM[0]} className={clsx('form-control', styles.result )} disabled />
             <UGBButton
                 type='submit'

@@ -18,7 +18,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 const useStyles = makeStyles((theme) => ({
     nav: {
-        backgroundColor: "#343a40",
+        backgroundColor: "#1B1B1B",
         padding: 0,
         paddingLeft: '10px',
     },

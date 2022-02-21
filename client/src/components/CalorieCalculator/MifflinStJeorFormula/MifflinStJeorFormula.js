@@ -89,7 +89,7 @@ const MifflinStJeorFormula = ({ bmr }) => {
                 type="submit"
                 btnType='success'
             />
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#343A40' }} >Your BMR is:</Typography>
+            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your BMR is:</Typography>
             <UGBInput
                 $value={bmr}
                 type='number'
