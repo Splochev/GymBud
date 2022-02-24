@@ -127,6 +127,7 @@ const CalorieCalculator = () => {
                         $value={tdee}
                         type='number'
                         disabled={true}
+                        maxWidth={209}
                     />
                 </div>
                 {alert}

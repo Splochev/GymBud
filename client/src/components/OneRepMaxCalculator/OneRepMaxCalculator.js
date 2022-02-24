@@ -13,21 +13,17 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    result: {
-        width: '200px',
-          marginBottom: 10,
-    },
     hr: {
         width: '100%',
         color: '#CED4DA',
-        opacity: 0.5
+        opacity: 0.3
     },
     inputs: {
         width: '100%',
         display: 'flex',
         gap: 10,
         '@media (max-width: 365px)': {
-            flexDirection:'column'
+            flexDirection: 'column'
         }
     },
     actions: {
@@ -116,20 +112,20 @@ const OneRepMaxCalculator = () => {
                 />
             </div>
             <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your one rep max is:</Typography>
-            <div className={styles.result}>
-                <UGBInput
-                    $value={oneRM}
-                    type='number'
-                    disabled={true}
-
+            <UGBInput
+                $value={oneRM}
+                type='number'
+                disabled={true}
+                maxWidth={140}
+            />
+            <div style={{ marginTop: 10 }} >
+                <UGBButton
+                    type='submit'
+                    btnType='success'
+                    title='Calculate 1 Rep Max'
+                    icon='fas fa-calculator'
                 />
             </div>
-            <UGBButton
-                type='submit'
-                btnType='success'
-                title='Calculate 1 Rep Max'
-                icon='fas fa-calculator'
-            />
             <div className={styles.actions}>
                 <UGBButton
                     onClick={() => {

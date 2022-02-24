@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const UGBInput = ({ $value, type, name, label, min = null, max = null, placeholder, hasButton, required = true, disabled = false, iconStart, children }) => {
+export const UGBInput = ({ $value, type, name, label, min = null, max = null, placeholder, maxWidth, hasButton, required = true, disabled = false, iconStart, children }) => {
     const styles = useStyles();
 
     return (
@@ -87,6 +87,7 @@ export const UGBInput = ({ $value, type, name, label, min = null, max = null, pl
                         onChange={disabled ? null : (e) => $value[1](e.target.value)}
                         type={type}
                         className={styles.input}
+                        style={{ width: maxWidth}}
                         name={name}
                         placeholder={placeholder}
                         required={required}
@@ -99,7 +100,22 @@ export const UGBInput = ({ $value, type, name, label, min = null, max = null, pl
                 </div>
             </div>
             :
-            <>
+            disabled ?
+                <input
+                    value={$value[0]}
+                    onChange={disabled ? null : (e) => $value[1](e.target.value)}
+                    type={type}
+                    style={{ width: maxWidth }}
+                    className={styles.input}
+                    name={name}
+                    placeholder={placeholder}
+                    required={required}
+                    min={min}
+                    max={max}
+                    disabled={disabled}
+                    step={type === 'number' ? '.01' : null}
+                />
+                :
                 <div className={styles.btnContainer}>
                     {label ? <Typography variant='subtitle2' component='div' className={styles.subTitle} >{label}</Typography> : null}
                     <input
@@ -110,12 +126,12 @@ export const UGBInput = ({ $value, type, name, label, min = null, max = null, pl
                         name={name}
                         placeholder={placeholder}
                         required={required}
+                        style={{ width: maxWidth }}
                         min={min}
                         max={max}
                         disabled={disabled}
                         step={type === 'number' ? '.01' : null}
                     />
                 </div>
-            </>
     );
 }

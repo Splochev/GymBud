@@ -94,6 +94,7 @@ const MifflinStJeorFormula = ({ bmr }) => {
                 $value={bmr}
                 type='number'
                 disabled={true}
+                maxWidth = {209}
             />
         </form>
     );

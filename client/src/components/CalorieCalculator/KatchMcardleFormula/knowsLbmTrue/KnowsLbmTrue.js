@@ -46,6 +46,7 @@ const KnowsLbmTrue = ({ bmr }) => {
                 $value={bmr}
                 type='number'
                 disabled={true}
+                maxWidth={123}
             />
         </form>
     );

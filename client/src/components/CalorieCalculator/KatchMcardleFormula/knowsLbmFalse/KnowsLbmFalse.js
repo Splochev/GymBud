@@ -78,8 +78,9 @@ const KnowsLbmFalse = ({ bmr }) => {
                 $value={bmr}
                 type='number'
                 disabled={true}
+                maxWidth={111}
             />
-        </form>
+        </form >
     );
 }
 
