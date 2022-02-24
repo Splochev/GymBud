@@ -12,6 +12,7 @@ const UGBLogo = () => {
                 lineHeight: 'inherit',
                 whiteSpace: 'nowrap',
                 marginRight:'1rem',
+                marginLeft:'0.5rem',
             }}
             href="#!"
             onClick={(e) => {

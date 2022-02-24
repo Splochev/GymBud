@@ -1,178 +1,126 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import clsx from 'clsx';
+import charts from '../assets/charts.svg'
+import food from '../assets/food.svg'
+import lifting from '../assets/lifting.svg'
+import useWindowSize from '../utils/useWindowSize';
 
 const useStyles = makeStyles((theme) => ({
-    articleCardTextWoman: {
-        paddingBottom: '30px'
-    },
-    homePageSection: {
-        marginRight: 0,
-        marginLeft: 0,
-        marginTop: 30,
-    },
-    postcard: {
-        flexWrap: 'wrap',
-        display: 'flex',
-        borderRadius: '10px',
-        margin: '0 0 2rem 0',
-        overflow: 'hidden',
-        position: 'relative',
-        backgroundColor: 'black',
-        color: 'white',
-        '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundImage: 'linear-gradient(-70deg, #1B1B1B, transparent 60%)',
-            opacity: 1
-        },
-        '&:hover': {
-            "& $postCardBar": {
-                width: '95%'
-            }
-        },
-        '@media (min-width: 1500px)': {
-            flexWrap: 'inherit',
-            '&:hover': {
-                "& $postcardImg": {
-                    transform: 'scale(1.1)'
-                }
-            },
-            '&:nth-child(2n+0)': {
-                flexDirection: 'row-reverse',
-                "& $postCardText": {
-                    '&::before': {
-                        right: '-12px',
-                        transform: 'rotate(-4deg)'
-                    },
-                }
-            },
-            '&:nth-child(2n+1)': {
-                "& $postCardText": {
-                    '&::before': {
-                        left: '-12px',
-                        transform: 'rotate(4deg)'
-                    },
-                }
-            },
-
-        }
-    },
-    postcardImg: {
-        maxHeight: '180px',
-        width: '100%',
-        objectFit: 'cover',
-        position: 'relative',
-        '@media (min-width: 1500px)': {
-            maxWidth: '300px',
-            maxHeight: '100%',
-            transition: 'transform 0.3s ease'
-        }
-    },
-    postCardBar: {
-        width: '50px',
-        height: '10px',
-        margin: '10px 20px',
-        borderRadius: '5px',
-        backgroundColor: '#1B1B1B',
-        transition: 'width 0.2s ease'
-    },
-    postCardText: {
-        position: 'relative',
-        '@media (min-width: 1500px)': {
-            padding: '3rem',
-            width: '100%',
-            '&::before': {
-                background: '#1B1B1B',
-                content: '""',
-                position: 'absolute',
-                display: 'block',
-                top: '-20%',
-                height: '130%',
-                width: '55px'
-            },
-        }
-    },
-    postCardPreviewText: {
+    homePageContainer: {
+        padding: '1.5rem',
         height: '100%',
-        fontSize: '20px',
-        paddingRight: '40px',
-        paddingLeft: '40px'
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        '@media (max-width: 1060px)': {
+            height: 'auto',
+        }
+    },
+    svgs: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        '@media (max-width: 1060px)': {
+            justifyContent: '',
+            flexDirection: 'column',
+            gap: 50
+        }
+    },
+    svg: {
+        width: '100%',
+        height: 'auto',
+    },
+    title: {
+        textAlign: 'center',
+        color: '#1B1B1B',
+        fontWeight: 'bolder',
+        fontSize: '50px',
+    },
+    subTitle: {
+        textAlign: 'center',
+        color: '#1B1B1B',
+        '@media (max-width: 1060px)': {
+            marginBottom: 70
+        }
+    },
+    cardTitle: {
+        textAlign: 'center',
+        fontWeight: 'bolder',
+        fontSize: '25px',
+        color: '#1B1B1B',
+        marginBottom: 16
+    },
+    cardSubTitle: {
+        textAlign: 'center',
+        fontSize: '18px',
+        color: '#1B1B1B',
+        display: 'flex',
+        flexDirection: 'column',
+        lineHeight: 1.2
     }
 }));
 
 const HomePageArticles = () => {
     const styles = useStyles();
+    const size = useWindowSize();
 
     return (
-        <div className={clsx("row", styles.homePageSection)}>
-            <div className="col">
-                <section>
-                    <div className="container py-2">
-                        <article className={styles.postcard}>
-                            <img className={styles.postcardImg} src="/UrGymBudBackGroundLandingPage.png" alt="man doing deadlift" />
-                            <div className={styles.postCardText}>
-                                <div className={styles.postCardPreviewText}>
-                                    <div className={styles.postCardBar}></div>
-                                    <ul>
-                                        <li>A little progress each day is what it's all about.</li>
-                                        <li>Track daily caloric & macronutrient intake, workout sessions and
-                                            much more with Ur Gym Bud</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </article>
-                        <article className={styles.postcard}>
-                            <img className={styles.postcardImg} src="/analytics.png" alt="computer screen and chart" />
-                            <div className={styles.postCardText}>
-                                <div className={styles.postCardPreviewText}>
-                                    <div className={styles.postCardBar}></div>
-                                    <ul>
-                                        <li>Calculate your total daily energy expenditure calories.</li>
-                                        <li>Calculate your daily calories & macronutrient intake.</li>
-                                        <li>Keep track of your body composition and gym progress.</li>
-                                        <li>Calculate your 1 rep max for any exercise.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </article>
+        <div className={styles.homePageContainer}>
+            <div>
+                <Typography variant='h1' component='div' className={styles.title} >
+                    UrGymBud{size.width <= 540 ? <br /> : ' '}Spots You!
+                </Typography>
+                <Typography variant='h6' component='div' className={styles.subTitle} >
+                    Keep the motivation going,{size.width <= 540 ? <br /> : ' '}we'll take care of the rest.
+                </Typography>
+                <div className={styles.svgs}>
+                    <div>
+                        <img src={charts} alt='charts' className={styles.svg} />
+                        <Typography variant='h1' component='div' className={styles.cardTitle} >
+                            Track body &amp;{size.width <= 403 ? <br /> : ' '}workout progress.
+                        </Typography>
+                        <Typography variant='h6' component='div' className={styles.cardSubTitle} >
+                            All measurements in one place.{size.width < 367 ? <br /> : ' '}From
+                            {size.width >= 367 ? <br /> : ' '}
+                            weekly weight change{size.width < 367 ? <br /> : ' '}tracking
+                            {size.width >= 367 ? <br /> : ' '}
+                            to exercise strength{size.width < 367 ? <br /> : ' '}testing.
+                        </Typography>
                     </div>
-                </section>
-            </div>
-            <div className="col">
-                <section>
-                    <div className="container py-2">
-                        <article className={styles.postcard}>
-                            <img className={styles.postcardImg} src="/landing-page-background-food.png" alt="cooked eggs on a pan" />
-                            <div className={styles.postCardText}>
-                                <div className={styles.postCardPreviewText}>
-                                    <div className={styles.postCardBar}></div>
-                                    <ul>
-                                        <li>Check the calories macronutrients of each food.</li>
-                                        <li>Build whole meals and check their calories & macronutrients.</li>
-                                        <li>Add new food with their calories & macronutrients.</li>
-                                        <li>Check the recipe, calories & macronutrients of already built meals.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </article>
-                        <article className={styles.postcard}  >
-                            <img className={styles.postcardImg} src="/landing-page-background-woman-img.png" alt="woman doing leg press" />
-                            <div className={styles.postCardText}>
-                                <div className={clsx(styles.articleCardTextWoman, styles.postCardPreviewText)}>
-                                    <div className={styles.postCardBar}></div>
-                                    <ul>
-                                        <li>Create and manage your own workout journal.</li>
-                                        <li>Submit every workout's set and rep.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </article>
+                    <div>
+                        <img src={food} alt='food' className={styles.svg} />
+                        <Typography variant='h1' component='div' className={styles.cardTitle} >
+                            Build food menus.
+                        </Typography>
+                        <Typography variant='h6' component='div' className={styles.cardSubTitle} >
+                            Find the calories &amp; micronutrients
+                            {size.width >= 339 ? <br /> : ' '}
+                            of your
+                            {size.width < 339 ? <br /> : ' '}
+                            favorite food, and
+                            {size.width < 339 ? <br /> : ' '}add
+                            {size.width >= 339 ? <br /> : ' '}
+                            it to your
+                            {size.width < 339 ? <br /> : ' '}
+                            food journal.
+                        </Typography>
                     </div>
-                </section>
+                    <div>
+                        <img src={lifting} alt='lifting' className={styles.svg} />
+                        <Typography variant='h1' component='div' className={styles.cardTitle} >
+                            Build &amp; Track{size.width <= 366 ? <br /> : ' '}Workout Splits
+                        </Typography>
+                        <Typography variant='h6' component='div' className={styles.cardSubTitle} >
+                            Make creating, changing, and following
+                            {size.width > 381 ? <br /> : ' '}
+                            your own workout splits easier with
+                            {size.width > 381 ? <br /> : ' '}
+                            our Workout Builder.
+                        </Typography>
+                    </div>
+                </div>
             </div>
         </div>
     );
