@@ -3,13 +3,15 @@ import KnowsLbmTrue from './knowsLbmTrue/KnowsLbmTrue'
 import KnowsLbmFalse from './knowsLbmFalse/KnowsLbmFalse'
 import { UGBRadioButtonsGroup } from '../../Global/UGBRadioButtonsGroup';
 import { FormControlLabel, Radio } from '@material-ui/core';
+import useStyles from '../styles'
 
 const KatchMcardleFormula = ({ bmr }) => {
+    const styles = useStyles();
     const knowsLbmLayout = useState('KnowsLbmTrue');
 
     return (
-        <div className="row">
-            <div className="col">
+        <div className={styles.katchFormulaLayout}>
+            <div>
                 <UGBRadioButtonsGroup
                     label=""
                     $checkedValue={knowsLbmLayout}

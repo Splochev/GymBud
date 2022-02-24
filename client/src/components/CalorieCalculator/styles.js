@@ -52,5 +52,10 @@ export default makeStyles((theme) => ({
     },
     container: {
         minHeight: '735px',
+    },
+    katchFormulaLayout: {
+        display: 'flex',
+        width:'100%',
+        justifyContent: "space-between",
     }
 }))

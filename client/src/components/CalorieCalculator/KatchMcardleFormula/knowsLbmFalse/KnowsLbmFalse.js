@@ -33,52 +33,50 @@ const KnowsLbmFalse = ({ bmr }) => {
     }
 
     return (
-        <div className="col">
-            <form className={styles.form} onSubmit={calculate}>
-                {alert}
-                <UGBRadioButtonsGroup
-                    label="Sex:"
-                    display='inline'
-                    $checkedValue={sex}
-                    customMap={() => {
-                        return (
-                            <>
-                                <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon)} />} />
-                                <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon)} />} />
-                            </>
-                        );
-                    }}
-                />
-                <UGBInput
-                    type="number"
-                    $value={weight}
-                    min='1'
-                    max='250'
-                    placeholder="Weight"
-                    iconStart='fas fa-weight'
-                />
-                <UGBInput
-                    type='number'
-                    $value={height}
-                    min='1'
-                    max='275'
-                    placeholder="Height"
-                    iconStart='fas fa-ruler'
-                />
-                <UGBButton
-                    icon='fas fa-calculator'
-                    title="Calculate BMR"
-                    type="submit"
-                    btnType='success'
-                />
-                <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your BMR is:</Typography>
-                <UGBInput
-                    $value={bmr}
-                    type='number'
-                    disabled={true}
-                />
-            </form>
-        </div>
+        <form className={styles.form} onSubmit={calculate}>
+            {alert}
+            <UGBRadioButtonsGroup
+                label="Sex:"
+                display='inline'
+                $checkedValue={sex}
+                customMap={() => {
+                    return (
+                        <>
+                            <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon)} />} />
+                            <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon)} />} />
+                        </>
+                    );
+                }}
+            />
+            <UGBInput
+                type="number"
+                $value={weight}
+                min='1'
+                max='250'
+                placeholder="Weight"
+                iconStart='fas fa-weight'
+            />
+            <UGBInput
+                type='number'
+                $value={height}
+                min='1'
+                max='275'
+                placeholder="Height"
+                iconStart='fas fa-ruler'
+            />
+            <UGBButton
+                icon='fas fa-calculator'
+                title="Calculate BMR"
+                type="submit"
+                btnType='success'
+            />
+            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your BMR is:</Typography>
+            <UGBInput
+                $value={bmr}
+                type='number'
+                disabled={true}
+            />
+        </form>
     );
 }
 

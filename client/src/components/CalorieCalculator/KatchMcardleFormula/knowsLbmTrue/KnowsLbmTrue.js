@@ -24,31 +24,29 @@ const KnowsLbmTrue = ({ bmr }) => {
     }
 
     return (
-        <div className="col">
-            <form className={styles.form} onSubmit={calculate}>
-                {alert}
-                <UGBInput
-                    type="number"
-                    $value={lbm}
-                    min='1'
-                    max='250'
-                    placeholder="LBM"
-                    iconStart='fas fa-weight'
-                />
-                <UGBButton
-                    icon='fas fa-calculator'
-                    title="Calculate BMR"
-                    type="submit"
-                    btnType='success'
-                />
-                <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your BMR is:</Typography>
-                <UGBInput
-                    $value={bmr}
-                    type='number'
-                    disabled={true}
-                />
-            </form>
-        </div>
+        <form className={styles.form} onSubmit={calculate}>
+            {alert}
+            <UGBInput
+                type="number"
+                $value={lbm}
+                min='1'
+                max='250'
+                placeholder="LBM"
+                iconStart='fas fa-weight'
+            />
+            <UGBButton
+                icon='fas fa-calculator'
+                title="Calculate BMR"
+                type="submit"
+                btnType='success'
+            />
+            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your BMR is:</Typography>
+            <UGBInput
+                $value={bmr}
+                type='number'
+                disabled={true}
+            />
+        </form>
     );
 }
 
