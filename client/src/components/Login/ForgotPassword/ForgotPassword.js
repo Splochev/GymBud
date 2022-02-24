@@ -51,7 +51,7 @@ const ForgotPassword = () => {
             <UGBInput
                 $value={email}
                 type='text'
-                placeholder="Your email"
+                label="Your email"
                 iconStart='fas fa-envelope'
             />
 

@@ -37,6 +37,11 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     avatarRoot: {
+        '&:focus': {
+            '& .MuiAvatar-root': {
+                boxShadow: '#969A9D 0px 0px 0px 3px',
+            },
+        },
         '& .MuiAvatar-root': {
             color: 'white',
             border: '1px solid white',
@@ -52,7 +57,8 @@ const useStyles = makeStyles((theme) => ({
     avatarFocused: {
         '& .MuiAvatar-root': {
             color: '#1B1B1B',
-            background: 'white'
+            background: 'white',
+            boxShadow: '#969A9D 0px 0px 0px 3px',
         },
     },
     logoContainer: {
@@ -68,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         width: '100%',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
     }
 }));
 
@@ -173,6 +179,7 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                     <CalorieCalculator />
                 </UGBModal>
             </>
+            {/* HAS BOOTSTRAP */}
             <nav className={clsx("navbar navbar-expand-custom", styles.nav)}>
                 <div className={size.width < 970 ? styles.logoContainer : null}>
                     <div className={size.width < 970 ? styles.btnContainer : null}>
@@ -193,7 +200,7 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                     <div className={styles.navBarCollapse}>
                         <ul className={clsx("navbar-nav mr-auto", size.width < 970 ? styles.shrinkNav : null)}>
                             <LiItem >Find Food</LiItem>
-                            <LiItem badge={0}>Meal Planner</LiItem>
+                            <LiItem badgeCount={1}>Meal Planner</LiItem>
                             <LiItem
                                 path='/progress'
                                 active={(history.location.pathname === '/progress' && !tab && !anchorCalculators && !anchorFood && !anchorMeals && !anchorWorkout) || tab === 'track-weight'}

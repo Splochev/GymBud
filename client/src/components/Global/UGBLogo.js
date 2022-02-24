@@ -4,7 +4,15 @@ const UGBLogo = () => {
     const history = useHistory();
     return (
         <a
-            className="navbar-brand"
+            style={{
+                display: 'inline-block',
+                paddingTop: '0.3125rem',
+                paddingBottom: '0.3125rem',
+                fontSize: "1.25rem",
+                lineHeight: 'inherit',
+                whiteSpace: 'nowrap',
+                marginRight:'1rem',
+            }}
             href="#!"
             onClick={(e) => {
                 e.preventDefault();

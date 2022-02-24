@@ -70,7 +70,10 @@ export default makeStyles(() => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 5
+        gap: 5,
+        '@media (max-width: 400px)': {
+            flexDirection: 'column'
+        }
     },
     unsortableHead: {
         color: 'white'
@@ -109,8 +112,19 @@ export default makeStyles(() => ({
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'baseline',
+        '@media (max-width: 465px)': {
+            alignItems: 'center',
+        }
+    },
+    actions: {
+        display: 'flex',
+        gap: 10,
         '& button': {
-            marginLeft: 10
+            width: '127px'
+        },
+        '@media (max-width: 465px)': {
+            flexDirection: 'column',
+            marginBottom: 10,
         }
     }
 }))

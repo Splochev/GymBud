@@ -27,13 +27,16 @@ const useStyles = makeStyles((theme) => ({
     },
     auth: {
         width: '174px',
+        alignItems: 'center',
         '& .MuiButtonBase-root': {
             padding: 0
         },
         '& .nav-link': {
             padding: 0,
         },
-        alignItems: 'center',
+        '@media (max-width: 415px)': {
+            width: '104px',
+        }
     },
     logoContainer: {
         display: 'flex',
@@ -43,10 +46,17 @@ const useStyles = makeStyles((theme) => ({
     },
     authLinks: {
         display: 'flex',
-        gap: 10
+        gap: 10,
+        '@media (max-width: 415px)': {
+            gap: 0,
+            flexDirection:'column'
+        }
     },
     btnContainer: {
-        width: '174px'
+        width: '174px',
+        '@media (max-width: 415px)': {
+            width: '104px',
+        }
     }
 }));
 
@@ -155,6 +165,7 @@ const LoggedOutHeader = () => {
                     <ForgotPassword />
                 </UGBModal>
             </>
+            {/* HAS BOOTSTRAP */}
             <nav className={clsx("navbar navbar-expand-custom", styles.nav)}>
                 <div className={size.width < 970 ? styles.logoContainer : null}>
                     <div className={size.width < 970 ? styles.btnContainer : null}>

@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
+import clsx from 'clsx';
 
 const theme = createTheme({
     palette: {
@@ -19,10 +20,6 @@ const theme = createTheme({
 
 const useRadioStyles = makeStyles((theme) => ({
     formControl: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
         "& .MuiFormLabel-root": {
             color: 'black'
         },
@@ -30,16 +27,37 @@ const useRadioStyles = makeStyles((theme) => ({
             color: 'black'
         },
     },
-    radioGroup: {
+    inlineFormControl: {
         display: 'flex',
         flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent:'center',
+        gap: 10,
     },
-    radioColor: {
-        color: 'blue'
+    blockFormControl: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+    },
+    inlineRadioGroup: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        justifyContent: 'center',
+        width: '100%'
+    },
+    blockRadioGroup: {
+        display: 'flex',
+        flexDirection: 'column',
+        flexWrap: 'nowrap',
+        justifyContent: 'center',
+        width: '100%'
     }
 }));
 
-export function UGBRadioButtonsGroup({ label, $checkedValue, radios, customMap, display }) {
+export function UGBRadioButtonsGroup({ label, $checkedValue, radios, customMap, display, displayFormControl = 'inline' }) {
     const styles = useRadioStyles();
 
     const handleChange = (event) => {
@@ -48,9 +66,14 @@ export function UGBRadioButtonsGroup({ label, $checkedValue, radios, customMap, 
 
     return (
         <ThemeProvider theme={theme}>
-            <FormControl className={display === 'inline' ? styles.formControl : undefined} >
-                <FormLabel>{label}</FormLabel>
-                <RadioGroup className={display === 'inline' ? styles.radioGroup : undefined} name={label} value={$checkedValue[0]} onChange={handleChange}>
+            <FormControl className={clsx(styles.formControl, styles[`${displayFormControl}FormControl`])} >
+                <FormLabel style={{ color: '#1B1B1B' }}>{label}</FormLabel>
+                <RadioGroup
+                    className={styles[`${display}RadioGroup`]}
+                    name={label}
+                    value={$checkedValue[0]}
+                    onChange={handleChange}
+                >
                     {customMap ?
                         customMap()
                         :

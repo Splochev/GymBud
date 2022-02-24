@@ -82,14 +82,14 @@ const Login = ({ setShowLogin }) => {
             <UGBInput
                 type='text'
                 name='mail'
-                placeholder="Your email"
+                label="Your email"
                 iconStart='fas fa-envelope'
                 $value={email}
             />
             <UGBInput
                 type='password'
                 name='password'
-                placeholder="Your password"
+                label="Your password"
                 iconStart='fas fa-lock'
                 $value={password}
             />

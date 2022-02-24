@@ -100,13 +100,13 @@ const AddFood = () => {
             {alert}
             <UGBInput
                 type='text'
-                placeholder='Food Name'
+                label='Food Name'
                 iconStart='fas fa-utensils'
                 $value={foodName}
             />
             <UGBInput
                 type='number'
-                placeholder='Carbs per 100 grams'
+                label='Carbs per 100 grams'
                 min='0'
                 max='100'
                 iconStart='fas fa-bread-slice'
@@ -114,7 +114,7 @@ const AddFood = () => {
             />
             <UGBInput
                 type='number'
-                placeholder='Fat per 100 grams'
+                label='Fat per 100 grams'
                 min='0'
                 max='100'
                 iconStart='fas fa-fish'
@@ -122,7 +122,7 @@ const AddFood = () => {
             />
             <UGBInput
                 type='number'
-                placeholder='Protein per 100 grams'
+                label='Protein per 100 grams'
                 min='0'
                 max='100'
                 iconStart='fas fa-drumstick-bite'
@@ -130,18 +130,18 @@ const AddFood = () => {
             />
             <UGBInput
                 type='number'
-                placeholder='Calories Per 100 grams'
+                label='Calories Per 100 grams'
                 min='0'
                 max='900'
                 iconStart='fas fa-burn'
+                hasButton={true}
                 $value={calories}
             >
                 <UGBButton
-                    btnType='inputButton'
                     title='Calculate the calories of the food'
                     icon='fas fa-calculator'
                     onClick={calculate}
-                    variant='success'
+                    btnType='success'
                 />
             </UGBInput>
             <div className={styles.actions}>

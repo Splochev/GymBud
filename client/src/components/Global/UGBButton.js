@@ -5,11 +5,26 @@ const useStyles = makeStyles((theme) => ({
     icon: {
         fontSize: '20px',
     },
-    success: {
-        borderRadius: '0px',
-        background: '#28A745',
+    btn: {
+        display: 'inline-block',
+        fontWeight: 400,
+        textAlign: 'center',
+        verticalAlign: 'middle',
+        WebkitUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none',
+        userSelect: 'none',
+        backgroundColor: 'transparent',
+        border: '1px solid transparent',
+        padding: '.375rem .75rem',
+        fontSize: '1rem',
+        lineHeight: '1.5',
+        borderRadius: '0.25rem',
+        transition: 'color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out',
         color: 'white',
-        outline: 'none',
+    },
+    success: {
+        background: '#28A745',
         '&:hover': {
             cursor: 'pointer',
             backgroundColor: '#218838',
@@ -22,31 +37,50 @@ const useStyles = makeStyles((theme) => ({
             outline: 'none'
         },
     },
-    btn: {
-        color: 'white'
+    danger: {
+        background: '#dc3545',
+        '&:hover': {
+            cursor: 'pointer',
+            backgroundColor: '#C82333',
+            border: '1px solid #bd2130',
+        },
+        '&:focus': {
+            border: '1px solid #bd2130',
+            background: '#C82333',
+            boxShadow: 'rgb(240,169,176) 0px 0px 0px 3px',
+            outline: 'none'
+        },
+    },
+    neutral: {
+        background: '#1B1B1B',
+        '&:hover': {
+            cursor: 'pointer',
+            backgroundColor: '#0D0D0D',
+            border: '1px solid #545B62',
+        },
+        '&:focus': {
+            border: '1px solid #545B62',
+            background: '#0D0D0D',
+            boxShadow: 'rgba(14,14,14,0.5) 0px 0px 0px 3px',
+            outline: 'none'
+        },
     }
 }));
 
-const UGBButton = ({ type = 'button', btnType, title, dataTarget, icon, onClick, variant, children }) => {
+//HAS BOOTSTRAP
+const UGBButton = ({ type = 'button', btnType, title, icon, onClick, children }) => {
     const styles = useStyles();
-    const types = {
-        toggler: { style: 'navbar-toggler', dataToggle: 'tooltip' },
-        inputButton: { style: 'input-group-text', dataToggle: 'tooltip' },
-        success: { style: 'btn btn-success', dataToggle: 'tooltip' },
-        secondary: { style: 'btn btn-secondary', dataToggle: 'tooltip' },
-        danger: { style: 'btn btn-danger', dataToggle: 'tooltip' },
-    }
+    const types = { toggler: { style: 'navbar-toggler', dataToggle: 'tooltip' } }
 
     return (
         <button
             className={clsx(
                 styles.btn,
-                styles[variant],
+                styles[btnType],
                 types[btnType] ? types[btnType].style : '',
             )}
             type={type}
-            data-toggle={types[btnType]?.dataToggle}
-            data-target={dataTarget || null}
+            data-toggle={'tooltip'}
             title={title || null}
             onClick={onClick || null}
         >

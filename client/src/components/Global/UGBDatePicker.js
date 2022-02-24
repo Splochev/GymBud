@@ -2,15 +2,19 @@ import React from 'react';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import { createTheme } from "@material-ui/core";
+import { createTheme, Typography } from "@material-ui/core";
 import { ThemeProvider } from '@material-ui/core/styles';
 import { parseDate } from '../utils/utilFunc'
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     datePicker: {
+        '& .MuiFormControl-root': {
+            marginTop: 0,
+            marginBottom: 0
+        },
         "& .MuiFormLabel-root": {
-            color: "black"
+            color: "black",
         },
         "& .Mui-focused": {
             color: "black"
@@ -70,6 +74,20 @@ const useStyles = makeStyles((theme) => ({
             },
         }
     },
+    subTitle: {
+        color: '#1B1B1B',
+        padding: 0,
+        fontSize: '1rem',
+        fontWeight: 400,
+        lineHeight: 1,
+        letterSpacing: '0.00938em',
+        textAlign: 'left',
+        width: '100%',
+        marginTop: 3,
+        fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
+        transform: 'translate(0, 1.5px) scale(0.75)',
+        transformOrigin: 'top left'
+    },
 }))
 
 const theme = createTheme({
@@ -89,6 +107,7 @@ export function UGBDatePicker({ selectedDate, setSelectedDate, maxDate, minDate 
     return (
         maxDate && minDate ?
             <div className={styles.datePicker}>
+                <Typography variant='subtitle2' component='div' className={styles.subTitle} >Choose Date</Typography>
                 <ThemeProvider theme={theme}>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
@@ -99,7 +118,6 @@ export function UGBDatePicker({ selectedDate, setSelectedDate, maxDate, minDate 
                             variant="inline"
                             format="yyyy-MM-dd"
                             margin="normal"
-                            label="Choose date"
                             value={selectedDate}
                             onChange={handleDateChange}
                             minDateMessage={`Date should not be before ${parseDate(minDate)}`}
@@ -111,6 +129,7 @@ export function UGBDatePicker({ selectedDate, setSelectedDate, maxDate, minDate 
             :
             maxDate ?
                 <div className={styles.datePicker}>
+                    <Typography variant='subtitle2' component='div' className={styles.subTitle} >Choose Date</Typography>
                     <ThemeProvider theme={theme}>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
@@ -120,7 +139,6 @@ export function UGBDatePicker({ selectedDate, setSelectedDate, maxDate, minDate 
                                 variant="inline"
                                 format="yyyy-MM-dd"
                                 margin="normal"
-                                label="Choose date"
                                 value={selectedDate}
                                 onChange={handleDateChange}
                                 maxDateMessage={`Date should not be after ${parseDate(maxDate)}`}
@@ -131,6 +149,7 @@ export function UGBDatePicker({ selectedDate, setSelectedDate, maxDate, minDate 
                 :
                 minDate ?
                     <div className={styles.datePicker}>
+                        <Typography variant='subtitle2' component='div' className={styles.subTitle} >Choose Date</Typography>
                         <ThemeProvider theme={theme}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <KeyboardDatePicker
@@ -140,7 +159,6 @@ export function UGBDatePicker({ selectedDate, setSelectedDate, maxDate, minDate 
                                     variant="inline"
                                     format="yyyy-MM-dd"
                                     margin="normal"
-                                    label="Choose date"
                                     value={selectedDate}
                                     onChange={handleDateChange}
                                     minDateMessage={`Date should not be before ${parseDate(minDate)}`}
@@ -149,21 +167,23 @@ export function UGBDatePicker({ selectedDate, setSelectedDate, maxDate, minDate 
                         </ThemeProvider>
                     </div >
                     :
-                    <div className={styles.datePicker}>
-                        <ThemeProvider theme={theme}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <KeyboardDatePicker
-                                    disableToolbar
-                                    autoOk={true}
-                                    variant="inline"
-                                    format="yyyy-MM-dd"
-                                    margin="normal"
-                                    label="Choose date"
-                                    value={selectedDate}
-                                    onChange={handleDateChange}
-                                />
-                            </MuiPickersUtilsProvider>
-                        </ThemeProvider>
-                    </div >
+                    <>
+                        <div className={styles.datePicker}>
+                            <Typography variant='subtitle2' component='div' className={styles.subTitle} >Choose Date</Typography>
+                            <ThemeProvider theme={theme}>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <KeyboardDatePicker
+                                        disableToolbar
+                                        autoOk={true}
+                                        variant="inline"
+                                        format="yyyy-MM-dd"
+                                        margin="normal"
+                                        value={selectedDate}
+                                        onChange={handleDateChange}
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </ThemeProvider>
+                        </div >
+                    </>
     );
 }

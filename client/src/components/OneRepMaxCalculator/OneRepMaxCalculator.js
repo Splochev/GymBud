@@ -2,7 +2,6 @@ import { useState } from 'react';
 import UGBMissingFields from '../Global/UGBMissingFields';
 import { UGBInput } from '../Global/UGBInput';
 import { makeStyles, Typography } from '@material-ui/core';
-import clsx from 'clsx';
 import UGBButton from '../Global/UGBButton';
 import UGBLink from '../Global/UGBLink';
 import { useHistory } from 'react-router-dom';
@@ -13,10 +12,13 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-     
         "& .btn-success": {
             marginTop: 10,
         }
+    },
+    result: {
+        width: '200px',
+          marginBottom: 10,
     },
     hr: {
         width: '100%',
@@ -24,9 +26,10 @@ const useStyles = makeStyles((theme) => ({
     inputs: {
         width: '100%',
         display: 'flex',
-    },
-    result: {
-        maxWidth:'200px'
+        gap: 10,
+        '@media (max-width: 365px)': {
+            flexDirection:'column'
+        }
     },
     actions: {
         width: '100%',
@@ -87,7 +90,7 @@ const OneRepMaxCalculator = () => {
                         label='critically acclaimed'
                         color='blue'
                         target='blank'
-                        url='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3525823/'  
+                        url='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3525823/'
                     />
                     &nbsp;is the Matt Brzycki formula which this calculator is using.
                     The higher the number of reps the more unreliable the 1 Rep Max estimation will be.
@@ -100,21 +103,28 @@ const OneRepMaxCalculator = () => {
                 <UGBInput
                     type='number'
                     $value={weight}
-                    placeholder='Weight'
+                    label='Weight'
                     min='1'
                     iconStart='fas fa-balance-scale'
                 />
                 <UGBInput
                     type='number'
                     $value={reps}
-                    placeholder='Reps'
+                    label='Reps'
                     min='4'
                     max='10'
                     iconStart='fas fa-sort-numeric-up'
                 />
             </div>
             <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your one rep max is:</Typography>
-            <input type='number' value={oneRM[0]} className={clsx('form-control', styles.result )} disabled />
+            <div className={styles.result}>
+                <UGBInput
+                    $value={oneRM}
+                    type='number'
+                    disabled={true}
+
+                />
+            </div>
             <UGBButton
                 type='submit'
                 btnType='success'

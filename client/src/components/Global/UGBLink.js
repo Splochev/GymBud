@@ -17,28 +17,48 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             textDecoration: 'underline',
             color: '#007BFF',
-            cursor:'pointer'
-        }
+            cursor: 'pointer'
+        },
+    },
+    outlineLight: {
+        width: '50px',
+        height: '50px',
+        border: '1px solid white',
+        borderRadius: '0.25rem',
+        backgroundColor: '#1B1B1B',
+        fontWeight: 400,
+        lineHeight: 1.5,
+        fontSize: '1rem',
+        color: 'white',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        '&:hover': {
+            textDecoration: 'none',
+            backgroundColor: 'white',
+            color: '#1B1B1B',
+        },
+        '&:focus': {
+            outline: 'none',
+            boxShadow: '#969A9D 0px 0px 0px 3px',
+        },
     }
 }));
 
 const UGBLink = ({ type, url, icon, target, onClick, label, color }) => {
-    const types = {
-        outlineLight: { style: 'btn btn-outline-light', dataToggle: 'collapse' },
-    }
     const targets = { blank: '_blank', default: '_self' }
     const styles = useStyles();
 
     return (
         <a
-            className={clsx(!type || types[type].style, styles[color])}
+            className={clsx(!type || styles[type], styles[color])}
             href={url}
             rel="noreferrer"
             target={targets[target]}
             onClick={onClick || null}
         >
             {label ?
-                label
+                <span>{label}</span>
                 :
                 <i className={clsx(icon, styles.icon)} />
             }

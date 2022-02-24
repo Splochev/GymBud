@@ -8,6 +8,7 @@ import { UGBRadioButtonsGroup } from '../../../Global/UGBRadioButtonsGroup'
 import clsx from 'clsx'
 import UGBButton from '../../../Global/UGBButton';
 import { Typography } from '@material-ui/core';
+import useWindowSize from '../../../utils/useWindowSize';
 
 const KnowsLbmFalse = ({ bmr }) => {
     const styles = useStyles();
@@ -15,6 +16,7 @@ const KnowsLbmFalse = ({ bmr }) => {
     const sex = useState('male')
     const weight = useState(undefined);
     const height = useState(undefined);
+    const size = useWindowSize();
 
     function calculate(e) {
         e.preventDefault();
@@ -37,7 +39,8 @@ const KnowsLbmFalse = ({ bmr }) => {
             {alert}
             <UGBRadioButtonsGroup
                 label="Sex:"
-                display='inline'
+                display={size.width > 350 ? 'inline' : 'block'}
+                displayFormControl={size.width > 350 ? 'inline' : 'block'}
                 $checkedValue={sex}
                 customMap={() => {
                     return (
@@ -53,7 +56,7 @@ const KnowsLbmFalse = ({ bmr }) => {
                 $value={weight}
                 min='1'
                 max='250'
-                placeholder="Weight"
+                label="Weight"
                 iconStart='fas fa-weight'
             />
             <UGBInput
@@ -61,7 +64,7 @@ const KnowsLbmFalse = ({ bmr }) => {
                 $value={height}
                 min='1'
                 max='275'
-                placeholder="Height"
+                label="Height"
                 iconStart='fas fa-ruler'
             />
             <UGBButton
@@ -70,7 +73,7 @@ const KnowsLbmFalse = ({ bmr }) => {
                 type="submit"
                 btnType='success'
             />
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your BMR is:</Typography>
+            <Typography className={clsx(styles.subTitle, styles.marginTopTitle)} variant='subtitle2' component='div'>Your BMR is:</Typography>
             <UGBInput
                 $value={bmr}
                 type='number'

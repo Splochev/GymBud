@@ -83,32 +83,32 @@ const Register = ({ onClose }) => {
             </Typography>
             <UGBInput
                 type='text'
-                placeholder="Your email"
+                label="Your email"
                 $value={email}
                 iconStart='fas fa-envelope'
             />
             <UGBInput
                 type='password'
                 $value={password}
-                placeholder='Your password'
+                label='Your password'
                 iconStart='fas fa-lock'
             />
             <UGBInput
                 type='password'
                 $value={repeatPassword}
-                placeholder='Repeat password'
+                label='Repeat password'
                 iconStart='fas fa-lock'
             />
             <UGBInput
                 type='text'
                 $value={firstName}
-                placeholder='Your first name'
+                label='Your first name'
                 iconStart='fa-solid fa-file-signature'
             />
             <UGBInput
                 type='text'
                 $value={lastName}
-                placeholder='Your last name'
+                label='Your last name'
                 iconStart='fa-solid fa-file-signature'
             />
             <UGBRadioButtonsGroup

@@ -11,8 +11,11 @@ import { Typography } from '@material-ui/core';
 import LiItem from '../Global/UGBLiItem';
 import { useHistory } from 'react-router-dom';
 import { UGBInput } from '../Global/UGBInput';
+import clsx from 'clsx';
+import useWindowSize from '../utils/useWindowSize';
 
 const CalorieCalculator = () => {
+    const size = useWindowSize();
     const styles = useStyles();
     const history = useHistory();
     const formula = useState('KatchMcardleFormula');
@@ -74,27 +77,28 @@ const CalorieCalculator = () => {
     return (
         <div className={styles.calorieCalculatorContainer}>
             <div className={styles.container}>
-                <Typography variant='h5' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Calorie Calculator</Typography>
+                <Typography variant='h5' component='div' className={clsx(styles.title, styles.marginBottomTitle)} >Calorie Calculator</Typography>
+                <Typography variant='subtitle2' component='div' className={styles.subTitle} >Choose Formula:</Typography>
                 <UGBRadioButtonsGroup
                     label=""
-                    display='inline'
+                    display={size.width >425 ? 'inline' : 'block'}
                     $checkedValue={formula}
                     customMap={() => {
                         return (
                             <>
-                                <FormControlLabel key={'KatchMcardleFormula'} value={'KatchMcardleFormula'} control={<Radio />} label='Use Katch-McArdle Formula' />
-                                <FormControlLabel key={'MifflinStJeorFormula'} value={'MifflinStJeorFormula'} control={<Radio />} label='Use Mifflin-St Jeor Formula' />
+                                <FormControlLabel key={'KatchMcardleFormula'} value={'KatchMcardleFormula'} control={<Radio />} label="Katch-McArdle" />
+                                <FormControlLabel key={'MifflinStJeorFormula'} value={'MifflinStJeorFormula'} control={<Radio />} label="Mifflin-St Jeor" />
                             </>
                         );
                     }}
                 />
-                <hr className={styles.hr} />
-                <Typography variant='h6' component='div' style={{ marginBottom: 10, textAlign: 'center', color: '#1B1B1B' }} >BMR calculator</Typography>
+                <hr className={clsx(styles.hr,styles.noPadding)} />
+                <Typography variant='h6' component='div' className={clsx(styles.title, styles.marginBottomTitle)} >BMR Calculator</Typography>
                 {formula[0] === 'KatchMcardleFormula' ? <KatchMcardleFormula bmr={bmr} /> : null}
                 {formula[0] === 'MifflinStJeorFormula' ? <MifflinStJeorFormula bmr={bmr} /> : null}
                 <hr className={styles.hr} />
                 <div className={styles.tdeeResult}>
-                    <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >TDEE calculator:</Typography>
+                    <Typography variant='h6' component='div' className={clsx(styles.title)} >TDEE calculator:</Typography>
                     <LiItem
                         type='select'
                         anchor={anchor}
@@ -105,7 +109,7 @@ const CalorieCalculator = () => {
                     >
                         <UGBButton
                             onClick={(e) => setAnchor(e.currentTarget)}
-                            btnType='secondary'
+                            btnType='neutral'
                         >
                             Chosen Activity Index: {activityIndex[0]}
                         </UGBButton>
@@ -116,7 +120,7 @@ const CalorieCalculator = () => {
                         title="Calculate TDEE"
                         onClick={calculate}
                     />
-                    <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your TDEE is:</Typography>
+                    <Typography className={clsx(styles.subTitle,styles.marginTopTitle)} variant='subtitle2' component='div'>Your TDEE is:</Typography>
                     <UGBInput
                         $value={tdee}
                         type='number'

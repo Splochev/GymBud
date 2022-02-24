@@ -289,7 +289,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
             </div>
             <div className={styles.toolbar}>
                 <Typography variant='h6' component='div' style={{ marginTop: 15, marginBottom: 15, color: '#1B1B1B' }} >Weight Entries: </Typography>
-                <div>
+                <div className={styles.actions}>
                     <UGBButton
                         btnType='success'
                         title='Submit your daily weight'

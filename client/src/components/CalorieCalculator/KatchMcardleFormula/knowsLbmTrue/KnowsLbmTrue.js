@@ -4,6 +4,7 @@ import UGBMissingFields from '../../../Global/UGBMissingFields.js';
 import { UGBInput } from '../../../Global/UGBInput'
 import UGBButton from '../../../Global/UGBButton';
 import { Typography } from '@material-ui/core';
+import clsx from 'clsx';
 
 const KnowsLbmTrue = ({ bmr }) => {
     const styles = useStyles();
@@ -31,7 +32,7 @@ const KnowsLbmTrue = ({ bmr }) => {
                 $value={lbm}
                 min='1'
                 max='250'
-                placeholder="LBM"
+                label="LBM"
                 iconStart='fas fa-weight'
             />
             <UGBButton
@@ -40,7 +41,7 @@ const KnowsLbmTrue = ({ bmr }) => {
                 type="submit"
                 btnType='success'
             />
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your BMR is:</Typography>
+            <Typography className={clsx(styles.subTitle,styles.marginTopTitle)} variant='subtitle2' component='div'>Your BMR is:</Typography>
             <UGBInput
                 $value={bmr}
                 type='number'

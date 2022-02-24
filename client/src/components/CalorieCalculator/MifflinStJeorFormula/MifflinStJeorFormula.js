@@ -62,7 +62,7 @@ const MifflinStJeorFormula = ({ bmr }) => {
             <UGBInput
                 type='number'
                 $value={weight}
-                placeholder="Weight"
+                label="Weight"
                 min='1'
                 max='250'
                 iconStart='fas fa-weight'
@@ -70,7 +70,7 @@ const MifflinStJeorFormula = ({ bmr }) => {
             <UGBInput
                 type='number'
                 $value={height}
-                placeholder="height"
+                label="Height"
                 min='1'
                 max='275'
                 iconStart='fas fa-ruler'
@@ -78,7 +78,7 @@ const MifflinStJeorFormula = ({ bmr }) => {
             <UGBInput
                 type='number'
                 $value={age}
-                placeholder="Age"
+                label="Age"
                 min='1'
                 max='125'
                 iconStart='fas fa-user-clock'
@@ -89,7 +89,7 @@ const MifflinStJeorFormula = ({ bmr }) => {
                 type="submit"
                 btnType='success'
             />
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your BMR is:</Typography>
+            <Typography className={clsx(styles.subTitle, styles.marginTopTitle)} variant='subtitle2' component='div'>Your BMR is:</Typography>
             <UGBInput
                 $value={bmr}
                 type='number'

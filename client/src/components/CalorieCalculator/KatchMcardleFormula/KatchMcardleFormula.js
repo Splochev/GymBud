@@ -2,24 +2,27 @@ import { useState } from 'react';
 import KnowsLbmTrue from './knowsLbmTrue/KnowsLbmTrue'
 import KnowsLbmFalse from './knowsLbmFalse/KnowsLbmFalse'
 import { UGBRadioButtonsGroup } from '../../Global/UGBRadioButtonsGroup';
-import { FormControlLabel, Radio } from '@material-ui/core';
+import { FormControlLabel, Radio, Typography } from '@material-ui/core';
 import useStyles from '../styles'
+import useWindowSize from '../../utils/useWindowSize';
 
 const KatchMcardleFormula = ({ bmr }) => {
     const styles = useStyles();
     const knowsLbmLayout = useState('KnowsLbmTrue');
+    const size = useWindowSize();
 
     return (
         <div className={styles.katchFormulaLayout}>
             <div>
+                <Typography className={styles.subTitle} variant='subtitle2' component='div'>Do you know your LBM?</Typography>
                 <UGBRadioButtonsGroup
-                    label=""
+                    display={size.width > 405 ? 'inline' : 'block'}
                     $checkedValue={knowsLbmLayout}
                     customMap={() => {
                         return (
                             <>
-                                <FormControlLabel key={'KnowsLbmTrue'} value={'KnowsLbmTrue'} control={<Radio />} label='I know my LBM' />
-                                <FormControlLabel key={'KnowsLbmFalse'} value={'KnowsLbmFalse'} control={<Radio />} label="I don't know my LBM" />
+                                <FormControlLabel key={'KnowsLbmTrue'} value={'KnowsLbmTrue'} control={<Radio />} label='Yes' />
+                                <FormControlLabel key={'KnowsLbmFalse'} value={'KnowsLbmFalse'} control={<Radio />} label="No" />
                             </>
                         );
                     }}

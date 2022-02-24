@@ -18,13 +18,12 @@ export default makeStyles((theme) => ({
         "& .form-control": {
             maxWidth: 200
         },
-        "& .btn-secondary": {
+        "& button:first-child": {
             width: 230
         },
-        "& .btn-success": {
-            marginTop: 10,
+        "& button:last-child": {
             marginBottom: 10,
-        }
+        },
     },
     form: {
         display: 'flex',
@@ -51,11 +50,34 @@ export default makeStyles((theme) => ({
         },
     },
     container: {
-        minHeight: '735px',
+        minHeight: '745px',
     },
     katchFormulaLayout: {
         display: 'flex',
-        width:'100%',
+        width: '100%',
         justifyContent: "space-between",
+        gap: 15
+    },
+    subTitle: {
+        color: '#1B1B1B',
+        padding: 0,
+        fontSize: '1rem',
+        fontWeight: '400',
+        lineHeight: '1',
+        letterSpacing: '0.00938em',
+        textAlign: 'center',
+    },
+    title: {
+        textAlign: 'center',
+        color: '#1B1B1B'
+    },
+    marginTopTitle: {
+        marginTop: 10
+    },
+    marginBottomTitle: {
+        marginBottom: 10
+    },
+    noPadding: {
+        padding: 0
     }
 }))

@@ -25,7 +25,8 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     title: {
-        color: '#1B1B1B'
+        color: '#1B1B1B',
+        textAlign: 'center'
     }
 }));
 
@@ -63,14 +64,14 @@ const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
     return (
         <form onSubmit={onSubmitWeight}>
             <Typography
-                className={clsx('d-flex justify-content-center', styles.title)}
+                className={styles.title}
                 variant='h6'
                 component='div'
             >
                 Track Daily Weight
             </Typography>
             <hr />
-            <div className={clsx('form-group col', styles.inputs)}>
+            <div className={styles.inputs}>
                 <UGBDatePicker
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
@@ -81,7 +82,7 @@ const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
             <UGBInput
                 type='number'
                 $value={weight}
-                placeholder='Weight'
+                label='Weight'
                 min='1'
                 iconStart='fas fa-balance-scale'
             />

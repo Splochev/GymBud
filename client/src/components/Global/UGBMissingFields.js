@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 
+//HAS BOOTSTRAP
 const UGBMissingFields = (props) => {
     function closeAlert() {
         props.setAlert('');
@@ -7,11 +8,12 @@ const UGBMissingFields = (props) => {
 
     useEffect(() => {
         setTimeout(() => { closeAlert() }, 2000);
-    },[]);
+    }, []);
 
-    return (<div className="alert alert-danger alert-dismissible">
-        {props.alertMessage}
-    </div>
+    return (
+        <div className="alert alert-danger alert-dismissible">
+            {props.alertMessage}
+        </div>
     );
 }
 
