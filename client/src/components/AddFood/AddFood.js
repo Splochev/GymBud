@@ -95,7 +95,7 @@ const AddFood = () => {
 
     return (
         <form className={styles.form} onSubmit={addFood}>
-            <Typography variant='h5' component='div' style={{ textAlign: 'center', marginBottom: 15, color: '#1B1B1B' }} >Add Food</Typography>
+            <Typography variant='h5' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Add Food</Typography>
             <hr className={styles.hr} />
             {alert}
             <UGBInput
