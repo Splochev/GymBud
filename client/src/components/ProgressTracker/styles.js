@@ -120,11 +120,11 @@ export default makeStyles(() => ({
         display: 'flex',
         gap: 10,
         '& button': {
-            width: '127px'
+            width: '135px'
         },
         '@media (max-width: 465px)': {
             flexDirection: 'column',
-            marginBottom: 10,
-        }
+        },
+        marginBottom: 10,
     }
 }))

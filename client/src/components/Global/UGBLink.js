@@ -21,8 +21,8 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     outlineLight: {
-        width: '50px',
-        height: '50px',
+        width: '35px',
+        height: '35px',
         border: '1px solid white',
         borderRadius: '0.25rem',
         backgroundColor: '#1B1B1B',
@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        textDecoration: 'none',
         '&:hover': {
             textDecoration: 'none',
             backgroundColor: 'white',

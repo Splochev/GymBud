@@ -15,6 +15,8 @@ const useStyles = makeStyles((theme) => ({
     },
     hr: {
         width: '100%',
+        color: '#CED4DA',
+        opacity: 0.5
     },
     actions: {
         width: '100%',

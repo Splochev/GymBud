@@ -9,7 +9,7 @@ import { postData } from '../../utils/FetchUtils.js';
 import { useHistory } from 'react-router-dom';
 import { useQuery } from '../../utils/RouteUtils.js';
 import { useEffect } from 'react';
-import { Collapse, IconButton, makeStyles } from '@material-ui/core';
+import { IconButton, makeStyles } from '@material-ui/core';
 import TrackWeight from '../../TrackWeight/TrackWeight.js';
 import Button from '@material-ui/core/Button';
 import { Avatar } from '@material-ui/core';
@@ -21,15 +21,8 @@ import UGBButton from '../../Global/UGBButton.js';
 import LiItem from '../../Global/UGBLiItem.js';
 
 const useStyles = makeStyles((theme) => ({
-    nav: {
-        backgroundColor: "#1B1B1B",
-        padding: 0,
-        paddingLeft: '10px',
-    },
-    shrinkNav: {
-        paddingBottom: '10px'
-    },
     usersAndMore: {
+        height: '100%',
         display: 'flex',
         alignItems: 'center',
         '& .MuiButtonBase-root': {
@@ -67,16 +60,59 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    btnContainer: {
-        width: '99px'
+    authLinks: {
+        height: '100%',
+        width: '140px',
+        display: 'flex',
+        gap: 10,
+        alignItems: 'center',
+        '@media (max-width: 418px)': {
+            gap: 0,
+            flexDirection: 'column',
+            alignItems: 'start',
+        }
     },
-    navBarCollapse: {
+    btnContainer: {
+        '@media (max-width: 970px)': {
+            width: '101px',
+        },
+        '@media (max-width: 418px)': {
+            width: '104px',
+        }
+    },
+    navigationBar: {
+        backgroundColor: "#1B1B1B",
+        padding: 0,
+        display: 'flex',
+        border: '2px solid #1B1B1B'
+    },
+    navItems: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 15,
+        height: '100%'
+    },
+    navItemsContainer: {
         display: 'flex',
         width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
+        height: '100%',
+        justifyContent: 'space-between'
+    },
+    collapseNav: {
+        height: '0px',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: "#1B1B1B",
+        gap: 10,
+        transition: 'height 0.1s'
+    },
+    collapseNavTransition: {
+        height: '250px',
+        paddingBottom: 10,
+        paddingLeft: 10,
     }
 }));
+
 
 const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
     const styles = useStyles();
@@ -87,14 +123,7 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
     const [showAddFood, setShowAddFood] = useState(false);
     const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
     const [showTrackWeight, setShowTrackWeight] = useState(false);
-    const [anchorWorkout, setAnchorWorkout] = useState(null);
-    const [anchorMeals, setAnchorMeals] = useState(null);
-    const [anchorFood, setAnchorFood] = useState(null);
-    const [anchorCalculators, setAnchorCalculators] = useState(null);
-    const [calculatorSelectItems] = useState([{ label: 'Calorie Calculator', path: '?tab=calorie-calculator' }, { label: '1 Rep Max Calculator', path: '?tab=one-rep-max-calculator' }])
-    const [foodSelectItems] = useState([{ label: 'My Food', path: '/home' }, { label: 'Add Food', path: '?tab=add-food' }])
-    const [mealsSelectItems] = useState([{ label: 'My Meals', path: '/home' }, { label: 'My Meal Plans', path: '/home' }])
-    const [workoutSelectItems] = useState([{ label: 'Workout Journal', path: '/home' }, { label: 'Add Workout Journal', path: '/home' }])
+
     const [toggleNav, setToggleNav] = useState(size.width < 970)
 
     useEffect(() => {
@@ -179,16 +208,18 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                     <CalorieCalculator />
                 </UGBModal>
             </>
-            {/* HAS BOOTSTRAP */}
-            <nav className={clsx("navbar navbar-expand-custom", styles.nav)}>
+            <div className={styles.navigationBar}>
                 <div className={size.width < 970 ? styles.logoContainer : null}>
-                    <div className={size.width < 970 ? styles.btnContainer : null}>
-                        <UGBButton
-                            btnType='toggler'
-                            icon='fas fa-bars'
-                            onClick={() => setToggleNav(!toggleNav)}
-                        />
-                    </div>
+                    {size.width < 970 ?
+                        <div className={styles.btnContainer}>
+                            <UGBButton
+                                icon='fas fa-bars'
+                                onClick={() => setToggleNav(!toggleNav)}
+                            />
+                        </div>
+                        :
+                        null
+                    }
                     <UGBLogo />
                     {size.width < 970 ?
                         < UserAndMore />
@@ -196,62 +227,25 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                         null
                     }
                 </div>
-                <Collapse in={toggleNav} style={{ width: '100%' }}>
-                    <div className={styles.navBarCollapse}>
-                        <ul className={clsx("navbar-nav mr-auto", size.width < 970 ? styles.shrinkNav : null)}>
-                            <LiItem >Find Food</LiItem>
-                            <LiItem badgeCount={1}>Meal Planner</LiItem>
-                            <LiItem
-                                path='/progress'
-                                active={(history.location.pathname === '/progress' && !tab && !anchorCalculators && !anchorFood && !anchorMeals && !anchorWorkout) || tab === 'track-weight'}
-                            >
-                                Progress
-                            </LiItem>
-                            <LiItem
-                                type='select'
-                                anchor={anchorCalculators}
-                                setAnchor={setAnchorCalculators}
-                                menuItems={calculatorSelectItems}
-                                active={anchorCalculators || tab === 'calorie-calculator' || tab === 'one-rep-max-calculator' ? true : null}
-                            >
-                                Calculators
-                            </LiItem>
-                            <LiItem
-                                type='select'
-                                anchor={anchorFood}
-                                setAnchor={setAnchorFood}
-                                menuItems={foodSelectItems}
-                                active={anchorFood || tab === 'add-food' ? true : null}
-                            >
-                                Food
-                            </LiItem>
-                            <LiItem
-                                type='select'
-                                anchor={anchorMeals}
-                                setAnchor={setAnchorMeals}
-                                menuItems={mealsSelectItems}
-                                active={anchorMeals ? true : null}
-                            >
-                                Meals
-                            </LiItem>
-                            <LiItem
-                                type='select'
-                                anchor={anchorWorkout}
-                                setAnchor={setAnchorWorkout}
-                                menuItems={workoutSelectItems}
-                                active={anchorWorkout ? true : null}
-                            >
-                                Workout
-                            </LiItem>
-                        </ul>
-                        {size.width >= 970 ?
-                            < UserAndMore />
-                            :
-                            null
-                        }
+                {size.width >= 970 ?
+                    <div className={styles.navItemsContainer}>
+                        <div className={styles.navItems}>
+                            <NavItems />
+                        </div>
+                        < UserAndMore />
+
                     </div>
-                </Collapse>
-            </nav>
+                    :
+                    null
+                }
+            </div>
+            <div className={clsx(styles.collapseNav, size.width < 970 && toggleNav ? styles.collapseNavTransition : '')}>
+                {size.width < 970 && toggleNav ?
+                    <NavItems />
+                    :
+                    null
+                }
+            </div>
         </ >
     );
 }
@@ -310,4 +304,69 @@ const UserAndMore = () => {
     );
 }
 
+const NavItems = () => {
+    const { tab } = useQuery();
+    const [anchorWorkout, setAnchorWorkout] = useState(null);
+    const [anchorMeals, setAnchorMeals] = useState(null);
+    const [anchorFood, setAnchorFood] = useState(null);
+    const [anchorCalculators, setAnchorCalculators] = useState(null);
+    const [calculatorSelectItems] = useState([{ label: 'Calorie Calculator', path: '?tab=calorie-calculator' }, { label: '1 Rep Max Calculator', path: '?tab=one-rep-max-calculator' }])
+    const [foodSelectItems] = useState([{ label: 'My Food', path: '/home' }, { label: 'Add Food', path: '?tab=add-food' }])
+    const [mealsSelectItems] = useState([{ label: 'My Meals', path: '/home' }, { label: 'My Meal Plans', path: '/home' }])
+    const [workoutSelectItems] = useState([{ label: 'Workout Journal', path: '/home' }, { label: 'Add Workout Journal', path: '/home' }])
+    const history = useHistory();
+
+    return (
+        <>
+            <LiItem >Find Food</LiItem>
+            <LiItem badgeCount={1}>Meal Planner</LiItem>
+            <LiItem
+                path='/progress'
+                active={(history.location.pathname === '/progress' && !tab && !anchorCalculators && !anchorFood && !anchorMeals && !anchorWorkout) || tab === 'track-weight'}
+            >
+                Progress
+            </LiItem>
+            <LiItem
+                type='select'
+                anchor={anchorCalculators}
+                setAnchor={setAnchorCalculators}
+                menuItems={calculatorSelectItems}
+                active={anchorCalculators || tab === 'calorie-calculator' || tab === 'one-rep-max-calculator' ? true : null}
+            >
+                Calculators
+            </LiItem>
+            <LiItem
+                type='select'
+                anchor={anchorFood}
+                setAnchor={setAnchorFood}
+                menuItems={foodSelectItems}
+                active={anchorFood || tab === 'add-food' ? true : null}
+            >
+                Food
+            </LiItem>
+            <LiItem
+                type='select'
+                anchor={anchorMeals}
+                setAnchor={setAnchorMeals}
+                menuItems={mealsSelectItems}
+                active={anchorMeals ? true : null}
+            >
+                Meals
+            </LiItem>
+            <LiItem
+                type='select'
+                anchor={anchorWorkout}
+                setAnchor={setAnchorWorkout}
+                menuItems={workoutSelectItems}
+                active={anchorWorkout ? true : null}
+            >
+                Workout
+            </LiItem>
+        </>
+    );
+}
+
 export default LoggedInHeader;
+
+
+

@@ -22,11 +22,13 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '0.25rem',
         transition: 'color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out',
         color: 'white',
+        '&:hover': {
+            cursor: 'pointer'
+        }
     },
     success: {
         background: '#28A745',
         '&:hover': {
-            cursor: 'pointer',
             backgroundColor: '#218838',
             border: '1px solid #1E7E34',
         },
@@ -40,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
     danger: {
         background: '#dc3545',
         '&:hover': {
-            cursor: 'pointer',
             backgroundColor: '#C82333',
             border: '1px solid #bd2130',
         },
@@ -54,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
     neutral: {
         background: '#1B1B1B',
         '&:hover': {
-            cursor: 'pointer',
             backgroundColor: '#0D0D0D',
             border: '1px solid #545B62',
         },
@@ -67,17 +67,14 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-//HAS BOOTSTRAP
 const UGBButton = ({ type = 'button', btnType, title, icon, onClick, children }) => {
     const styles = useStyles();
-    const types = { toggler: { style: 'navbar-toggler', dataToggle: 'tooltip' } }
 
     return (
         <button
             className={clsx(
                 styles.btn,
                 styles[btnType],
-                types[btnType] ? types[btnType].style : '',
             )}
             type={type}
             data-toggle={'tooltip'}

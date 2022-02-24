@@ -22,9 +22,13 @@ const useStyles = makeStyles((theme) => ({
     navUrls: {
         fontSize: '20px',
         color: 'white',
-        height: '100%',
         borderBottom: '2px solid #1B1B1B',
+        textDecoration: 'none',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
         '&:hover': {
+            cursor: 'pointer',
             color: '#1E7E34 !important',
             borderBottom: '2px solid #1E7E34 !important',
             '& .MuiSvgIcon-root': {
@@ -42,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
         }
     },
 }));
-//HAS BOOTSTRAP
 
 const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, menuItems, customLabel, variant = 'li', shrinkUrl = true, customShrinkUrl, children }) => {
     const styles = useStyles();
@@ -51,27 +54,25 @@ const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, me
 
     if (type === 'select') {
         return (
-            <div>
+            <>
                 {customLabel ?
                     { ...children }
                     :
-                    <a
+                    <div
                         className={clsx(
-                            "nav-link",
                             styles.navUrls,
                             active ? styles.active : null,
                             shrinkUrl ? size.width < 970 ? styles.shrinkUrl : null : null
                         )}
-                        href="#!"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setAnchor(e.currentTarget)
-                        }}
                         style={{ width: customShrinkUrl ? customShrinkUrl : '' }}
+                        onClick={(e) => {
+                            setAnchor(e.currentTarget)
+                            if (path) { history.push(path) }
+                        }}
                     >
                         {children}
                         <ArrowDropDown style={{ color: '#FFFFFF' }} />
-                    </a>
+                    </div>
                 }
                 <Popover
                     anchorEl={anchor}
@@ -127,30 +128,38 @@ const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, me
                         null
                     }
                 </Popover>
-            </div>
+            </>
         );
     };
 
     return (
-        <div>
-            <a
-                className={clsx("nav-link", styles.navUrls, shrinkUrl ? size.width < 970 ? styles.shrinkUrl : null : null, active ? styles.active : null)}
-                style={{ width: customShrinkUrl ? customShrinkUrl : '' }}
-                href="#!"
-                onClick={(e) => {
-                    e.preventDefault();
-                    if (path) { history.push(path) }
-                }}
-            >
-                <span>
-                    {children}
-                    {badgeCount || badgeCount === 0 ?
-                        <Badge badgeContent={badgeCount} className={styles.badge} />
+        <div
+            className={clsx(
+                styles.navUrls,
+                shrinkUrl ?
+                    size.width < 970 ? styles.shrinkUrl
                         :
                         null
-                    }
-                </span>
-            </a>
+                    :
+                    null,
+                active ?
+                    styles.active
+                    :
+                    null
+            )}
+            style={{ width: customShrinkUrl ? customShrinkUrl : '' }}
+            onClick={(e) => {
+                if (path) { history.push(path) }
+            }}
+        >
+            <span>
+                {children}
+                {badgeCount || badgeCount === 0 ?
+                    <Badge badgeContent={badgeCount} className={styles.badge} />
+                    :
+                    null
+                }
+            </span>
         </div>
     );
 }

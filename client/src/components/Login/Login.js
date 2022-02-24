@@ -17,6 +17,8 @@ const useStyles = makeStyles((theme) => ({
     },
     hr: {
         width: '100%',
+        color: '#CED4DA',
+        opacity: 0.5
     },
     forgotPass: {
         width: '100%',

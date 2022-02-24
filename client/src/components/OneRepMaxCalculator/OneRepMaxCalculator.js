@@ -12,9 +12,6 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        "& .btn-success": {
-            marginTop: 10,
-        }
     },
     result: {
         width: '200px',
@@ -22,6 +19,8 @@ const useStyles = makeStyles((theme) => ({
     },
     hr: {
         width: '100%',
+        color: '#CED4DA',
+        opacity: 0.5
     },
     inputs: {
         width: '100%',

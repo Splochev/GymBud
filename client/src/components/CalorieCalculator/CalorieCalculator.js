@@ -81,7 +81,7 @@ const CalorieCalculator = () => {
                 <Typography variant='subtitle2' component='div' className={styles.subTitle} >Choose Formula:</Typography>
                 <UGBRadioButtonsGroup
                     label=""
-                    display={size.width >425 ? 'inline' : 'block'}
+                    display={size.width > 425 ? 'inline' : 'block'}
                     $checkedValue={formula}
                     customMap={() => {
                         return (
@@ -92,7 +92,7 @@ const CalorieCalculator = () => {
                         );
                     }}
                 />
-                <hr className={clsx(styles.hr,styles.noPadding)} />
+                <hr className={clsx(styles.hr, styles.noPadding)} />
                 <Typography variant='h6' component='div' className={clsx(styles.title, styles.marginBottomTitle)} >BMR Calculator</Typography>
                 {formula[0] === 'KatchMcardleFormula' ? <KatchMcardleFormula bmr={bmr} /> : null}
                 {formula[0] === 'MifflinStJeorFormula' ? <MifflinStJeorFormula bmr={bmr} /> : null}
@@ -107,12 +107,14 @@ const CalorieCalculator = () => {
                         customLabel={true}
                         variant='div'
                     >
-                        <UGBButton
-                            onClick={(e) => setAnchor(e.currentTarget)}
-                            btnType='neutral'
-                        >
-                            Chosen Activity Index: {activityIndex[0]}
-                        </UGBButton>
+                        <div className={styles.activityIndex}>
+                            <UGBButton
+                                onClick={(e) => setAnchor(e.currentTarget)}
+                                btnType='neutral'
+                            >
+                                Chosen Activity Index: {activityIndex[0]}
+                            </UGBButton>
+                        </div>
                     </LiItem>
                     <UGBButton
                         btnType='success'
@@ -120,7 +122,7 @@ const CalorieCalculator = () => {
                         title="Calculate TDEE"
                         onClick={calculate}
                     />
-                    <Typography className={clsx(styles.subTitle,styles.marginTopTitle)} variant='subtitle2' component='div'>Your TDEE is:</Typography>
+                    <Typography className={styles.subTitle} variant='subtitle2' component='div'>Your TDEE is:</Typography>
                     <UGBInput
                         $value={tdee}
                         type='number'

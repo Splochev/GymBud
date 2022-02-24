@@ -15,30 +15,23 @@ export default makeStyles((theme) => ({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
-        "& .form-control": {
-            maxWidth: 200
-        },
-        "& button:first-child": {
-            width: 230
-        },
-        "& button:last-child": {
-            marginBottom: 10,
-        },
+        gap: 10,
+    },
+    activityIndex: {
+        '& button': {
+            width: '235px'
+        }
     },
     form: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        flexDirection: 'column',
-        "& .form-group": {
-            maxWidth: 250
-        },
-        "& .form-control": {
-            maxWidth: 200
-        },
+        flexDirection: 'column'
     },
     hr: {
         width: '100%',
+        color: '#CED4DA',
+        opacity: 0.5
     },
     actions: {
         width: '100%',

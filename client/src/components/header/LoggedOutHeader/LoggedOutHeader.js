@@ -1,4 +1,4 @@
-import { Collapse, IconButton, makeStyles } from '@material-ui/core';
+import {IconButton, makeStyles } from '@material-ui/core';
 import OneRepMaxCalculator from '../../OneRepMaxCalculator/OneRepMaxCalculator.js';
 import Login from '../../Login/Login.js';
 import ForgotPassword from '../../Login/ForgotPassword/ForgotPassword.js';
@@ -6,7 +6,6 @@ import { useState } from 'react';
 import Register from '../../Register/Register.js';
 import CalorieCalculator from '../../CalorieCalculator/CalorieCalculator.js';
 import UGBModal from '../../Global/UGBModal.js';
-import clsx from 'clsx'
 import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useQuery } from '../../utils/RouteUtils.js';
@@ -15,29 +14,9 @@ import UGBLogo from '../../Global/UGBLogo.js';
 import UGBButton from '../../Global/UGBButton.js';
 import LiItem from '../../Global/UGBLiItem.js';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
-    nav: {
-        backgroundColor: "#1B1B1B",
-        padding: 0,
-        paddingLeft: '10px',
-    },
-    shrinkNav: {
-        paddingBottom: '10px'
-    },
-    auth: {
-        width: '174px',
-        alignItems: 'center',
-        '& .MuiButtonBase-root': {
-            padding: 0
-        },
-        '& .nav-link': {
-            padding: 0,
-        },
-        '@media (max-width: 415px)': {
-            width: '104px',
-        }
-    },
     logoContainer: {
         display: 'flex',
         width: '100%',
@@ -45,18 +24,66 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
     },
     authLinks: {
+        height: '100%',
+        width: '140px',
         display: 'flex',
         gap: 10,
-        '@media (max-width: 415px)': {
+        alignItems: 'center',
+        '@media (max-width: 418px)': {
             gap: 0,
-            flexDirection:'column'
+            flexDirection: 'column',
+            alignItems: 'start',
         }
     },
     btnContainer: {
-        width: '174px',
-        '@media (max-width: 415px)': {
+        '@media (max-width: 970px)': {
+            width: '175px',
+        },
+        '@media (max-width: 418px)': {
             width: '104px',
         }
+    },
+    navigationBar: {
+        backgroundColor: "#1B1B1B",
+        padding: 0,
+        display: 'flex',
+        border: '2px solid #1B1B1B'
+    },
+    auth: {
+        display: 'flex',
+        alignItems: 'center',
+        height: '100%',
+        '& .MuiButtonBase-root': {
+            padding: 0
+        },
+        '@media (max-width: 418px)': {
+            width: '104px',
+        }
+    },
+    navItems: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 15,
+        height: '100%'
+    },
+    navItemsContainer: {
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        justifyContent: 'space-between'
+    },
+    collapseNav: {
+        height: '0px',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: "#1B1B1B",
+        gap: 10,
+        transition: 'height 0.1s'
+    },
+    collapseNavTransition: {
+        height: '150px',
+        paddingBottom: 10,
+        paddingLeft: 10,
     }
 }));
 
@@ -71,13 +98,11 @@ const LoggedOutHeader = () => {
     const [showRegister, setShowRegister] = useState(false);
     const { tab } = useQuery();
     const size = useWindowSize();
-    const [toggleNav, setToggleNav] = useState(size.width < 970)
+    const [toggleNav, setToggleNav] = useState(false)
 
     useEffect(() => {
-        if (size.width < 970) {
-            setToggleNav(false);
-        } else {
-            setToggleNav(true);
+        if (size.width >= 970) {
+            setToggleNav(false)
         }
     }, [size])
 
@@ -165,16 +190,18 @@ const LoggedOutHeader = () => {
                     <ForgotPassword />
                 </UGBModal>
             </>
-            {/* HAS BOOTSTRAP */}
-            <nav className={clsx("navbar navbar-expand-custom", styles.nav)}>
+            <div className={styles.navigationBar}>
                 <div className={size.width < 970 ? styles.logoContainer : null}>
-                    <div className={size.width < 970 ? styles.btnContainer : null}>
-                        <UGBButton
-                            btnType='toggler'
-                            icon='fas fa-bars'
-                            onClick={() => setToggleNav(!toggleNav)}
-                        />
-                    </div>
+                    {size.width < 970 ?
+                        <div className={styles.btnContainer}>
+                            <UGBButton
+                                icon='fas fa-bars'
+                                onClick={() => setToggleNav(!toggleNav)}
+                            />
+                        </div>
+                        :
+                        null
+                    }
                     <UGBLogo />
                     {size.width < 970 ?
                         < Auth />
@@ -182,40 +209,25 @@ const LoggedOutHeader = () => {
                         null
                     }
                 </div>
-                <Collapse in={toggleNav} style={{ width: '100%' }}>
-                    <div className="navbar-collapse">
-                        <ul className={clsx("navbar-nav mr-auto", size.width < 970 ? styles.shrinkNav : null)}>
-                            <LiItem
-                                shrinkUrl={size.width < 970}
-                                customShrinkUrl={size.width < 970 ? '190px' : null}
-                            >
-                                Find Food
-                            </LiItem>
-                            <LiItem
-                                path='?tab=calorie-calculator'
-                                active={tab === 'calorie-calculator'}
-                                shrinkUrl={size.width < 970}
-                                customShrinkUrl={size.width < 970 ? '190px' : null}
-                            >
-                                Calorie Calculator
-                            </LiItem>
-                            <LiItem
-                                path='?tab=one-rep-max-calculator'
-                                active={tab === 'one-rep-max-calculator'}
-                                shrinkUrl={size.width < 970}
-                                customShrinkUrl={size.width < 970 ? '190px' : null}
-                            >
-                                1 Rep Max Calculator
-                            </LiItem>
-                        </ul>
-                        {size.width >= 970 ?
-                            < Auth />
-                            :
-                            null
-                        }
+                {size.width >= 970 ?
+                    <div className={styles.navItemsContainer}>
+                        <div className={styles.navItems}>
+                            <NavItems />
+                        </div>
+                        < Auth />
+
                     </div>
-                </Collapse>
-            </nav>
+                    :
+                    null
+                }
+            </div>
+            <div className={clsx(styles.collapseNav, size.width < 970 && toggleNav ? styles.collapseNavTransition : '')}>
+                {size.width < 970 && toggleNav ?
+                    <NavItems />
+                    :
+                    null
+                }
+            </div>
         </>
     );
 }
@@ -227,7 +239,7 @@ const Auth = () => {
     const [moreSelectItems] = useState([{ label: 'Opt1', path: '/home' }, { label: 'Opt2', path: '/home' }])
 
     return (
-        <div className={clsx("nav justify-content-end", styles.auth)}>
+        <div className={styles.auth}>
             <div className={styles.authLinks}>
                 <LiItem
                     path='?tab=sign-in'
@@ -263,5 +275,36 @@ const Auth = () => {
     );
 }
 
+const NavItems = () => {
+    const size = useWindowSize();
+    const { tab } = useQuery();
+
+    return (
+        <>
+            <LiItem
+                shrinkUrl={size.width < 970}
+                customShrinkUrl={size.width < 970 ? '190px' : null}
+            >
+                Find Food
+            </LiItem>
+            <LiItem
+                path='?tab=calorie-calculator'
+                active={tab === 'calorie-calculator'}
+                shrinkUrl={size.width < 970}
+                customShrinkUrl={size.width < 970 ? '190px' : null}
+            >
+                Calorie Calculator
+            </LiItem>
+            <LiItem
+                path='?tab=one-rep-max-calculator'
+                active={tab === 'one-rep-max-calculator'}
+                shrinkUrl={size.width < 970}
+                customShrinkUrl={size.width < 970 ? '190px' : null}
+            >
+                1 Rep Max Calculator
+            </LiItem>
+        </>
+    );
+}
 
 export default LoggedOutHeader;

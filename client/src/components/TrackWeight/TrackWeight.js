@@ -27,7 +27,12 @@ const useStyles = makeStyles((theme) => ({
     title: {
         color: '#1B1B1B',
         textAlign: 'center'
-    }
+    },
+    hr: {
+        width: '100%',
+        color: '#CED4DA',
+        opacity: 0.5
+    },
 }));
 
 const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
@@ -70,7 +75,7 @@ const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
             >
                 Track Daily Weight
             </Typography>
-            <hr />
+            <hr className={styles.hr} />
             <div className={styles.inputs}>
                 <UGBDatePicker
                     selectedDate={selectedDate}

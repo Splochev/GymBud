@@ -24,7 +24,8 @@ const useStyles = makeStyles((theme) => ({
     links: {
         display: 'flex',
         gap: 10,
-        marginTop: 5
+        marginTop: 5,
+        marginBottom: 5,
     }
 }));
 
