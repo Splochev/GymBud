@@ -9,7 +9,7 @@ import { postData } from '../../utils/FetchUtils.js';
 import { useHistory } from 'react-router-dom';
 import { useQuery } from '../../utils/RouteUtils.js';
 import { useEffect } from 'react';
-import { IconButton, makeStyles } from '@material-ui/core';
+import { Collapse, IconButton, makeStyles } from '@material-ui/core';
 import TrackWeight from '../../TrackWeight/TrackWeight.js';
 import Button from '@material-ui/core/Button';
 import { Avatar } from '@material-ui/core';
@@ -30,6 +30,8 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: '10px'
     },
     usersAndMore: {
+        display: 'flex',
+        alignItems: 'center',
         '& .MuiButtonBase-root': {
             padding: 0
         }
@@ -55,8 +57,18 @@ const useStyles = makeStyles((theme) => ({
     },
     logoContainer: {
         display: 'flex',
-        gap: 10,
-        alignItems: 'center'
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    btnContainer: {
+        width: '99px'
+    },
+    navBarCollapse: {
+        display: 'flex',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
     }
 }));
 
@@ -77,7 +89,15 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
     const [foodSelectItems] = useState([{ label: 'My Food', path: '/home' }, { label: 'Add Food', path: '?tab=add-food' }])
     const [mealsSelectItems] = useState([{ label: 'My Meals', path: '/home' }, { label: 'My Meal Plans', path: '/home' }])
     const [workoutSelectItems] = useState([{ label: 'Workout Journal', path: '/home' }, { label: 'Add Workout Journal', path: '/home' }])
+    const [toggleNav, setToggleNav] = useState(size.width < 970)
 
+    useEffect(() => {
+        if (size.width < 970) {
+            setToggleNav(false);
+        } else {
+            setToggleNav(true);
+        }
+    }, [size])
 
     useEffect(() => {
         switch (tab) {
@@ -155,6 +175,13 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
             </>
             <nav className={clsx("navbar navbar-expand-custom", styles.nav)}>
                 <div className={size.width < 970 ? styles.logoContainer : null}>
+                    <div className={size.width < 970 ? styles.btnContainer : null}>
+                        <UGBButton
+                            btnType='toggler'
+                            icon='fas fa-bars'
+                            onClick={() => setToggleNav(!toggleNav)}
+                        />
+                    </div>
                     <UGBLogo />
                     {size.width < 970 ?
                         < UserAndMore />
@@ -162,64 +189,61 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                         null
                     }
                 </div>
-                <UGBButton
-                    btnType='toggler'
-                    icon='fas fa-bars'
-                    dataTarget='#navbarSupportedContent'
-                />
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className={clsx("navbar-nav mr-auto", size.width < 970 ? styles.shrinkNav : null)}>
-                        <LiItem >Find Food</LiItem>
-                        <LiItem badge={0}>Meal Planner</LiItem>
-                        <LiItem
-                            path='/progress'
-                            active={(history.location.pathname === '/progress' && !tab && !anchorCalculators && !anchorFood && !anchorMeals && !anchorWorkout) || tab === 'track-weight'}
-                        >
-                            Progress
-                        </LiItem>
-                        <LiItem
-                            type='select'
-                            anchor={anchorCalculators}
-                            setAnchor={setAnchorCalculators}
-                            menuItems={calculatorSelectItems}
-                            active={anchorCalculators || tab === 'calorie-calculator' || tab === 'one-rep-max-calculator' ? true : null}
-                        >
-                            Calculators
-                        </LiItem>
-                        <LiItem
-                            type='select'
-                            anchor={anchorFood}
-                            setAnchor={setAnchorFood}
-                            menuItems={foodSelectItems}
-                            active={anchorFood || tab === 'add-food' ? true : null}
-                        >
-                            Food
-                        </LiItem>
-                        <LiItem
-                            type='select'
-                            anchor={anchorMeals}
-                            setAnchor={setAnchorMeals}
-                            menuItems={mealsSelectItems}
-                            active={anchorMeals ? true : null}
-                        >
-                            Meals
-                        </LiItem>
-                        <LiItem
-                            type='select'
-                            anchor={anchorWorkout}
-                            setAnchor={setAnchorWorkout}
-                            menuItems={workoutSelectItems}
-                            active={anchorWorkout ? true : null}
-                        >
-                            Workout
-                        </LiItem>
-                    </ul>
-                    {size.width >= 970 ?
-                        < UserAndMore />
-                        :
-                        null
-                    }
-                </div>
+                <Collapse in={toggleNav} style={{ width: '100%' }}>
+                    <div className={styles.navBarCollapse}>
+                        <ul className={clsx("navbar-nav mr-auto", size.width < 970 ? styles.shrinkNav : null)}>
+                            <LiItem >Find Food</LiItem>
+                            <LiItem badge={0}>Meal Planner</LiItem>
+                            <LiItem
+                                path='/progress'
+                                active={(history.location.pathname === '/progress' && !tab && !anchorCalculators && !anchorFood && !anchorMeals && !anchorWorkout) || tab === 'track-weight'}
+                            >
+                                Progress
+                            </LiItem>
+                            <LiItem
+                                type='select'
+                                anchor={anchorCalculators}
+                                setAnchor={setAnchorCalculators}
+                                menuItems={calculatorSelectItems}
+                                active={anchorCalculators || tab === 'calorie-calculator' || tab === 'one-rep-max-calculator' ? true : null}
+                            >
+                                Calculators
+                            </LiItem>
+                            <LiItem
+                                type='select'
+                                anchor={anchorFood}
+                                setAnchor={setAnchorFood}
+                                menuItems={foodSelectItems}
+                                active={anchorFood || tab === 'add-food' ? true : null}
+                            >
+                                Food
+                            </LiItem>
+                            <LiItem
+                                type='select'
+                                anchor={anchorMeals}
+                                setAnchor={setAnchorMeals}
+                                menuItems={mealsSelectItems}
+                                active={anchorMeals ? true : null}
+                            >
+                                Meals
+                            </LiItem>
+                            <LiItem
+                                type='select'
+                                anchor={anchorWorkout}
+                                setAnchor={setAnchorWorkout}
+                                menuItems={workoutSelectItems}
+                                active={anchorWorkout ? true : null}
+                            >
+                                Workout
+                            </LiItem>
+                        </ul>
+                        {size.width >= 970 ?
+                            < UserAndMore />
+                            :
+                            null
+                        }
+                    </div>
+                </Collapse>
             </nav>
         </ >
     );
@@ -244,7 +268,7 @@ const UserAndMore = () => {
     }
 
     return (
-        <div className={clsx("nav justify-content-end", styles.usersAndMore)}>
+        <div className={styles.usersAndMore}>
             <LiItem
                 type='select'
                 anchor={anchorUser}

@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const LiItem = ({ path, active, badge, type = 'link', anchor, setAnchor, menuItems, customLabel, variant = 'li', shrinkUrl = true, children }) => {
+const LiItem = ({ path, active, badge, type = 'link', anchor, setAnchor, menuItems, customLabel, variant = 'li', shrinkUrl = true, customShrinkUrl, children }) => {
     const styles = useStyles();
     const size = useWindowSize();
     const history = useHistory();
@@ -63,6 +63,7 @@ const LiItem = ({ path, active, badge, type = 'link', anchor, setAnchor, menuIte
                             e.preventDefault();
                             setAnchor(e.currentTarget)
                         }}
+                        style={{ width: customShrinkUrl ? customShrinkUrl : '' }}
                     >
                         {children}
                         <ArrowDropDown style={{ color: '#FFFFFF' }} />
@@ -128,7 +129,9 @@ const LiItem = ({ path, active, badge, type = 'link', anchor, setAnchor, menuIte
 
     return (
         <li className="nav-item">
-            <a className={clsx("nav-link", styles.navUrls, shrinkUrl ? size.width < 970 ? styles.shrinkUrl : null : null, active ? styles.active : null)}
+            <a
+                className={clsx("nav-link", styles.navUrls, shrinkUrl ? size.width < 970 ? styles.shrinkUrl : null : null, active ? styles.active : null)}
+                style={{ width: customShrinkUrl ? customShrinkUrl : '' }}
                 href="#!"
                 onClick={(e) => {
                     e.preventDefault();

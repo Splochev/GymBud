@@ -1,4 +1,4 @@
-import { IconButton, makeStyles } from '@material-ui/core';
+import { Collapse, IconButton, makeStyles } from '@material-ui/core';
 import OneRepMaxCalculator from '../../OneRepMaxCalculator/OneRepMaxCalculator.js';
 import Login from '../../Login/Login.js';
 import ForgotPassword from '../../Login/ForgotPassword/ForgotPassword.js';
@@ -26,15 +26,27 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: '10px'
     },
     auth: {
+        width: '174px',
         '& .MuiButtonBase-root': {
             padding: 0
         },
-        alignItems: 'center'
+        '& .nav-link': {
+            padding: 0,
+        },
+        alignItems: 'center',
     },
     logoContainer: {
         display: 'flex',
-        gap: 10,
-        alignItems: 'center'
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    authLinks: {
+        display: 'flex',
+        gap: 10
+    },
+    btnContainer: {
+        width: '174px'
     }
 }));
 
@@ -49,6 +61,15 @@ const LoggedOutHeader = () => {
     const [showRegister, setShowRegister] = useState(false);
     const { tab } = useQuery();
     const size = useWindowSize();
+    const [toggleNav, setToggleNav] = useState(size.width < 970)
+
+    useEffect(() => {
+        if (size.width < 970) {
+            setToggleNav(false);
+        } else {
+            setToggleNav(true);
+        }
+    }, [size])
 
     useEffect(() => {
         switch (tab) {
@@ -136,6 +157,13 @@ const LoggedOutHeader = () => {
             </>
             <nav className={clsx("navbar navbar-expand-custom", styles.nav)}>
                 <div className={size.width < 970 ? styles.logoContainer : null}>
+                    <div className={size.width < 970 ? styles.btnContainer : null}>
+                        <UGBButton
+                            btnType='toggler'
+                            icon='fas fa-bars'
+                            onClick={() => setToggleNav(!toggleNav)}
+                        />
+                    </div>
                     <UGBLogo />
                     {size.width < 970 ?
                         < Auth />
@@ -143,33 +171,39 @@ const LoggedOutHeader = () => {
                         null
                     }
                 </div>
-                <UGBButton
-                    btnType='toggler'
-                    icon='fas fa-bars'
-                    dataTarget='#navbarSupportedContent'
-                />
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className={clsx("navbar-nav mr-auto", size.width < 970 ? styles.shrinkNav : null)}>
-                        <LiItem >Find Food</LiItem>
-                        <LiItem
-                            path='?tab=calorie-calculator'
-                            active={tab === 'calorie-calculator'}
-                        >
-                            Calorie Calculator
-                        </LiItem>
-                        <LiItem
-                            path='?tab=one-rep-max-calculator'
-                            active={tab === 'one-rep-max-calculator'}
-                        >
-                            1 Rep Max Calculator
-                        </LiItem>
-                    </ul>
-                    {size.width >= 970 ?
-                        < Auth />
-                        :
-                        null
-                    }
-                </div>
+                <Collapse in={toggleNav} style={{ width: '100%' }}>
+                    <div className="navbar-collapse">
+                        <ul className={clsx("navbar-nav mr-auto", size.width < 970 ? styles.shrinkNav : null)}>
+                            <LiItem
+                                shrinkUrl={size.width < 970}
+                                customShrinkUrl={size.width < 970 ? '190px' : null}
+                            >
+                                Find Food
+                            </LiItem>
+                            <LiItem
+                                path='?tab=calorie-calculator'
+                                active={tab === 'calorie-calculator'}
+                                shrinkUrl={size.width < 970}
+                                customShrinkUrl={size.width < 970 ? '190px' : null}
+                            >
+                                Calorie Calculator
+                            </LiItem>
+                            <LiItem
+                                path='?tab=one-rep-max-calculator'
+                                active={tab === 'one-rep-max-calculator'}
+                                shrinkUrl={size.width < 970}
+                                customShrinkUrl={size.width < 970 ? '190px' : null}
+                            >
+                                1 Rep Max Calculator
+                            </LiItem>
+                        </ul>
+                        {size.width >= 970 ?
+                            < Auth />
+                            :
+                            null
+                        }
+                    </div>
+                </Collapse>
             </nav>
         </>
     );
@@ -183,20 +217,22 @@ const Auth = () => {
 
     return (
         <div className={clsx("nav justify-content-end", styles.auth)}>
-            <LiItem
-                path='?tab=sign-in'
-                active={tab === 'sign-in' || tab === 'forgotten-password'}
-                shrinkUrl={false}
-            >
-                Sign In
-            </LiItem>
-            <LiItem
-                path='?tab=sign-up'
-                active={tab === 'sign-up'}
-                shrinkUrl={false}
-            >
-                Sign Up
-            </LiItem>
+            <div className={styles.authLinks}>
+                <LiItem
+                    path='?tab=sign-in'
+                    active={tab === 'sign-in' || tab === 'forgotten-password'}
+                    shrinkUrl={false}
+                >
+                    Sign In
+                </LiItem>
+                <LiItem
+                    path='?tab=sign-up'
+                    active={tab === 'sign-up'}
+                    shrinkUrl={false}
+                >
+                    Sign Up
+                </LiItem>
+            </div>
             <LiItem
                 type='select'
                 anchor={anchorMore}

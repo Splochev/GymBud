@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 const UGBButton = ({ type = 'button', btnType, title, dataTarget, icon, onClick, variant, children }) => {
     const styles = useStyles();
     const types = {
-        toggler: { style: 'navbar-toggler', dataToggle: 'collapse' },
+        toggler: { style: 'navbar-toggler', dataToggle: 'tooltip' },
         inputButton: { style: 'input-group-text', dataToggle: 'tooltip' },
         success: { style: 'btn btn-success', dataToggle: 'tooltip' },
         secondary: { style: 'btn btn-secondary', dataToggle: 'tooltip' },
