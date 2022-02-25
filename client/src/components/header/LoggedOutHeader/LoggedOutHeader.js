@@ -1,4 +1,4 @@
-import {IconButton, makeStyles } from '@material-ui/core';
+import { IconButton, makeStyles } from '@material-ui/core';
 import OneRepMaxCalculator from '../../OneRepMaxCalculator/OneRepMaxCalculator.js';
 import Login from '../../Login/Login.js';
 import ForgotPassword from '../../Login/ForgotPassword/ForgotPassword.js';
@@ -72,16 +72,21 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         justifyContent: 'space-between'
     },
-    collapseNav: {
+
+
+    collapsed: {
         height: '0px',
+    },
+    collapseNav: {
+        overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: "#1B1B1B",
         gap: 10,
-        transition: 'height 0.1s'
+        transition: 'height 0.2s'
     },
     collapseNavTransition: {
-        height: '150px',
+        overflow: 'unset',
         paddingBottom: 10,
         paddingLeft: 10,
     }
@@ -221,12 +226,8 @@ const LoggedOutHeader = () => {
                     null
                 }
             </div>
-            <div className={clsx(styles.collapseNav, size.width < 970 && toggleNav ? styles.collapseNavTransition : '')}>
-                {size.width < 970 && toggleNav ?
-                    <NavItems />
-                    :
-                    null
-                }
+            <div className={clsx(styles.collapseNav, size.width < 970 && toggleNav ? styles.collapseNavTransition : styles.collapsed)}>
+                <NavItems />
             </div>
         </>
     );
