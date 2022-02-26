@@ -45,6 +45,11 @@ module.exports = class WeightTrackerController {
                     date ASC
             `);
 
+            if (!weightData.length) {
+                res.json({ data: [] });
+                return;
+            }
+
             let minOffsetDate = await MysqlAdapter.query(`
                 SELECT date FROM 
                     weight_tracker
