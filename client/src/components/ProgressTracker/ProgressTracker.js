@@ -16,6 +16,15 @@ function getWeeksAmount(dt2, dt1) {
     return Math.abs(Math.round(diff));
 }
 
+function getBarChartWidth(barsCount) {
+    if (barsCount === 1) {
+        return '180px'
+    } else if (barsCount === 0) {
+        return '100%'
+    }
+    return `${180 + ((barsCount * (barsCount - 1)) / 2) + (100 * (barsCount - 1))}px`
+}
+
 const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
     const styles = useStyles();
     const history = useHistory();
@@ -34,6 +43,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
     const [chartLabels, setChartLabels] = useState([]);
     const [chartValues, setChartValues] = useState([]);
     const [lineChartValues, setLineChartValues] = useState([]);
+    const [chartWidth, setChartWidth] = useState('100%');
     const [changes, setChanges] = useState({});
     const [headCells] = useState([
         {
@@ -102,18 +112,15 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
     ]);
 
     useEffect(() => {
-        let tempData = rows;
-        if (tempData.length > 5) {
-            tempData = tempData.slice(-5);
-        }
         const labels = [];
         const values = [];
         const tempLineChartValues = [];
-        for (let i = 0; i < tempData.length; i++) {
-            labels.push(tempData[i].startDate + '|' + tempData[i].endDate);
-            values.push(tempData[i].avgWeight);
-            tempLineChartValues.push(tempData[i].weightChange);
+        for (let i = 0; i < rows.length; i++) {
+            labels.push(rows[i].startDate + '|' + rows[i].endDate);
+            values.push(rows[i].avgWeight);
+            tempLineChartValues.push(rows[i].weightChange);
         }
+        setChartWidth(getBarChartWidth(values.length));
         setChartLabels(labels);
         setChartValues(values);
         setLineChartValues(tempLineChartValues);
@@ -261,24 +268,30 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                     />
                 </div>
                 <div className={styles.charts}>
-                    <div style={{ width: '100%' }}>
+                    <div style={{ width: '100%', overflow: 'auto', position: 'relative' }}>
                         <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Average Weight Tracker:</Typography>
-                        <UGBVerticalBarsChart
-                            data={rows}
-                            tooltipLabel='Average Weight'
-                            color='#3DA1D7'
-                            height='250px'
-                            type='bar'
-                            chartLabels={chartLabels}
-                            chartValues={chartValues}
-                        />
+                        <div style={{ width: chartWidth }}>
+                            <UGBVerticalBarsChart
+                                data={rows}
+                                tooltipLabel='Average Weight'
+                                hoverTooltipLabel=' kg'
+                                colorTop='#3DA1D7'
+                                height='250px'
+                                type='bar'
+                                chartLabels={chartLabels}
+                                chartValues={chartValues}
+                            />
+                        </div>
+                        <hr className={styles.chartLine}/>
                     </div>
                     <div style={{ width: '100%' }}>
                         <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Weight Change(%) Tracker:</Typography>
                         <UGBVerticalBarsChart
                             data={rows}
-                            tooltipLabel='Average Weight'
-                            color='#3DA1D7'
+                            tooltipLabel='Weight Change'
+                            hoverTooltipLabel='%'
+                            colorTop='#3DA1D7'
+                            colorBottom='#3DA1D7'
                             height='250px'
                             type='line'
                             chartLabels={chartLabels}

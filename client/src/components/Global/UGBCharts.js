@@ -3,12 +3,14 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import { parseDate } from '../utils/utilFunc';
+import { useState } from 'react';
+import { useEffect } from 'react';
 Chart.register(...registerables);
 
 const useStyles = makeStyles((theme) => ({
     canvasContainer250px: {
         height: '250px',
-        width:'100%'
+        width: '100%'
     }
 }));
 
@@ -27,7 +29,7 @@ function getGradient(ctx, chartArea) {
     return gradient;
 }
 
-export function UGBVerticalBarsChart({ type, chartLabels, chartValues, tooltipLabel, color, height, ...props }) {
+export function UGBVerticalBarsChart({ type, chartLabels, chartValues, tooltipLabel, hoverTooltipLabel, colorTop, colorBottom, height, ...props }) {
     const styles = useStyles();
 
 
@@ -67,6 +69,7 @@ export function UGBVerticalBarsChart({ type, chartLabels, chartValues, tooltipLa
     const options = {
         responsive: true,
         maintainAspectRatio: false,
+        barPercentage: 1,
         plugins: {
             legend: {
                 display: false,
@@ -81,7 +84,7 @@ export function UGBVerticalBarsChart({ type, chartLabels, chartValues, tooltipLa
                         const week = context[0].label.split('|');
                         const startDate = parseDate(new Date(week[0]), '/');
                         const endDate = parseDate(new Date(week[1]), '/');
-                        let label = `${context[0].raw} kg\n${startDate} - ${endDate}`;
+                        let label = `${context[0].raw}${hoverTooltipLabel}\n${startDate} - ${endDate}`;
                         return label;
                     }
                 },
@@ -96,7 +99,7 @@ export function UGBVerticalBarsChart({ type, chartLabels, chartValues, tooltipLa
                 ticks: {
                     callback: function (value, index, values) {
                         try {
-                            return `${value.toFixed(2)} kg`;
+                            return `${value.toFixed(2)}${hoverTooltipLabel}`;
                         } catch (err) {
                             return '';
                         }
@@ -107,7 +110,7 @@ export function UGBVerticalBarsChart({ type, chartLabels, chartValues, tooltipLa
                     },
                 },
                 grid: {
-                    borderColor: color,
+                    borderColor: colorTop,
                     drawTicks: false,
                     display: false,
                 },
@@ -115,7 +118,7 @@ export function UGBVerticalBarsChart({ type, chartLabels, chartValues, tooltipLa
             x: {
                 grid: {
                     drawTicks: false,
-                    borderColor: color,
+                    borderColor: colorBottom,
                     display: false,
                 },
                 ticks: {

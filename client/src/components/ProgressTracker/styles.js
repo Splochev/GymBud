@@ -126,5 +126,13 @@ export default makeStyles(() => ({
             flexDirection: 'column',
         },
         marginBottom: 10,
+    },
+    chartLine: {
+        width: 'calc(100% - 67px)',
+        border: 'none',
+        borderBottom: '1px solid #3DA1D7',
+        marginTop: '-20px',
+        marginLeft: '67px',
+        position: 'absolute'
     }
 }))
