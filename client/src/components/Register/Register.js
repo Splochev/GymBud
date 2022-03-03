@@ -1,12 +1,14 @@
 import { FormControlLabel, Radio, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { UGBInput } from '../Global/UGBInput';
+import { UGBIconInput, UGBPasswordInput } from '../Global/UGBInput';
 import { UGBRadioButtonsGroup } from '../Global/UGBRadioButtonsGroup';
 import { postData } from '../utils/FetchUtils';
 import { makeStyles } from '@material-ui/core';
-import UGBButton from '../Global/UGBButton';
 import { useHistory } from 'react-router-dom';
+import { UGBButton } from '../Global/UGBButton';
+import { useEffect } from 'react';
+import { UGBMenuItem, UGBSelect } from '../Global/UGBSelect';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -35,9 +37,46 @@ const useStyles = makeStyles((theme) => ({
             width: '93px'
         }
     },
+    inputs: {
+        width: '100%',
+        display: 'flex',
+        gap: 15,
+        '@media (max-width: 460px)': {
+            flexDirection: 'column',
+            gap: 0,
+        },
+    },
+    radioIcon: {
+        color: '#757575'
+    },
+    birthDate: {
+        '@media (max-width: 460px)': {
+            gap: 10,
+        },
+    }
 }));
 
-const Register = ({ onClose }) => {
+function yearIsLeap(year) {
+    return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+}
+
+
+const monthsLabel = {
+    1: 'Jan',
+    2: 'Feb',
+    3: 'Mar',
+    4: 'Apr',
+    5: 'May',
+    6: 'Jun',
+    7: 'Jul',
+    8: 'Aug',
+    9: 'Sep',
+    10: 'Oct',
+    11: 'Nov',
+    12: 'Dec',
+};
+
+const Register = () => {
     const history = useHistory();
     const styles = useStyles();
     const email = useState('');
@@ -46,6 +85,62 @@ const Register = ({ onClose }) => {
     const firstName = useState('');
     const lastName = useState('');
     const sex = useState('male')
+    const [daysOfMonths, setDaysOfMonths] = useState([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]);
+    const [days, setDays] = useState([]);
+    const day = useState(new Date().getDate());
+    const [months] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    const [month, setMonth] = useState(new Date().getMonth() + 1);
+    const [year, setYear] = useState(new Date().getFullYear());
+    const [minYear] = useState(new Date().getFullYear() - 125);
+    const [maxYear] = useState(new Date().getFullYear());
+    const [years, setYears] = useState([]);
+
+    useEffect(() => {
+        const daysOfMonthCount = daysOfMonths[month - 1];
+        const daysArr = [];
+        for (let i = 1; i <= daysOfMonthCount; i++) {
+            daysArr.push(i);
+        }
+        setDays(daysArr)
+
+        const years = [];
+        for (let i = minYear; i <= maxYear; i++) {
+            years.push(i);
+        }
+        setYears(years);
+    }, [])
+
+    function changeMonth(selectedMonth) {
+        setMonth(selectedMonth);
+        const daysOfMonthCount = daysOfMonths[selectedMonth - 1];
+        const daysArr = [];
+        for (let i = 1; i <= daysOfMonthCount; i++) {
+            daysArr.push(i);
+        }
+        setDays(daysArr)
+        day[1](1);
+    }
+
+    function onChangeMonth(e) {
+        changeMonth(e.target.value);
+    }
+
+    function changeYear(e) {
+        setYear(e.target.value);
+        if (yearIsLeap(e.target.value)) {
+            const tempDaysOfMonths = daysOfMonths;
+            tempDaysOfMonths[1] = 29;
+            setDaysOfMonths(tempDaysOfMonths);
+            changeMonth(month);
+        } else {
+            if (daysOfMonths[1] !== 28) {
+                const tempDaysOfMonths = daysOfMonths;
+                tempDaysOfMonths[1] = 28;
+                setDaysOfMonths(tempDaysOfMonths);
+                changeMonth(month);
+            }
+        }
+    }
 
     function register(e) {
         e.preventDefault();
@@ -54,15 +149,17 @@ const Register = ({ onClose }) => {
             return;
         }
 
+        const birthDate = `${year}-${month}-${day[0]}`;
         postData(process.env.REACT_APP_HOST + '/api/user/register', {
-            "email": email[0],
-            "password": password[0],
-            "firstName": firstName[0],
-            "lastName": lastName[0],
-            "sex": sex[0]
+            email: email[0],
+            password: password[0],
+            firstName: firstName[0],
+            lastName: lastName[0],
+            sex: sex[0],
+            birthDate: birthDate,
         }).then(data => {
             console.log(data);
-            onClose();
+            history.push(history.pathName);
         }, error => {
             console.log('register error', error)
         })
@@ -83,36 +180,80 @@ const Register = ({ onClose }) => {
             >
                 Please sign this form to create an account.
             </Typography>
-            <UGBInput
-                type='text'
-                label="Your email"
+            <div className={styles.inputs}>
+                <UGBIconInput
+                    $value={firstName}
+                    required
+                    label='First name'
+                    startIcon='fa-solid fa-file-signature'
+                />
+                <UGBIconInput
+                    $value={lastName}
+                    required
+                    label='Last name'
+                    startIcon='fa-solid fa-file-signature'
+                />
+            </div>
+            <UGBIconInput
                 $value={email}
-                iconStart='fas fa-envelope'
+                required
+                label='Email'
+                startIcon='fas fa-envelope'
             />
-            <UGBInput
-                type='password'
-                $value={password}
-                label='Your password'
-                iconStart='fas fa-lock'
-            />
-            <UGBInput
-                type='password'
-                $value={repeatPassword}
-                label='Repeat password'
-                iconStart='fas fa-lock'
-            />
-            <UGBInput
-                type='text'
-                $value={firstName}
-                label='Your first name'
-                iconStart='fa-solid fa-file-signature'
-            />
-            <UGBInput
-                type='text'
-                $value={lastName}
-                label='Your last name'
-                iconStart='fa-solid fa-file-signature'
-            />
+            <div className={styles.inputs}>
+                <UGBPasswordInput
+                    $value={password}
+                    required
+                    label='Password'
+                    startIcon='fas fa-lock'
+                />
+                <UGBPasswordInput
+                    $value={repeatPassword}
+                    required
+                    label='Repeat password'
+                    startIcon='fas fa-lock'
+                />
+            </div>
+            <Typography
+                variant='inherit'
+                component='div'
+                style={{
+                    color: '#1B1B1B',
+                    width: '100%',
+                    marginBottom: 5,
+                }}
+            >
+                Birth Date
+            </Typography>
+            <div className={clsx(styles.inputs, styles.birthDate)}>
+                <UGBSelect label='' $value={day}>
+                    {days.map(x => {
+                        return (
+                            <UGBMenuItem key={x} value={x}>
+                                {x}
+                            </UGBMenuItem>
+                        )
+                    })}
+                </UGBSelect>
+                <UGBSelect label='' value={month} onChange={onChangeMonth}>
+                    {months.map(x => {
+                        return (
+                            <UGBMenuItem key={x} value={x}>
+                                {monthsLabel[x]}
+                            </UGBMenuItem>
+                        )
+                    })}
+                </UGBSelect>
+                <UGBSelect label='' value={year} onChange={changeYear}>
+                    {years.map(x => {
+                        return (
+                            <UGBMenuItem key={x} value={x}>
+                                {x}
+                            </UGBMenuItem>
+                        )
+                    })}
+                </UGBSelect>
+            </div>
             <UGBRadioButtonsGroup
                 label="Sex:"
                 display='inline'
@@ -120,26 +261,24 @@ const Register = ({ onClose }) => {
                 customMap={() => {
                     return (
                         <>
-                            <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon)} />} />
-                            <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon)} />} />
+                            <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon, styles.radioIcon)} />} />
+                            <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon, styles.radioIcon)} />} />
                         </>
                     );
                 }}
-
             />
             <div className={styles.actions}>
                 <UGBButton
+                    btnType='secondary'
                     onClick={() => {
                         history.push(history.pathName);
-                        onClose()
                     }}
-                    btnType='danger'
                 >
                     Cancel
                 </UGBButton>
                 <UGBButton
-                    type="submit"
-                    btnType='success'
+                    type='submit'
+                    btnType='primary'
                 >
                     Sign Up
                 </UGBButton>

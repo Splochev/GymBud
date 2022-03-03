@@ -76,24 +76,27 @@ module.exports = class UserController {
         try {
             const body = req.body;
 
-            if (!body.email || !body.password || !body.firstName || !body.lastName || !body.sex) {
+            if (!body.email || !body.password || !body.firstName || !body.lastName || !body.sex || !body.birthDate) {
                 if (!body.email) {
-                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.data, 'Email is required!'));
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'Email is required!'));
                     return;
                 } else if (!body.password) {
-                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Password is required!'));
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'Password is required!'));
                     return;
                 } else if (!body.firstName) {
-                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'First Name is required!'));
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'First Name is required!'));
                     return;
                 } else if (!body.lastName) {
-                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Last Name is required!'));
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'Last Name is required!'));
                     return;
                 } else if (!body.sex) {
-                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Sex is required!'));
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'Sex is required!'));
                     return;
                 } else if (!body.userType) {
-                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'User Type is required!'));
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'User Type is required!'));
+                    return;
+                } else if (!body.birthDate) {
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'Birth Date is required!'));
                     return;
                 }
             } else {
@@ -104,7 +107,7 @@ module.exports = class UserController {
                 let expirationDate = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
 
                 let userData = await MysqlAdapter.query(`
-                    INSERT IGNORE INTO users (email,password,first_name,last_name,sex,created_on,verification_token_expires_on,verification_token)
+                    INSERT IGNORE INTO users (email,password,first_name,last_name,sex,created_on,verification_token_expires_on,verification_token,birth_date)
                     VALUES(
                         ${escape(body.email)},
                         '${password}',
@@ -113,7 +116,8 @@ module.exports = class UserController {
                         ${escape(body.sex)},
                         '${date}',
                         '${expirationDate}',
-                        uuid()
+                        uuid(),
+                        ${escape(body.birthDate)}
                     )
                     RETURNING verification_token as token
                 `)
