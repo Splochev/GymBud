@@ -71,9 +71,10 @@ export default makeStyles(() => ({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 5,
+        maxWidth: '600px',
         '@media (max-width: 400px)': {
             flexDirection: 'column'
-        }
+        },
     },
     unsortableHead: {
         color: 'white'
@@ -139,5 +140,13 @@ export default makeStyles(() => ({
         overflowX: 'auto',
         overflowY: 'hidden',
         position: 'relative'
+    },
+    topSide: {
+        width: '100%',
+        height: ' 100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 }))

@@ -267,37 +267,37 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                         maxDate={new Date()}
                     />
                 </div>
-                <div className={styles.charts}>
-                    <div className={styles.barChart}>
-                        <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Average Weight Tracker:</Typography>
-                        <div style={{ width: chartWidth }}>
-                            <UGBVerticalBarsChart
-                                data={rows}
-                                tooltipLabel='Average Weight'
-                                hoverTooltipLabel=' kg'
-                                colorTop='#3DA1D7'
-                                height='250px'
-                                type='bar'
-                                chartLabels={chartLabels}
-                                chartValues={chartValues}
-                            />
-                        </div>
-                        <hr style={{ width: `calc(${chartWidth} - 67px)` }} className={styles.chartLine} />
-                    </div>
-                    <div style={{ width: '100%' }}>
-                        <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Weight Change(%) Tracker:</Typography>
+            </div>
+            <div className={styles.charts}>
+                <div className={styles.barChart}>
+                    <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Average Weight Tracker:</Typography>
+                    <div style={{ width: chartWidth }}>
                         <UGBVerticalBarsChart
                             data={rows}
-                            tooltipLabel='Weight Change'
-                            hoverTooltipLabel='%'
+                            tooltipLabel='Average Weight'
+                            hoverTooltipLabel=' kg'
                             colorTop='#3DA1D7'
-                            colorBottom='#3DA1D7'
                             height='250px'
-                            type='line'
+                            type='bar'
                             chartLabels={chartLabels}
-                            chartValues={lineChartValues}
+                            chartValues={chartValues}
                         />
                     </div>
+                    <hr style={{ width: `calc(${chartWidth} - 67px)` }} className={styles.chartLine} />
+                </div>
+                <div style={{ width: '100%' }}>
+                    <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Weight Change(%) Tracker:</Typography>
+                    <UGBVerticalBarsChart
+                        data={rows}
+                        tooltipLabel='Weight Change'
+                        hoverTooltipLabel='%'
+                        colorTop='#3DA1D7'
+                        colorBottom='#3DA1D7'
+                        height='250px'
+                        type='line'
+                        chartLabels={chartLabels}
+                        chartValues={lineChartValues}
+                    />
                 </div>
             </div>
             <div className={styles.toolbar}>
