@@ -11,8 +11,8 @@ import clsx from 'clsx';
 const theme = createTheme({
     palette: {
         secondary: {
-            main: '#007BFF',
-            light: '#B3D7FF',
+            main: '#23913C',
+            light: '#A3D9B0',
             contrastText: '#FFFFFF',
         },
     }
@@ -21,10 +21,10 @@ const theme = createTheme({
 const useRadioStyles = makeStyles((theme) => ({
     formControl: {
         "& .MuiFormLabel-root": {
-            color: 'black'
+            color: '#757575'
         },
         "& .Mui-focused": {
-            color: 'black'
+            color: '#757575'
         },
     },
     inlineFormControl: {

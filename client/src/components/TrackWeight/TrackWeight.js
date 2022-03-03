@@ -1,11 +1,10 @@
 import { makeStyles, Typography } from '@material-ui/core';
 import { useState } from 'react';
 import { UGBDatePicker } from '../Global/UGBDatePicker';
-import UGBButton from '../Global/UGBButton';
 import { UGBInput } from '../Global/UGBInput';
 import { postData } from '../utils/FetchUtils';
 import { parseDate } from '../utils/utilFunc';
-import clsx from 'clsx';
+import { UGBButton } from '../Global/UGBButton';
 
 const useStyles = makeStyles((theme) => ({
     actions: {
@@ -93,14 +92,14 @@ const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
             />
             <div className={styles.actions}>
                 <UGBButton
+                    btnType='secondary'
                     onClick={() => onClose()}
-                    btnType='danger'
                 >
                     Cancel
                 </UGBButton>
                 <UGBButton
-                    btnType='success'
-                    type="submit"
+                    type='submit'
+                    btnType='primary'
                 >
                     Save
                 </UGBButton>

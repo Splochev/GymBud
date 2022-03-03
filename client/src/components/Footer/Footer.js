@@ -42,7 +42,6 @@ const Footer = () => {
         setOpen(false);
     };
 
-
     return (
         <div className={styles.footer}>
             <div className={styles.fill} />

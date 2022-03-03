@@ -4,19 +4,17 @@ import KnowsLbmFalse from './knowsLbmFalse/KnowsLbmFalse'
 import { UGBRadioButtonsGroup } from '../../Global/UGBRadioButtonsGroup';
 import { FormControlLabel, Radio, Typography } from '@material-ui/core';
 import useStyles from '../styles'
-import useWindowSize from '../../utils/useWindowSize';
 
 const KatchMcardleFormula = ({ bmr }) => {
     const styles = useStyles();
     const knowsLbmLayout = useState('KnowsLbmTrue');
-    const size = useWindowSize();
 
     return (
         <div className={styles.katchFormulaLayout}>
-            <div>
+            <div >
                 <Typography className={styles.subTitle} variant='subtitle2' component='div'>Do you know your LBM?</Typography>
                 <UGBRadioButtonsGroup
-                    display={size.width > 405 ? 'inline' : 'block'}
+                    display='inline'
                     $checkedValue={knowsLbmLayout}
                     customMap={() => {
                         return (

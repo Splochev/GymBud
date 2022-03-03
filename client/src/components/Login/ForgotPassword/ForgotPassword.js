@@ -1,9 +1,9 @@
-import { UGBInput } from '../../Global/UGBInput';
+import { UGBIconInput } from '../../Global/UGBInput';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core';
-import UGBButton from '../../Global/UGBButton';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { UGBButton } from '../../Global/UGBButton';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -50,25 +50,26 @@ const ForgotPassword = () => {
             >
                 Please provide your account email to reset your password.
             </Typography>
-            <UGBInput
+            <UGBIconInput
                 $value={email}
-                type='text'
-                label="Your email"
-                iconStart='fas fa-envelope'
+                required
+                label='Your email'
+                startIcon='fas fa-envelope'
             />
-
             <div className={styles.actions}>
                 <UGBButton
-                    onClick={() => history.push(history.pathName)}
-                    btnType='danger'
+                    btnType='secondary'
+                    onClick={() => {
+                        history.push(history.pathName);
+                    }}
                 >
                     Cancel
                 </UGBButton>
                 <UGBButton
-                    btnType='success'
-                    type="submit"
+                    type='submit'
+                    btnType='primary'
                 >
-                    Reset Your Password
+                    Reset Password
                 </UGBButton>
             </div>
         </form>

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import UGBMissingFields from '../Global/UGBMissingFields';
-import { UGBInput } from '../Global/UGBInput';
+import { UGBIconInput } from '../Global/UGBInput';
 import { makeStyles, Typography } from '@material-ui/core';
-import UGBButton from '../Global/UGBButton';
 import UGBLink from '../Global/UGBLink';
 import { useHistory } from 'react-router-dom';
+import clsx from 'clsx';
+import { UGBButton } from '../Global/UGBButton';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -35,6 +36,24 @@ const useStyles = makeStyles((theme) => ({
             marginRight: theme.spacing(2),
         },
     },
+    subTitle: {
+        color: '#1B1B1B',
+        padding: 0,
+        fontSize: '1rem',
+        fontWeight: '400',
+        lineHeight: '1',
+        letterSpacing: '0.00938em',
+        textAlign: 'center',
+        width: '185px',
+        marginBottom: 10
+    },
+    result: {
+        fontWeight: "bolder",
+        letterSpacing: '1.2',
+    },
+    icon: {
+        fontSize: '20px'
+    },
 }));
 
 const OneRepMaxCalculator = () => {
@@ -49,9 +68,12 @@ const OneRepMaxCalculator = () => {
         e.preventDefault();
         const parsedWeight = Number(weight[0]);
         const parsedReps = Number(reps[0]);
+        console.log(parsedWeight, parsedReps)
+
 
         if ((parsedReps <= 10 && parsedReps >= 4) && (parsedWeight > 0)) {
-            oneRM[1]((parsedWeight / (1.0278 - 0.0278 * parsedReps)).toFixed(2));
+            const result = (parsedWeight / (1.0278 - 0.0278 * parsedReps)).toFixed(2);
+            oneRM[1](result);
         } else {
             setAlert(<UGBMissingFields setAlert={setAlert} alertMessage={'All fields are required!'} />)
         }
@@ -95,43 +117,38 @@ const OneRepMaxCalculator = () => {
             </Typography>
             {alert}
             <div className={styles.inputs}>
-                <UGBInput
-                    type='number'
+                <UGBIconInput
                     $value={weight}
-                    label='Weight'
-                    min='1'
-                    iconStart='fas fa-balance-scale'
+                    required
+                    startIcon='fas fa-balance-scale'
+                    label="Weight"
                 />
-                <UGBInput
-                    type='number'
+                <UGBIconInput
                     $value={reps}
-                    label='Reps'
-                    min='4'
-                    max='10'
-                    iconStart='fas fa-sort-numeric-up'
+                    required
+                    startIcon='fas fa-sort-numeric-up'
+                    label="Reps"
                 />
             </div>
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Your one rep max is:</Typography>
-            <UGBInput
-                $value={oneRM}
-                type='number'
-                disabled={true}
-                maxWidth={140}
-            />
-            <div style={{ marginTop: 10 }} >
-                <UGBButton
-                    type='submit'
-                    btnType='success'
-                    title='Calculate 1 Rep Max'
-                    icon='fas fa-calculator'
-                />
-            </div>
+            <Typography
+                className={styles.subTitle}
+                variant='subtitle2'
+                component='div'>
+                Your one rep max is: {!isNaN(Number(oneRM[0])) ? <span className={styles.result}>{oneRM[0]}</span> : null}
+            </Typography>
+            <UGBButton
+                type='submit'
+                btnType='primary'
+                startIcon={<i className={clsx('fas fa-calculator', styles.icon)} />}
+            >
+                Calculate
+            </UGBButton>
             <div className={styles.actions}>
                 <UGBButton
+                    btnType='secondary'
                     onClick={() => {
                         history.push(history.pathName);
                     }}
-                    btnType='danger'
                 >
                     Close
                 </UGBButton>

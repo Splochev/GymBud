@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import UGBMissingFields from '../Global/UGBMissingFields';
-import { UGBInput } from '../Global/UGBInput'
+import { UGBIconInput } from '../Global/UGBInput'
 import { Typography } from '@material-ui/core';
-import UGBButton from '../Global/UGBButton';
 import { makeStyles } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
+import { UGBButton } from '../Global/UGBButton';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        gap: 15
     },
     hr: {
         width: '100%',
@@ -23,12 +24,24 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: "flex-end",
         marginTop: theme.spacing(2),
-        "& button:first-child": {
-            marginRight: theme.spacing(2),
-        },
+        gap: 10,
+        '& button': {
+            width: '76px'
+        }
+    },
+    inputs: {
+        display: 'flex',
+        width: '100%',
+        gap: 16,
+        '@media (max-width: 460px)': {
+            flexDirection: 'column',
+        }
+    },
+    title: {
+        textAlign: 'center',
+        color: '#1B1B1B'
     },
 }));
-
 
 function calculateWeightAndCalories(carbs, fat, protein, req) {
     let weight = 0;
@@ -97,69 +110,59 @@ const AddFood = () => {
 
     return (
         <form className={styles.form} onSubmit={addFood}>
-            <Typography variant='h5' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Add Food</Typography>
+            <Typography variant='h5' component='div' className={styles.title} >Add Food</Typography>
             <hr className={styles.hr} />
             {alert}
-            <UGBInput
-                type='text'
-                label='Food Name'
-                iconStart='fas fa-utensils'
-                $value={foodName}
-            />
-            <UGBInput
-                type='number'
-                label='Carbs per 100 grams'
-                min='0'
-                max='100'
-                iconStart='fas fa-bread-slice'
-                $value={carbs}
-            />
-            <UGBInput
-                type='number'
-                label='Fat per 100 grams'
-                min='0'
-                max='100'
-                iconStart='fas fa-fish'
-                $value={fat}
-            />
-            <UGBInput
-                type='number'
-                label='Protein per 100 grams'
-                min='0'
-                max='100'
-                iconStart='fas fa-drumstick-bite'
-                $value={protein}
-            />
-            <UGBInput
-                type='number'
-                label='Calories Per 100 grams'
-                min='0'
-                max='900'
-                iconStart='fas fa-burn'
-                hasButton={true}
-                $value={calories}
-            >
-                <UGBButton
-                    title='Calculate the calories of the food'
-                    icon='fas fa-calculator'
-                    onClick={calculate}
-                    btnType='success'
+            <div className={styles.inputs}>
+                <UGBIconInput
+                    $value={carbs}
+                    required
+                    label='Food Name'
+                    startIcon='fas fa-utensils'
                 />
-            </UGBInput>
+                <UGBIconInput
+                    $value={carbs}
+                    required
+                    label='Carbs per 100 grams'
+                    startIcon='fas fa-bread-slice'
+                />
+            </div>
+            <div className={styles.inputs}>
+                <UGBIconInput
+                    $value={fat}
+                    required
+                    label='Fat per 100 grams'
+                    startIcon='fas fa-fish'
+                />
+                <UGBIconInput
+                    $value={protein}
+                    required
+                    label='Protein per 100 grams'
+                    startIcon='fas fa-drumstick-bite'
+                />
+            </div>
+            <UGBIconInput
+                $value={calories}
+                required
+                label='Calories Per 100 grams'
+                startIcon='fas fa-burn'
+                endIcon='fas fa-calculator'
+                $$onClick={calculate}
+            />
             <div className={styles.actions}>
                 <UGBButton
+                    btnType='secondary'
                     onClick={() => {
                         history.push(history.pathName);
                     }}
-                    btnType='danger'
                 >
                     Cancel
                 </UGBButton>
                 <UGBButton
-                    btnType='success'
                     type='submit'
+                    btnType='primary'
                 >
-                    Add To My Food
+                    Add
                 </UGBButton>
             </div>
         </form>

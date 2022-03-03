@@ -11,10 +11,10 @@ import { useEffect } from 'react';
 import { useQuery } from '../../utils/RouteUtils.js';
 import useWindowSize from '../../utils/useWindowSize.js';
 import UGBLogo from '../../Global/UGBLogo.js';
-import UGBButton from '../../Global/UGBButton.js';
 import LiItem from '../../Global/UGBLiItem.js';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import clsx from 'clsx';
+import { UGBButton } from '../../Global/UGBButton.js';
 
 const useStyles = makeStyles((theme) => ({
     logoContainer: {
@@ -72,8 +72,6 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         justifyContent: 'space-between'
     },
-
-
     collapsed: {
         height: '0px',
     },
@@ -169,7 +167,7 @@ const LoggedOutHeader = () => {
                     }}
                     maxWidth='sm'
                 >
-                    <Register onClose={() => setShowRegister(false)} />
+                    <Register/>
                 </UGBModal>
                 <UGBModal
                     open={showLogin}
@@ -200,9 +198,11 @@ const LoggedOutHeader = () => {
                     {size.width < 970 ?
                         <div className={styles.btnContainer}>
                             <UGBButton
-                                icon='fas fa-bars'
+                                variant='text'
                                 onClick={() => setToggleNav(!toggleNav)}
-                            />
+                            >
+                                <i className={clsx('fas fa-bars', styles.icon)} />
+                            </UGBButton>
                         </div>
                         :
                         null

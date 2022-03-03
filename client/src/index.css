@@ -16,3 +16,8 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+
+.MuiPaper-root .MuiList-root .MuiButtonBase-root{
+  white-space: normal;
+}

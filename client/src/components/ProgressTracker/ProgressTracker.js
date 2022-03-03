@@ -6,9 +6,9 @@ import { getData, putData } from '../utils/FetchUtils';
 import { parseDate } from '../utils/utilFunc'
 import { UGBDatePicker } from '../Global/UGBDatePicker'
 import { UGBVerticalBarsChart } from '../Global/UGBCharts'
-import UGBButton from '../Global/UGBButton'
 import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
+import { UGBButton } from '../Global/UGBButton';
 
 function getWeeksAmount(dt2, dt1) {
     var diff = (dt2 - dt1) / 1000;
@@ -268,7 +268,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                     />
                 </div>
                 <div className={styles.charts}>
-                    <div style={{ width: '100%', overflow: 'auto', position: 'relative' }}>
+                    <div className={styles.barChart}>
                         <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Average Weight Tracker:</Typography>
                         <div style={{ width: chartWidth }}>
                             <UGBVerticalBarsChart
@@ -282,7 +282,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                                 chartValues={chartValues}
                             />
                         </div>
-                        <hr className={styles.chartLine}/>
+                        <hr style={{ width: `calc(${chartWidth} - 67px)` }} className={styles.chartLine} />
                     </div>
                     <div style={{ width: '100%' }}>
                         <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Weight Change(%) Tracker:</Typography>
@@ -304,8 +304,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                 <Typography variant='h6' component='div' style={{ marginTop: 15, marginBottom: 15, color: '#1B1B1B' }} >Weight Entries: </Typography>
                 <div className={styles.actions}>
                     <UGBButton
-                        btnType='success'
-                        title='Submit your daily weight'
+                        btnType='primary'
                         onClick={() => {
                             history.push({ search: "?tab=track-weight", state: { fromPopup: true } });
                         }}
@@ -313,8 +312,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                         Track weight
                     </UGBButton>
                     <UGBButton
-                        btnType='success'
-                        title='Save changes from table'
+                        btnType='primary'
                         onClick={() => saveChanges()}
                     >
                         Save Changes

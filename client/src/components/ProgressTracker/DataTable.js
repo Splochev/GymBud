@@ -12,8 +12,8 @@ import UGBAlert from '../Global/UGBAlert';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import ClearIcon from '@material-ui/icons/Clear';
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { parseDate } from '../utils/utilFunc'
 import Pagination from '@material-ui/lab/Pagination';
 import { createTheme } from "@material-ui/core";
@@ -145,7 +145,7 @@ function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
                                     active={orderBy === headCell.id}
                                     direction={orderBy === headCell.id ? order : 'asc'}
                                     onClick={createSortHandler(headCell.id)}
-                                    IconComponent={orderBy === headCell.id ? ArrowDropUpIcon : ArrowDropDownIcon}
+                                    IconComponent={orderBy === headCell.id ? ExpandLessIcon : ExpandMoreIcon}
                                 >
                                     {headCell.label}
                                 </TableSortLabel>

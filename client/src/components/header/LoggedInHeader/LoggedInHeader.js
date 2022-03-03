@@ -13,12 +13,12 @@ import { IconButton, makeStyles } from '@material-ui/core';
 import TrackWeight from '../../TrackWeight/TrackWeight.js';
 import Button from '@material-ui/core/Button';
 import { Avatar } from '@material-ui/core';
-import { ArrowDropDown } from '@material-ui/icons';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import useWindowSize from '../../utils/useWindowSize.js';
 import UGBLogo from '../../Global/UGBLogo.js';
-import UGBButton from '../../Global/UGBButton.js';
 import LiItem from '../../Global/UGBLiItem.js';
+import { UGBButton } from '../../Global/UGBButton.js';
 
 const useStyles = makeStyles((theme) => ({
     usersAndMore: {
@@ -113,6 +113,9 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'unset',
         paddingBottom: 10,
         paddingLeft: 10,
+    },
+    icon: {
+        fontSize: '21px'
     }
 }));
 
@@ -216,9 +219,11 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                     {size.width < 970 ?
                         <div className={styles.btnContainer}>
                             <UGBButton
-                                icon='fas fa-bars'
+                                variant='text'
                                 onClick={() => setToggleNav(!toggleNav)}
-                            />
+                            >
+                                <i className={clsx('fas fa-bars', styles.icon)} />
+                            </UGBButton>
                         </div>
                         :
                         null
@@ -282,7 +287,7 @@ const UserAndMore = () => {
                     component="span" disableTouchRipple
                 >
                     <Avatar>{store[0].user.first_name.charAt(0) + store[0].user.last_name.charAt(0)}</Avatar>
-                    <ArrowDropDown style={{ color: '#FFFFFF' }} />
+                    <ExpandMoreIcon style={{ color: '#FFFFFF' }} />
                 </Button>
             </LiItem>
             <LiItem

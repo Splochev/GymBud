@@ -1,137 +1,240 @@
-import { Typography } from '@material-ui/core';
+import { IconButton, InputAdornment, InputBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/styles';
 import clsx from 'clsx'
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { forwardRef } from 'react';
+import { BrandAlert } from './BrandAlert';
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
-const useStyles = makeStyles((theme) => ({
-    icon: {
-        fontSize: '20px',
-        background: '#E9ECEF',
-        color: '#1B1B1B',
-        width: '53px',
-        height: '40px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        border: '1px solid #CED4DA'
-    },
-    iconInput: {
-        display: 'flex',
-        marginBottom: 10,
-        width: '100%',
-    },
-    input: {
-        outline: 'none',
-        display: 'block',
-        width: '100%',
-        padding: '0.375rem .75rem',
-        fontSize: '1rem',
-        fontWeight: 40,
-        lineHeight: 1.5,
-        color: '#495057',
-        backgroundColor: '#fff',
-        backgroundClip: 'padding-box',
-        border: '1px solid #ced4da',
-        transition: 'border-color .15s ease-in-out,box-shadow .15s ease-in-out',
-        '&:focus': {
-            boxShadow: 'rgb(191,222,255) 0px 0px 0px 3px',
-            border: '1px solid #80BDFF',
-            outlineWidth: '0px'
-        },
-        '&:disabled': {
-            border: '1px solid #CED4DA',
-            backgroundColor: '#E9ECEF',
-            color: '#5A6067',
-            borderRadius: '5px'
-        }
-    },
-    biggerIcon: {
-        width: '61px'
-    },
-    subTitle: {
-        color: '#1B1B1B',
+const useStyles = makeStyles(() => ({
+    iconButton: {
+        background: '#28A745',
+        color: 'white',
         padding: 0,
-        fontSize: '1rem',
-        fontWeight: 400,
-        lineHeight: 1,
-        letterSpacing: '0.00938em',
-        textAlign: 'left',
-        width: '100%',
-        marginTop: 3,
-        fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
-        transform: 'translate(0, 1.5px) scale(0.75)',
-        transformOrigin: 'top left'
+        paddingTop: '3px',
+        paddingBottom: '4px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
+        borderRadius: '21px',
+        textAlign: 'center',
+        marginRight: '-11px',
+        border: '1px solid transparent',
+        '&:hover': {
+            backgroundColor: '#218838',
+            border: '1px solid #1E7E34',
+        },
+        '&:focus': {
+            border: '1px solid #1E7E34',
+            background: '#218838',
+            boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
+            outline: 'none'
+        },
     },
-    btnContainer: {
-        width: '100%'
+    icon: {
+        fontSize: '21px',
+        color: '#757575'
     },
-    cornerLess: {
-        '& button': {
-            borderRadius: 0
-        }
+    iconButtonColor: {
+        color: 'white',
     }
+
 }));
 
-export const UGBInput = ({ $value, type, name, label, min = null, max = null, placeholder, maxWidth, hasButton, required = true, disabled = false, iconStart, children }) => {
-    const styles = useStyles();
+const UGBIconButton = ({ icon, $onClick }) => {
+    const styles = useStyles()
+    return (
+        <IconButton onClick={$onClick} disableRipple classes={{ root: styles.iconButton }}>
+            <i className={clsx(icon, styles.icon, styles.iconButtonColor)} />
+        </IconButton>
+    );
+}
+
+const InternalInput = forwardRef(function Input(props, ref) {
+    const {
+        disableUnderline,
+        classes = {},
+        fullWidth = false,
+        inputComponent = 'input',
+        multiline = false,
+        type = 'text',
+        ...other
+    } = props;
 
     return (
-        iconStart ?
-            <div className={clsx(styles.btnContainer, hasButton ? styles.cornerLess : '')}>
-                {label ? <Typography variant='subtitle2' component='div' className={styles.subTitle} >{label}</Typography> : null}
-                <div className={styles.iconInput}>
-                    <div className={clsx(styles.icon, hasButton ? styles.biggerIcon : '')}>
-                        <i className={iconStart} />
-                    </div>
-                    <input
-                        value={$value[0]}
-                        onChange={disabled ? null : (e) => $value[1](e.target.value)}
-                        type={type}
-                        className={styles.input}
-                        style={{ width: maxWidth}}
-                        name={name}
-                        placeholder={placeholder}
-                        required={required}
-                        min={min}
-                        max={max}
-                        disabled={disabled}
-                        step={type === 'number' ? '.01' : null}
-                    />
-                    {children}
-                </div>
-            </div>
-            :
-            disabled ?
-                <input
+        <InputBase
+            classes={{
+                ...classes,
+                root: clsx(classes.root, {
+                    [classes.underline]: !disableUnderline,
+                }),
+                underline: null,
+            }}
+            fullWidth={fullWidth}
+            inputComponent={inputComponent}
+            multiline={multiline}
+            ref={ref}
+            type={type}
+            {...other}
+        />
+    );
+});
+
+export const UGBInput = withStyles(() => ({
+    root: {
+        width: '100%',
+        position: 'relative',
+        boxSizing: 'content-box',
+        display: 'flex',
+        flexDirection: 'column',
+        color: '#1B1B1B',
+        marginBottom: 8,
+        // font: ...,
+        // letterSpacing: ...,
+    },
+    label: {
+        width: '100%',
+        margin: '0px auto 8px 0px',
+    },
+    input: {
+        width: '100%',
+        height: 40,
+        border: '1px solid #1B1B1B',
+        borderRadius: 20,
+        boxSizing: 'border-box',
+        padding: '8px 16px',
+        background: 'none',
+        color: '#1B1B1B',
+        // font: ...,
+        // letterSpacing: ...,
+    },
+    error: {
+        borderColor: '#df4759'
+    }
+}))(({ classes, ...props }) => {
+    const {
+        variant,
+        label,
+        InputLabelProps,
+        inputProps,
+        InputProps,
+        $value,
+        validator,
+        validatorPassed,
+        iconStart,
+        ...other
+    } = props;
+    const [validationErr, setValidationErr] = useState([]);
+
+    const onChange = (e) => {
+        const value = e.target.value;
+        if (validator) {
+            setValidationErr(validator(value))
+            if (validatorPassed) {
+                if (validator(value).length) {
+                    validatorPassed[1](false);
+                } else {
+                    validatorPassed[1](true);
+                }
+            }
+        }
+        $value[1](value)
+    }
+
+    return (label ?
+        <label className={classes.root} {...InputLabelProps}>
+            <span className={classes.label}>{label}</span>
+            {$value ?
+                <InternalInput
+                    inputProps={inputProps}
+                    {...InputProps}
+                    {...other}
                     value={$value[0]}
-                    onChange={disabled ? null : (e) => $value[1](e.target.value)}
-                    type={type}
-                    style={{ width: maxWidth }}
-                    className={styles.input}
-                    name={name}
-                    placeholder={placeholder}
-                    required={required}
-                    min={min}
-                    max={max}
-                    disabled={disabled}
-                    step={type === 'number' ? '.01' : null}
+                    onChange={onChange}
+                    className={clsx(classes.input, validationErr.length ? classes.error : null)}
                 />
                 :
-                <div className={styles.btnContainer}>
-                    {label ? <Typography variant='subtitle2' component='div' className={styles.subTitle} >{label}</Typography> : null}
-                    <input
-                        value={$value[0]}
-                        onChange={disabled ? null : (e) => $value[1](e.target.value)}
-                        type={type}
-                        className={styles.input}
-                        name={name}
-                        placeholder={placeholder}
-                        required={required}
-                        style={{ width: maxWidth }}
-                        min={min}
-                        max={max}
-                        disabled={disabled}
-                        step={type === 'number' ? '.01' : null}
-                    />
-                </div>
+                <InternalInput inputProps={inputProps} {...InputProps} {...other} className={classes.input} />
+            }
+            {validationErr.map(x => <BrandAlert key={x}>{x}</BrandAlert>)}
+        </label>
+        : $value ?
+            <InternalInput
+                inputProps={inputProps}
+                {...InputProps}
+                {...other}
+                value={$value[0]}
+                onChange={onChange}
+                className={clsx(classes.input, validationErr.length ? classes.error : null)}
+            />
+            :
+            <InternalInput inputProps={inputProps} {...InputProps} {...other} className={classes.input} />
+    );
+});
+
+export function UGBIconInput({ startIcon, endIcon, $$onClick, ...props }) {
+    const styles = useStyles()
+    return (
+        <UGBInput
+            InputProps={{
+                startAdornment: !startIcon ? null : (
+                    <InputAdornment position="start">
+                        <i className={clsx(startIcon, styles.icon)} />
+                    </InputAdornment>
+                ),
+                endAdornment: !endIcon ? null : (
+                    <InputAdornment position="end">
+                        {$$onClick ?
+                            <UGBIconButton icon={endIcon} $onClick={$$onClick} />
+                            :
+                            <i className={clsx(endIcon, styles.icon)} />
+                        }
+                    </InputAdornment>
+                ),
+                labelWidth: 70
+            }}
+            {...props}
+        />
+    );
+}
+
+export function UGBPasswordInput({ startIcon, ...props }) {
+    const styles = useStyles()
+    const [show, setShow] = useState(false);
+    const [inputType, setInputType] = useState('password')
+
+    useEffect(() => {
+        if (show) {
+            setInputType('text')
+        } else {
+            setInputType('password')
+        }
+    }, [show]);
+
+    function handleClickShowPassword(e) {
+        setShow(!show);
+    }
+
+    return (
+        <UGBInput
+            type={inputType}
+            InputProps={{
+                startAdornment: !startIcon ? null : (
+                    <InputAdornment position="start">
+                        <i className={clsx(startIcon, styles.icon)} />
+                    </InputAdornment>
+                ),
+                endAdornment: (
+                    <InputAdornment position="end">
+                        <IconButton style={{ padding: '5px', marginRight: '-11px' }} onClick={handleClickShowPassword}>
+                            {show ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                    </InputAdornment>
+                )
+            }}
+            {...props}
+        />
     );
 }

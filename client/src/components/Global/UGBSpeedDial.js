@@ -19,12 +19,16 @@ const useStylesTest = makeStyles((theme) => ({
             alignItems: 'center',
             width: '187px',
             height: '30px',
-            color: 'black'
+            color: 'white',
+            background: '#28A745',
+        },
+        '& .MuiButtonBase-root': {
+            background: '#28A745',
         },
         '& .MuiButtonBase-root:first-child': {
-            width: '47px',
-            height: '47px',
-            background: '#1B1B1B',
+            width: '37px',
+            height: '37px',
+            background: 'transparent',
             color: 'white',
             border: '1px solid white',
             borderRadius: '0.25rem',
@@ -36,11 +40,14 @@ const useStylesTest = makeStyles((theme) => ({
                 background: 'white',
                 color: '#1B1B1B',
             },
+            '& .MuiFab-label': {
+                height:'100%'
+            }
         }
     },
     speedDial: {
         position: 'absolute',
-        bottom: theme.spacing(-2.3),
+        bottom: theme.spacing(-1.2),
         right: theme.spacing(2),
     },
 }));
@@ -54,10 +61,10 @@ const theme = createTheme({
 });
 
 const actions = [
-    { icon: <i className="fa-solid fa-weight-scale" style={{ fontSize: 20, color: 'black' }} />, name: 'Track Weight' },
-    { icon: <i className="fas fa-calculator" style={{ fontSize: 20, color: 'black' }} />, name: 'Calorie Calculator' },
-    { icon: <FitnessCenterIcon style={{ fontSize: 20, color: 'black' }} />, name: '1 Rep Max Calculator' },
-    { icon: <i className="fa-solid fa-carrot" style={{ fontSize: 20, color: 'black' }} />, name: 'Add Food' },
+    { icon: <i className="fa-solid fa-weight-scale" style={{ fontSize: 20, color: 'white' }} />, name: 'Track Weight' },
+    { icon: <i className="fas fa-calculator" style={{ fontSize: 20, color: 'white' }} />, name: 'Calorie Calculator' },
+    { icon: <FitnessCenterIcon style={{ fontSize: 20, color: 'white' }} />, name: '1 Rep Max Calculator' },
+    { icon: <i className="fa-solid fa-carrot" style={{ fontSize: 20, color: 'white' }} />, name: 'Add Food' },
 ];
 
 export default function SpeedDialTooltipOpen() {

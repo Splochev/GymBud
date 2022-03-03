@@ -5,8 +5,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { NavLink } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 import { MenuList, Popover } from '@material-ui/core';
-import { ArrowDropDown } from '@material-ui/icons';
 import useWindowSize from '../utils/useWindowSize';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const useStyles = makeStyles((theme) => ({
     active: {
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     navUrls: {
         fontSize: '20px',
         color: 'white',
-        borderBottom: '2px solid #1B1B1B',
+        borderBottom: '2px solid transparent',
         textDecoration: 'none',
         height: '100%',
         display: 'flex',
@@ -71,7 +71,7 @@ const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, me
                         }}
                     >
                         {children}
-                        <ArrowDropDown style={{ color: '#FFFFFF' }} />
+                        <ExpandMoreIcon style={{ color: '#FFFFFF' }} />
                     </div>
                 }
                 <Popover

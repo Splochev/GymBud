@@ -1,12 +1,12 @@
-import { UGBInput } from '../Global/UGBInput';
+import { UGBIconInput, UGBPasswordInput } from '../Global/UGBInput';
 import { useStoreContext } from '../store/Store';
 import { postData } from '../utils/FetchUtils'
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 import { Typography } from '@material-ui/core';
 import UGBLink from '../Global/UGBLink';
-import UGBButton from '../Global/UGBButton';
 import { makeStyles } from '@material-ui/core';
+import { UGBButton } from '../Global/UGBButton';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -81,19 +81,17 @@ const Login = ({ setShowLogin }) => {
             >
                 Please fill in this form to sign in.
             </Typography>
-            <UGBInput
-                type='text'
-                name='mail'
-                label="Your email"
-                iconStart='fas fa-envelope'
+            <UGBIconInput
                 $value={email}
+                required
+                label='Your email'
+                startIcon='fas fa-envelope'
             />
-            <UGBInput
-                type='password'
-                name='password'
-                label="Your password"
-                iconStart='fas fa-lock'
+            <UGBPasswordInput
                 $value={password}
+                required
+                label='Your password'
+                startIcon='fas fa-lock'
             />
             <div className={styles.forgotPass}>
                 <div>Forgot</div>
@@ -109,16 +107,16 @@ const Login = ({ setShowLogin }) => {
             </div>
             <div className={styles.actions}>
                 <UGBButton
+                    btnType='secondary'
                     onClick={() => {
                         history.push(history.pathName);
                     }}
-                    btnType='danger'
                 >
                     Cancel
                 </UGBButton>
                 <UGBButton
-                    btnType='success'
                     type='submit'
+                    btnType='primary'
                 >
                     Sign In
                 </UGBButton>

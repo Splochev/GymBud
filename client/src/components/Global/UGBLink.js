@@ -52,7 +52,7 @@ const UGBLink = ({ type, url, icon, target, onClick, label, color }) => {
 
     return (
         <a
-            className={clsx(!type || styles[type], styles[color])}
+            className={clsx(styles[type], styles[color])}
             href={url}
             rel="noreferrer"
             target={targets[target]}

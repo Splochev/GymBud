@@ -1,15 +1,18 @@
 import useStyles from '../../styles'
 import { useState } from 'react';
 import UGBMissingFields from '../../../Global/UGBMissingFields.js';
-import { UGBInput } from '../../../Global/UGBInput'
-import UGBButton from '../../../Global/UGBButton';
+import { UGBIconInput } from '../../../Global/UGBInput'
 import { Typography } from '@material-ui/core';
 import clsx from 'clsx';
+import { UGBButton } from '../../../Global/UGBButton';
+import { useEffect } from 'react';
 
 const KnowsLbmTrue = ({ bmr }) => {
     const styles = useStyles();
     const [alert, setAlert] = useState('');
     const lbm = useState('')
+
+    useEffect(() => { bmr[1]('') }, [])
 
     function calculate(e) {
         e.preventDefault();
@@ -27,27 +30,26 @@ const KnowsLbmTrue = ({ bmr }) => {
     return (
         <form className={styles.form} onSubmit={calculate}>
             {alert}
-            <UGBInput
-                type="number"
+            <UGBIconInput
                 $value={lbm}
-                min='1'
-                max='250'
-                label="LBM"
-                iconStart='fas fa-weight'
+                required
+                startIcon='fas fa-weight'
+                label="Lean Body Mass"
             />
             <UGBButton
-                icon='fas fa-calculator'
-                title="Calculate BMR"
-                type="submit"
-                btnType='success'
-            />
-            <Typography className={clsx(styles.subTitle,styles.marginTopTitle)} variant='subtitle2' component='div'>Your BMR is:</Typography>
-            <UGBInput
-                $value={bmr}
-                type='number'
-                disabled={true}
-                maxWidth={123}
-            />
+                type='submit'
+                btnType='primary'
+                onClick={calculate}
+                startIcon={<i className={clsx('fas fa-calculator', styles.icon)} />}
+            >
+                Calculate
+            </UGBButton>
+            <Typography
+                className={clsx(styles.subTitle, styles.marginTopTitle, styles.resultLabel)}
+                variant='subtitle2'
+                component='div'>
+                Your BMR is: {!isNaN(Number(bmr[0])) ? <span className={styles.result}>{bmr[0]}</span> : null}
+            </Typography>
         </form>
     );
 }

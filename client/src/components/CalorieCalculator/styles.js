@@ -2,12 +2,13 @@ import { makeStyles } from '@material-ui/core';
 
 export default makeStyles((theme) => ({
     icon: {
-        fontSize: '20px'
+        fontSize: '20px',
     },
     calorieCalculatorContainer: {
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
+        width: '100%'
     },
     tdeeResult: {
         marginBottom: 10,
@@ -44,12 +45,16 @@ export default makeStyles((theme) => ({
     },
     container: {
         minHeight: '745px',
+        width: '100%'
     },
     katchFormulaLayout: {
         display: 'flex',
         width: '100%',
         justifyContent: "space-between",
-        gap: 15
+        gap: 15,
+        '@media (max-width: 500px)': {
+            flexDirection: 'column',
+        }
     },
     subTitle: {
         color: '#1B1B1B',
@@ -70,7 +75,20 @@ export default makeStyles((theme) => ({
     marginBottomTitle: {
         marginBottom: 10
     },
-    noPadding: {
-        padding: 0
+    inputs: {
+        display: 'flex',
+        width: '100%',
+        gap: 16,
+    },
+    resultLabel: {
+        width: '160px',
+        textAlign:'left'
+    },
+    result: {
+        fontWeight: "bolder",
+        letterSpacing: '1.2'
+    },
+    radioIcon: {
+        color: '#757575'
     }
 }))

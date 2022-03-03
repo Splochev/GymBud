@@ -119,8 +119,8 @@ export default makeStyles(() => ({
     actions: {
         display: 'flex',
         gap: 10,
-        '& button': {
-            width: '135px'
+        '& .MuiButtonBase-root': {
+            width: '145px'
         },
         '@media (max-width: 465px)': {
             flexDirection: 'column',
@@ -128,11 +128,16 @@ export default makeStyles(() => ({
         marginBottom: 10,
     },
     chartLine: {
-        width: 'calc(100% - 67px)',
         border: 'none',
         borderBottom: '1px solid #3DA1D7',
         marginTop: '-20px',
         marginLeft: '67px',
-        position: 'absolute'
+        minWidth: 'calc(100% - 67px)'
+    },
+    barChart: {
+        width: '100%',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        position: 'relative'
     }
 }))
