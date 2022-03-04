@@ -167,7 +167,7 @@ const LoggedOutHeader = () => {
                     }}
                     maxWidth='sm'
                 >
-                    <Register/>
+                    <Register />
                 </UGBModal>
                 <UGBModal
                     open={showLogin}
@@ -207,9 +207,9 @@ const LoggedOutHeader = () => {
                         :
                         null
                     }
-                    <UGBLogo />
+                    <UGBLogo setToggleNav={setToggleNav} />
                     {size.width < 970 ?
-                        < Auth />
+                        < Auth setToggleNav={setToggleNav} />
                         :
                         null
                     }
@@ -217,27 +217,26 @@ const LoggedOutHeader = () => {
                 {size.width >= 970 ?
                     <div className={styles.navItemsContainer}>
                         <div className={styles.navItems}>
-                            <NavItems />
+                            <NavItems setToggleNav={setToggleNav} />
                         </div>
-                        < Auth />
-
+                        < Auth setToggleNav={setToggleNav} />
                     </div>
                     :
                     null
                 }
             </div>
             <div className={clsx(styles.collapseNav, size.width < 970 && toggleNav ? styles.collapseNavTransition : styles.collapsed)}>
-                <NavItems />
+                <NavItems setToggleNav={setToggleNav} />
             </div>
         </>
     );
 }
 
-const Auth = () => {
+const Auth = ({ setToggleNav }) => {
     const styles = useStyles();
     const { tab } = useQuery();
     const [anchorMore, setAnchorMore] = useState(null);
-    const [moreSelectItems] = useState([{ label: 'Opt1', path: '/home' }, { label: 'Opt2', path: '/home' }])
+    const [moreSelectItems] = useState([{ label: 'Opt1', path: '/home', setToggleNav: setToggleNav }, { label: 'Opt2', path: '/home', setToggleNav: setToggleNav }])
 
     return (
         <div className={styles.auth}>
@@ -246,6 +245,7 @@ const Auth = () => {
                     path='?tab=sign-in'
                     active={tab === 'sign-in' || tab === 'forgotten-password'}
                     shrinkUrl={false}
+                    setToggleNav={setToggleNav}
                 >
                     Sign In
                 </LiItem>
@@ -253,6 +253,7 @@ const Auth = () => {
                     path='?tab=sign-up'
                     active={tab === 'sign-up'}
                     shrinkUrl={false}
+                    setToggleNav={setToggleNav}
                 >
                     Sign Up
                 </LiItem>
@@ -276,7 +277,7 @@ const Auth = () => {
     );
 }
 
-const NavItems = () => {
+const NavItems = ({ setToggleNav}) => {
     const size = useWindowSize();
     const { tab } = useQuery();
 
@@ -285,6 +286,7 @@ const NavItems = () => {
             <LiItem
                 shrinkUrl={size.width < 970}
                 customShrinkUrl={size.width < 970 ? '190px' : null}
+                setToggleNav={setToggleNav}
             >
                 Find Food
             </LiItem>
@@ -293,6 +295,7 @@ const NavItems = () => {
                 active={tab === 'calorie-calculator'}
                 shrinkUrl={size.width < 970}
                 customShrinkUrl={size.width < 970 ? '190px' : null}
+                setToggleNav={setToggleNav}
             >
                 Calorie Calculator
             </LiItem>
@@ -301,6 +304,7 @@ const NavItems = () => {
                 active={tab === 'one-rep-max-calculator'}
                 shrinkUrl={size.width < 970}
                 customShrinkUrl={size.width < 970 ? '190px' : null}
+                setToggleNav={setToggleNav}
             >
                 1 Rep Max Calculator
             </LiItem>

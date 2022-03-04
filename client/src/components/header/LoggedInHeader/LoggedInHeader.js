@@ -119,7 +119,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
     const styles = useStyles();
     const size = useWindowSize();
@@ -228,9 +227,9 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                         :
                         null
                     }
-                    <UGBLogo />
+                    <UGBLogo setToggleNav={setToggleNav} />
                     {size.width < 970 ?
-                        < UserAndMore />
+                        < UserAndMore setToggleNav={setToggleNav} />
                         :
                         null
                     }
@@ -238,9 +237,9 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                 {size.width >= 970 ?
                     <div className={styles.navItemsContainer}>
                         <div className={styles.navItems}>
-                            <NavItems />
+                            <NavItems setToggleNav={setToggleNav}/>
                         </div>
-                        < UserAndMore />
+                        < UserAndMore setToggleNav={setToggleNav} />
 
                     </div>
                     :
@@ -248,19 +247,19 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                 }
             </div>
             <div className={clsx(styles.collapseNav, size.width < 970 && toggleNav ? styles.collapseNavTransition : styles.collapsed)}>
-                <NavItems />
+                <NavItems setToggleNav={setToggleNav} />
             </div>
         </ >
     );
 }
 
-const UserAndMore = () => {
+const UserAndMore = ({ setToggleNav }) => {
     const styles = useStyles();
     const store = useStoreContext();
     const [anchorUser, setAnchorUser] = useState(null);
     const [anchorMore, setAnchorMore] = useState(null);
-    const [userSelectItems] = useState([{ label: 'My user', path: '/home' }, { label: 'Logout', path: null, onClick: onLogout }])
-    const [moreSelectItems] = useState([{ label: 'Opt1', path: '/home' }, { label: 'Opt2', path: '/home' }])
+    const [userSelectItems] = useState([{ label: 'My user', path: '/home', setToggleNav: setToggleNav }, { label: 'Logout', path: null, onClick: onLogout }])
+    const [moreSelectItems] = useState([{ label: 'Opt1', path: '/home', setToggleNav: setToggleNav }, { label: 'Opt2', path: '/home', setToggleNav: setToggleNav }])
 
     function onLogout() {
         setAnchorUser(null);
@@ -308,25 +307,38 @@ const UserAndMore = () => {
     );
 }
 
-const NavItems = () => {
+const NavItems = ({ setToggleNav }) => {
     const { tab } = useQuery();
     const [anchorWorkout, setAnchorWorkout] = useState(null);
     const [anchorMeals, setAnchorMeals] = useState(null);
     const [anchorFood, setAnchorFood] = useState(null);
     const [anchorCalculators, setAnchorCalculators] = useState(null);
-    const [calculatorSelectItems] = useState([{ label: 'Calorie Calculator', path: '?tab=calorie-calculator' }, { label: '1 Rep Max Calculator', path: '?tab=one-rep-max-calculator' }])
-    const [foodSelectItems] = useState([{ label: 'My Food', path: '/home' }, { label: 'Add Food', path: '?tab=add-food' }])
-    const [mealsSelectItems] = useState([{ label: 'My Meals', path: '/home' }, { label: 'My Meal Plans', path: '/home' }])
-    const [workoutSelectItems] = useState([{ label: 'Workout Journal', path: '/home' }, { label: 'Add Workout Journal', path: '/home' }])
+    const [calculatorSelectItems] = useState([
+        { label: 'Calorie Calculator', path: '?tab=calorie-calculator', setToggleNav: setToggleNav },
+        { label: '1 Rep Max Calculator', path: '?tab=one-rep-max-calculator', setToggleNav: setToggleNav }
+    ]);
+    const [foodSelectItems] = useState([
+        { label: 'My Food', path: '/home', setToggleNav: setToggleNav },
+        { label: 'Add Food', path: '?tab=add-food', setToggleNav: setToggleNav }
+    ]);
+    const [mealsSelectItems] = useState([
+        { label: 'My Meals', path: '/home', setToggleNav: setToggleNav },
+        { label: 'My Meal Plans', path: '/home', setToggleNav: setToggleNav }
+    ])
+    const [workoutSelectItems] = useState([
+        { label: 'Workout Journal', path: '/home', setToggleNav: setToggleNav },
+        { label: 'Add Workout Journal', path: '/home', setToggleNav: setToggleNav }
+    ])
     const history = useHistory();
 
     return (
         <>
-            <LiItem >Find Food</LiItem>
-            <LiItem badgeCount={1}>Meal Planner</LiItem>
+            <LiItem setToggleNav={setToggleNav}>Find Food</LiItem>
+            <LiItem setToggleNav={setToggleNav} badgeCount={1}>Meal Planner</LiItem>
             <LiItem
                 path='/progress'
                 active={(history.location.pathname === '/progress' && !tab && !anchorCalculators && !anchorFood && !anchorMeals && !anchorWorkout) || tab === 'track-weight'}
+                setToggleNav={setToggleNav}
             >
                 Progress
             </LiItem>
