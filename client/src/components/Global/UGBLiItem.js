@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, menuItems, customLabel, variant = 'li', shrinkUrl = true, customShrinkUrl, children }) => {
+const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, menuItems, customLabel, variant = 'li', shrinkUrl = true, setToggleNav, customShrinkUrl, children }) => {
     const styles = useStyles();
     const size = useWindowSize();
     const history = useHistory();
@@ -65,10 +65,7 @@ const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, me
                             shrinkUrl ? size.width < 970 ? styles.shrinkUrl : null : null
                         )}
                         style={{ width: customShrinkUrl ? customShrinkUrl : '' }}
-                        onClick={(e) => {
-                            setAnchor(e.currentTarget)
-                            if (path) { history.push(path) }
-                        }}
+                        onClick={(e) => setAnchor(e.currentTarget)}
                     >
                         {children}
                         <ExpandMoreIcon style={{ color: '#FFFFFF' }} />
@@ -99,7 +96,12 @@ const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, me
                                                 component={NavLink}
                                                 exact={true}
                                                 to={item.path}
-                                                onClick={() => setAnchor(null)}
+                                                onClick={() => {
+                                                    setAnchor(null);
+                                                    if (item.setToggleNav) {
+                                                        item.setToggleNav();
+                                                    }
+                                                }}
                                             >
                                                 {item.labels ?
                                                     item.labels.map((l, i) => (
@@ -150,6 +152,9 @@ const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, me
             style={{ width: customShrinkUrl ? customShrinkUrl : '' }}
             onClick={(e) => {
                 if (path) { history.push(path) }
+                if (setToggleNav) {
+                    setToggleNav(false);
+                }
             }}
         >
             <span>

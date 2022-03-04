@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router-dom';
 
-const UGBLogo = () => {
+const UGBLogo = ({ setToggleNav }) => {
     const history = useHistory();
     return (
         <a
@@ -11,13 +11,16 @@ const UGBLogo = () => {
                 fontSize: "1.25rem",
                 lineHeight: 'inherit',
                 whiteSpace: 'nowrap',
-                marginRight:'1rem',
-                marginLeft:'0.5rem',
+                marginRight: '1rem',
+                marginLeft: '0.5rem',
             }}
             href="#!"
             onClick={(e) => {
                 e.preventDefault();
                 history.push('/home');
+                if (setToggleNav) {
+                    setToggleNav(false);
+                }
             }}
         >
             <img src="/UrGymBudLogoLight.png" alt="Logo" style={{ height: '42px' }}></img>
