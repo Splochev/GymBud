@@ -118,7 +118,6 @@ const Register = () => {
             daysArr.push(i);
         }
         setDays(daysArr)
-        day[1](1);
     }
 
     function onChangeMonth(e) {
@@ -146,6 +145,11 @@ const Register = () => {
         e.preventDefault();
 
         if (password[0] !== repeatPassword[0]) {
+            return;
+        }
+
+        if (!days[day[0]]) {
+            console.log('invalid date')
             return;
         }
 
