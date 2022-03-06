@@ -327,7 +327,7 @@ const NavItems = ({ setToggleNav }) => {
     ])
     const [workoutSelectItems] = useState([
         { label: 'Workout Journal', path: '/home', setToggleNav: setToggleNav },
-        { label: 'Add Workout Journal', path: '/home', setToggleNav: setToggleNav }
+        { label: 'Workout Builder', path: '/workout-builder', setToggleNav: setToggleNav }
     ])
     const history = useHistory();
 
