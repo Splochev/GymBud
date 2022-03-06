@@ -4,6 +4,7 @@ import { Select } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { UGBInput } from './UGBInput';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { IconButton } from '@material-ui/core';
 
 export const UGBMenuItem = forwardRef((props, ref) =>
     <MenuItem innerRef={ref} {...props} />)
@@ -14,10 +15,12 @@ const useSelectStyles = makeStyles((theme) => ({
             backgroundColor: 'transparent',
         },
     },
-    arrow: {
-        right: theme.spacing(0.5),
-        position: 'absolute',
-        cursor: 'pointer',
+    icon: {
+        marginRight: '-5px',
+        padding: '3px',
+        '& .MuiSvgIcon-root': {
+            color: '#1B1B1B',
+        }
     }
 }));
 
@@ -37,8 +40,17 @@ export function UGBSelect({ label, value, onChange, onChangeWithNotify, children
             open={open}
             onOpen={() => setOpen(true)}
             onClose={() => setOpen(false)}
-            IconComponent={(props) => <ExpandMoreIcon fontSize='large' {...props} className={styles.arrow} onClick={() => setOpen(!open)} />}
-            input={<UGBInput label={label} />}
+            IconComponent={(props) => {
+                return (
+                    <IconButton
+                        classes={{ root: styles.icon }}
+                        onClick={() => setOpen(!open)}
+                    >
+                        <ExpandMoreIcon {...props} />
+                    </IconButton>
+                );
+            }}
+            input={<UGBInput InputProps={props.InputProps} label={label} />}
         >
             {children}
         </Select>
@@ -50,8 +62,17 @@ export function UGBSelect({ label, value, onChange, onChangeWithNotify, children
             open={open}
             onOpen={() => setOpen(true)}
             onClose={() => setOpen(false)}
-            IconComponent={(props) => <ExpandMoreIcon fontSize='large' {...props} className={styles.arrow} onClick={() => setOpen(!open)} />}
-            input={<UGBInput label={label} />}
+            IconComponent={(props) => {
+                return (
+                    <IconButton
+                        classes={{ root: styles.icon }}
+                        onClick={() => setOpen(!open)}
+                    >
+                        <ExpandMoreIcon {...props} />
+                    </IconButton>
+                );
+            }}
+            input={<UGBInput InputProps={props.InputProps} label={label} />}
         >
             {children}
         </Select>
