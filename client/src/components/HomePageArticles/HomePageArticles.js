@@ -1,9 +1,10 @@
 import { makeStyles, Typography } from '@material-ui/core';
-import clsx from 'clsx';
+import { useEffect } from 'react';
 import charts from '../assets/charts.svg'
 import food from '../assets/food.svg'
 import lifting from '../assets/lifting.svg'
 import useWindowSize from '../utils/useWindowSize';
+import { useStoreContext } from '../store/Store';
 
 const useStyles = makeStyles((theme) => ({
     homePageContainer: {
@@ -65,6 +66,16 @@ const useStyles = makeStyles((theme) => ({
 const HomePageArticles = () => {
     const styles = useStyles();
     const size = useWindowSize();
+    const store = useStoreContext();
+
+    useEffect(() => {
+        if (size.width > 1060) {
+            store[1](state => (state.hasOverflow = false, { ...state }))
+        } else {
+            store[1](state => (state.hasOverflow = true, { ...state }))
+        }
+        return () => { store[1](state => (state.hasOverflow = true, { ...state })) }
+    }, [size])
 
     return (
         <div className={styles.homePageContainer}>

@@ -10,6 +10,8 @@ import { Switch, BrowserRouter, useHistory } from 'react-router-dom';
 import { getData } from './components/utils/FetchUtils'
 import { useStoreContext } from './components/store/Store'
 import { makeStyles } from '@material-ui/core/styles';
+import WorkoutBuilder from './components/WorkoutBuilder/WorkoutBuilder';
+import clsx from 'clsx';
 require("dotenv").config();
 
 const AutoLoginComponent = ({ children }) => {
@@ -38,9 +40,11 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
     },
     contentContainer: {
-        overflow: 'auto',
         height: '100%',
     },
+    hasOverflow: {
+        overflow: 'auto',
+    }
 }));
 
 const App = () => {
@@ -113,14 +117,15 @@ const App = () => {
                     <AutoLoginComponent>
                         {storeState.user ?
                             <div className={styles.pageLayout}>
-                                <LoggedInHeader refreshTableData={refreshTableData} setRefreshTableData={setRefreshTableData}/>
-                                <div className={styles.contentContainer}>
+                                <LoggedInHeader refreshTableData={refreshTableData} setRefreshTableData={setRefreshTableData} />
+                                <div className={clsx(styles.contentContainer, storeState.hasOverflow ? styles.hasOverflow : '')}>
                                     <Switch>
+                                        <Route exact path="/home" component={HomePageArticles} />
                                         <Route
                                             exact path='/progress'
                                             render={props => <ProgressTracker refreshTableData={refreshTableData} setRefreshTableData={setRefreshTableData} />}
                                         />
-                                        <Route exact path="/home" component={HomePageArticles} />
+                                        <Route exact path="/workout-builder" component={WorkoutBuilder} />
                                         <Redirect from="*" to="/home" />
                                     </Switch>
                                 </div>
@@ -129,7 +134,7 @@ const App = () => {
                             :
                             <div className={styles.pageLayout}>
                                 <LoggedOutHeader />
-                                <div className={styles.contentContainer}>
+                                <div className={clsx(styles.contentContainer, storeState.hasOverflow ? styles.hasOverflow : '')}>
                                     <Switch>
                                         <Route exact path="/home" component={HomePageArticles} />
                                         <Redirect from="*" to="/home" />
