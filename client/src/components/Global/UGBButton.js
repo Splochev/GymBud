@@ -45,7 +45,22 @@ const useStyles = makeStyles(() => ({
         },
     },
     neutral: {
-        
+
+    },
+    outlinedPrimary: {
+        border: '1px solid #218838',
+        color: '#218838',
+        background: 'transparent',
+        '&:hover': {
+            background: 'transparent',
+            border: '1px solid #1E7E34',
+        },
+        '&:focus': {
+            background: 'transparent',
+            border: '1px solid #1E7E34',
+            boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
+            outline: 'none'
+        },
     }
 }));
 
