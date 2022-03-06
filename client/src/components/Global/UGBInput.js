@@ -8,49 +8,14 @@ import { forwardRef } from 'react';
 import { BrandAlert } from './BrandAlert';
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { UGBIconButton } from './UGBButton';
 
 const useStyles = makeStyles(() => ({
-    iconButton: {
-        background: '#28A745',
-        color: 'white',
-        padding: 0,
-        paddingTop: '3px',
-        paddingBottom: '4px',
-        paddingLeft: '20px',
-        paddingRight: '20px',
-        borderRadius: '21px',
-        textAlign: 'center',
-        marginRight: '-11px',
-        border: '1px solid transparent',
-        '&:hover': {
-            backgroundColor: '#218838',
-            border: '1px solid #1E7E34',
-        },
-        '&:focus': {
-            border: '1px solid #1E7E34',
-            background: '#218838',
-            boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
-            outline: 'none'
-        },
-    },
     icon: {
         fontSize: '21px',
         color: '#757575'
     },
-    iconButtonColor: {
-        color: 'white',
-    }
-
 }));
-
-const UGBIconButton = ({ icon, $onClick }) => {
-    const styles = useStyles()
-    return (
-        <IconButton onClick={$onClick} disableRipple classes={{ root: styles.iconButton }}>
-            <i className={clsx(icon, styles.icon, styles.iconButtonColor)} />
-        </IconButton>
-    );
-}
 
 const InternalInput = forwardRef(function Input(props, ref) {
     const {

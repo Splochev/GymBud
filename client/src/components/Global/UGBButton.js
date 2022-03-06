@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@material-ui/core";
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import clsx from "clsx";
+import { IconButton } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -61,12 +62,72 @@ const useStyles = makeStyles(() => ({
             boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
             outline: 'none'
         },
-    }
+    },
+    icon: {
+        fontSize: '21px',
+        color: '#757575'  
+    },
+    text: {
+        fontSize: '14px',
+        color: '#757575',
+        textTransform: 'capitalize'
+    },
+    iconButtonColor: {
+        color: 'white',
+    },
+    iconEnd: {
+        marginRight: '-11px',
+        padding: 0,
+        paddingTop: '3px',
+        paddingBottom: '4px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
+    },
+    IconStart: {
+        marginLeft: '-11px',
+        padding: 0,
+        paddingLeft: '13px',
+        paddingRight: '13px',
+        paddingTop: '6px',
+        paddingBottom: '6px',
+    },
+    iconButton: {
+        background: '#28A745',
+        color: 'white',
+        borderRadius: '21px',
+        textAlign: 'center',
+        border: '1px solid transparent',
+        '&:hover': {
+            backgroundColor: '#218838',
+            border: '1px solid #1E7E34',
+        },
+        '&:focus': {
+            border: '1px solid #1E7E34',
+            background: '#218838',
+            boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
+            outline: 'none'
+        },
+    },
 }));
 
 export function UGBButton({ btnType, ...params }) {
     const styles = useStyles();
     return (
         <Button disableRipple variant="contained" classes={{ root: clsx(styles.root, styles[btnType]) }} {...params} />
+    );
+}
+
+export const UGBIconButton = ({ icon, $onClick, isEnd = true, children }) => {
+    const styles = useStyles()
+    return (
+        <IconButton onClick={$onClick} disableRipple classes={{ root: clsx(styles.iconButton, isEnd ? styles.iconEnd : styles.IconStart) }}>
+            {icon ?
+                <i className={clsx(icon, styles.icon, styles.iconButtonColor)} />
+                :
+                <div className={clsx(styles.text, styles.iconButtonColor)}>
+                    {children}
+                </div>
+            }
+        </IconButton>
     );
 }
