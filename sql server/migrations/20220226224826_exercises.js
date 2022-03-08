@@ -2,7 +2,7 @@ exports.up = function (knex) {
     return knex.schema.raw(`
         CREATE TABLE exercises(
         id INT NOT NULL AUTO_INCREMENT,
-        user_id INT,
+        user_id INT NOT NULL,
         exercise VARCHAR(255) NOT NULL,
         video_url VARCHAR(1000),
         PRIMARY KEY(id),

@@ -4,202 +4,260 @@ const { escape } = require('mysql');
 const ErrorHandler = require('../utils/error-handler');
 const AuthHelpers = require('../utils/auth-helpers');
 
-function parseDate(date) {
-    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-}
-
 module.exports = class WorkoutController {
     constructor() {
         this.router = express.Router();
         this.attachEndpoints();
     }
     attachEndpoints() {
-        this.router.get('/get-weight-data', AuthHelpers.loggedIn, (req, res) => this.getWeightData(req, res));
+        this.router.post('/add-workout-journal', AuthHelpers.loggedIn, (req, res) => this.addWorkoutJournal(req, res));
+        this.router.get('/get-workout-journals', AuthHelpers.loggedIn, (req, res) => this.getWorkoutJournals(req, res));
 
-        this.router.get('/get-weight-data', AuthHelpers.loggedIn, (req, res) => this.getWeightData(req, res));
-        this.router.post('/submit-weight', AuthHelpers.loggedIn, (req, res) => this.submitWeight(req, res));
-        this.router.put('/edit-weights', AuthHelpers.loggedIn, (req, res) => this.submitWeights(req, res));
+        this.router.post('/add-workout-journal-session', AuthHelpers.loggedIn, (req, res) => this.addWorkoutJournalSession(req, res));
+        this.router.get('/get-workout-journal-sessions', AuthHelpers.loggedIn, (req, res) => this.getWorkoutJournalSessions(req, res));
+
+        this.router.post('/add-exercise', AuthHelpers.loggedIn, (req, res) => this.addExercise(req, res));
+        this.router.get('/get-exercises', AuthHelpers.loggedIn, (req, res) => this.getExercises(req, res));
     }
 
-    async getWeightData(req, res) {
+    async addWorkoutJournal(req, res) {
         try {
             const user = req.user;
-            const limit = req.query.limitDate ? req.query.limitDate : parseDate(new Date());
-            const minSelectedOffsetDateIsSet = req.query.getMinOffsetDate;
-            let offsetDate = req.query.offsetDate ? req.query.offsetDate : new Date();
+            const description = req.body.description;
+            const name = req.body.name;
 
-            if (!req.query.offsetDate) {
-                offsetDate.setDate(offsetDate.getDate() - 90);
-                offsetDate = parseDate(offsetDate);
-            }
-            if (new Date(offsetDate).getTime() > new Date(limit).getTime()) {
-                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, 'Invalid dates'));
+            if (!name || !user) {
+                let invalidParam = ''
+                if (!name) {
+                    invalidParam = 'name'
+                } else if (!user) {
+                    invalidParam = 'user'
+                }
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
                 return;
             }
 
-            const weightData = await MysqlAdapter.query(`
-                SELECT date, weight FROM 
-                    weight_tracker
-                WHERE
-                    user_id = ${escape(user.id)}
-                    AND date BETWEEN CAST(${escape(offsetDate)} AS DATE) AND CAST(${escape(limit)} AS DATE)
-                ORDER BY 
-                    date ASC
-            `);
-
-            if (!weightData.length) {
-                res.json({ data: [] });
+            try {
+                await MysqlAdapter.query(`
+                    INSERT INTO workouts (user_id,name,description)
+                        VALUES (
+                            ${escape(user.id)},
+                            ${escape(name)},
+                            ${description ? escape(description) : "NULL"}
+                        )
+                 `);
+            } catch (err) {
+                console.log(err)
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.conflict, 'A workout journal with that name already exists!'));
                 return;
             }
 
-            let minOffsetDate = await MysqlAdapter.query(`
-                SELECT date FROM 
-                    weight_tracker
-                WHERE
-                    user_id = ${escape(user.id)}
-                ORDER BY 
-                    date ASC
-                limit 1; 
-            `)
-            minOffsetDate = minOffsetDate[0].date
-
-            const mappedWeightData = {};
-            let startDateOfWeek = !minSelectedOffsetDateIsSet && new Date(minOffsetDate).getTime() < new Date(offsetDate).getTime() ? new Date(offsetDate) : new Date(weightData[0].date);
-            const parsedLimit = new Date(limit).getTime();
-
-            while (startDateOfWeek.getTime() <= parsedLimit) {
-                mappedWeightData[startDateOfWeek.getTime()] = 1;
-                startDateOfWeek.setDate(startDateOfWeek.getDate() + 1);
-            }
-
-            for (const weightEntry of weightData) {
-                mappedWeightData[new Date(weightEntry.date).getTime()] = { ...weightEntry };
-            }
-
-            const weeksAmount = Math.ceil(Object.keys(mappedWeightData).length / 7);
-            startDateOfWeek = !minSelectedOffsetDateIsSet && new Date(minOffsetDate).getTime() < new Date(offsetDate).getTime() ? new Date(offsetDate) : new Date(weightData[0].date);
-            const endDateOfWeek = !minSelectedOffsetDateIsSet && new Date(minOffsetDate).getTime() < new Date(offsetDate).getTime() ? new Date(offsetDate) : new Date(weightData[0].date);
-            endDateOfWeek.setDate(endDateOfWeek.getDate() + 6);
-            const responseWeightData = [];
-
-            for (let i = 0; i < weeksAmount; i++) {
-                responseWeightData.push({ startDate: parseDate(startDateOfWeek), endDate: parseDate(endDateOfWeek) });
-                let weightSum = 0;
-                let avgWeightCounter = 0;
-                let dateCounter = 1;
-
-                while (startDateOfWeek.getTime() <= endDateOfWeek.getTime()) {
-                    const startDateOfWeekAsTime = startDateOfWeek.getTime();
-                    if (mappedWeightData[startDateOfWeekAsTime] && mappedWeightData[startDateOfWeekAsTime] !== 1) {
-                        responseWeightData[i][dateCounter] = mappedWeightData[startDateOfWeekAsTime].weight;
-                        weightSum += mappedWeightData[startDateOfWeekAsTime].weight;
-                        avgWeightCounter++;
-                    } else {
-                        responseWeightData[i][dateCounter] = null;
-                    }
-                    dateCounter++;
-                    startDateOfWeek.setDate(startDateOfWeek.getDate() + 1);
-                }
-
-                responseWeightData[i].avgWeight = (weightSum / avgWeightCounter).toFixed(2);
-                if (isNaN(responseWeightData[i].avgWeight)) {
-                    responseWeightData[i].avgWeight = 0;
-                }
-
-                if (i === 0) {
-                    responseWeightData[i].weightChange = 0;
-                } else {
-                    if (responseWeightData[i].avgWeight) {
-                        let result = Math.round(((responseWeightData[i].avgWeight - responseWeightData[i - 1].avgWeight) / responseWeightData[i - 1].avgWeight * 100) * 100) / 100;
-                        if (isNaN(result) || result == 'Infinity' || result == '-Infinity') {
-                            result = 0;
-                        }
-                        responseWeightData[i].weightChange = result;
-                    } else {
-                        responseWeightData[i].weightChange = 0
-                    }
-                }
-                endDateOfWeek.setDate(endDateOfWeek.getDate() + 7);
-            }
-
-            res.json({ data: responseWeightData, minOffsetDate: minOffsetDate });
-        } catch (error) {
-            console.log(error);
-            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
-        }
-    };
-
-    async submitWeight(req, res) {
-        try {
-            const user = req.user;
-            const weight = escape(req.body.weight);
-            const date = req.body.date;
-
-            const weightData = await MysqlAdapter.query(`
-                INSERT INTO weight_tracker (user_id,weight,date)
-                    VALUES (${escape(user.id)},${weight},${escape(date)})
-                ON DUPLICATE KEY UPDATE
-                    user_id = VALUES(user_id),
-                    weight = VALUES(weight),
-                    date = VALUES(date)
-            `);
-
-            res.json({ data: weightData });
+            res.json({ success: true });
         } catch (error) {
             console.log(error)
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
         }
     };
 
-    async submitWeights(req, res) {
+    async getWorkoutJournals(req, res) {
         try {
             const user = req.user;
-            const weightEntries = Object.entries(req.body);
-            const forDeletionEntries = [];
-            const forUpdateEntries = [];
+            const filter = req.query.filter ? req.query.filter.replace(/'/g, "\\'") : undefined;
+            const offset = req.query.offset;
+            const limit = req.query.limit;
 
-            for (const entry of weightEntries) {
-                if (entry[1] === null) {
-                    forDeletionEntries.push(escape(entry[0]));
-                } else {
-                    forUpdateEntries.push(entry);
-                }
+            if (!user) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid user`));
+                return;
             }
 
-            let deletedWeightData = 0;
-            if (forDeletionEntries.length > 0) {
-                deletedWeightData = await MysqlAdapter.query(`
-                    DELETE FROM 
-                        weight_tracker
-                    WHERE
-                        user_id=${escape(user.id)} 
-                            AND
-                        date IN (${forDeletionEntries.join(',')})
-                `);
+            let filterQuery = undefined;
+            if (filter) {
+                filterQuery = `AND w.name LIKE ${escape(`%${filter}%`)}`;
             }
 
-            let weightData = 0;
-            if (forUpdateEntries.length > 0) {
-                weightData = await MysqlAdapter.query(`
-                    INSERT INTO weight_tracker (user_id,weight,date)
-                        VALUES ${forUpdateEntries.map(entry => `(${escape(user.id)},${escape(entry[1])},${escape(entry[0])})`)}
-                    ON DUPLICATE KEY UPDATE
-                        user_id = VALUES(user_id),
-                        weight = VALUES(weight),
-                        date = VALUES(date)
-                `);
+            let limitQuery = undefined;
+            if (offset && limit) {
+                limitQuery = `LIMIT ${escape(offset)},${escape(limit)}`;
             }
 
-            res.json({ updatedData: weightData, deletedWeightData: deletedWeightData });
+            const workoutJournals = await MysqlAdapter.query(`
+                SELECT
+                    *
+                FROM workouts w
+                WHERE
+                    w.user_id = ${escape(user.id)}
+                ${filterQuery ? filterQuery : ''}
+                ${limitQuery ? limitQuery : ''}
+            `);
+
+            res.json({ data: workoutJournals });
         } catch (error) {
             console.log(error)
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
         }
-
-
     };
 
+    async addWorkoutJournalSession(req, res) {
+        try {
+            const user = req.user;
+            const name = req.body.name;
+            const workoutJournalId = req.body.workoutJournalId;
 
+            if (!name || !user || !workoutJournalId) {
+                let invalidParam = ''
+                if (!name) {
+                    invalidParam = 'name'
+                } else if (!user) {
+                    invalidParam = 'user'
+                } else if (!workoutJournalId) {
+                    invalidParam = 'workout journal'
+                }
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
+                return;
+            }
 
-    
+            try {
+                await MysqlAdapter.query(`
+                    INSERT INTO daily_workout (user_id,name,workouts_id)
+                        VALUES (
+                            ${escape(user.id)},
+                            ${escape(name)},
+                            ${escape(workoutJournalId)}
+                        )
+                 `);
+            } catch (err) {
+                console.log(err)
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.conflict, 'A workout journal with that name already exists!'));
+                return;
+            }
+
+            res.json({ success: true });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+    async getWorkoutJournalSessions(req, res) {
+        try {
+            const user = req.user;
+            const filter = req.query.filter ? req.query.filter.replace(/'/g, "\\'") : undefined;
+            const offset = req.query.offset;
+            const limit = req.query.limit;
+
+            if (!filter || !user) {
+                let invalidParam = '';
+                if (!filter) {
+                    invalidParam = 'filter';
+                } else if (!user) {
+                    invalidParam = 'user';
+                }
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
+                return;
+            }
+
+            let limitQuery = undefined;
+            if (offset && limit) {
+                limitQuery = `LIMIT ${escape(req.query.offset)},${escape(req.query.offset)}`
+            }
+
+            const workoutJournalSession = await MysqlAdapter.query(`
+                SELECT
+                    *
+                FROM daily_workout dw
+                WHERE
+                    dw.user_id = ${escape(user.id)}
+                AND dw.workouts_id LIKE ${escape(`%${filter}%`)}
+                ${limitQuery ? limitQuery : ''}
+            `);
+
+            res.json({ data: workoutJournalSession });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+    async addExercise(req, res) {
+        try {
+            const user = req.user;
+            const exercise = req.body.exercise;
+            const videoUrl = req.body.videoUrl;
+
+            if (!exercise || !user) {
+                let invalidParam = ''
+                if (!exercise) {
+                    invalidParam = 'exercise'
+                } else if (!user) {
+                    invalidParam = 'user'
+                }
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
+                return;
+            }
+
+            try {
+                await MysqlAdapter.query(`
+                    INSERT INTO exercises (user_id,exercise,video_url)
+                        VALUES (
+                            ${escape(user.id)},
+                            ${escape(exercise)},
+                            ${videoUrl ? escape(videoUrl) : "NULL"}
+                        )
+                 `);
+            } catch (err) {
+                console.log(err)
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.conflict, 'This exercise already exists!'));
+                return;
+            }
+
+            res.json({ success: true });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+    async getExercises(req, res) {
+        try {
+            const user = req.user;
+            const filter = req.query.filter ? req.query.filter.replace(/'/g, "\\'") : undefined;
+            const offset = req.query.offset;
+            const limit = req.query.limit;
+
+            if (!user) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid user`));
+                return;
+            }
+
+            let filterQuery = undefined;
+            if (filter) {
+                filterQuery = `AND e.exercise LIKE ${escape(`%${filter}%`)}`
+            }
+
+            let limitQuery = undefined;
+            if (offset && limit) {
+                limitQuery = `LIMIT ${escape(offset)},${escape(limit)}`
+            }
+
+            const exercises = await MysqlAdapter.query(`
+                SELECT
+                    id,
+                    exercise,
+                    video_url as videoLink
+                FROM exercises e
+                WHERE
+                    (e.user_id = ${escape(user.id)}
+                    OR e.isPublic = '1')
+                ${filterQuery ? filterQuery : ''}
+                ${limitQuery ? limitQuery : ''}
+            `);
+
+            res.json({ data: exercises });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
 }
