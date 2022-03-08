@@ -16,7 +16,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderTop: '1px solid black'
     },
     fill: {
         marginLeft: '20px'
