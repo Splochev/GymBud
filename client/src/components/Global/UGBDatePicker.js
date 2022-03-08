@@ -28,12 +28,12 @@ const useStyles = makeStyles((theme) => ({
             },
             width: '100%',
             height: 40,
-            border: '1px solid #1B1B1B',
             borderRadius: 20,
             boxSizing: 'border-box',
             padding: '8px 16px',
-            background: 'none',
+            background: '#e0e0e01a',
             color: '#1B1B1B',
+            boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
             '& .MuiSvgIcon-root': {
                 fontSize: '21px',
                 color: '#757575'

@@ -8,8 +8,10 @@ const useStyles = makeStyles((theme) => ({
     white: {
         color: 'white',
         fontSize: '15px',
+        textDecoration: 'none',
         '&:hover': {
-            color: 'white'
+            color: 'white',
+            textDecoration: 'underline',
         }
     },
     blue: {
@@ -17,6 +19,24 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             textDecoration: 'underline',
             color: '#007BFF',
+            cursor: 'pointer'
+        },
+    },
+    green: {
+        color: '#28A745',
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'underline',
+            color: '#28A745',
+            cursor: 'pointer'
+        },
+    }, 
+    primary: {
+        color: '#1B1B1B',
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'underline',
+            color: '#0D0D0D',
             cursor: 'pointer'
         },
     },

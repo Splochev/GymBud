@@ -65,7 +65,7 @@ const useStyles = makeStyles(() => ({
     },
     icon: {
         fontSize: '21px',
-        color: '#757575'  
+        color: '#757575'
     },
     text: {
         fontSize: '14px',
@@ -97,6 +97,7 @@ const useStyles = makeStyles(() => ({
         borderRadius: '21px',
         textAlign: 'center',
         border: '1px solid transparent',
+        boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
         '&:hover': {
             backgroundColor: '#218838',
             border: '1px solid #1E7E34',
@@ -107,7 +108,13 @@ const useStyles = makeStyles(() => ({
             boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
             outline: 'none'
         },
-    },
+        "&:disabled": {
+            backgroundColor: '#087F23',
+            "& .MuiButton-label": {
+                color: 'white'
+            }
+        }
+    }
 }));
 
 export function UGBButton({ btnType, ...params }) {
@@ -117,10 +124,20 @@ export function UGBButton({ btnType, ...params }) {
     );
 }
 
-export const UGBIconButton = ({ icon, $onClick, isEnd = true, children }) => {
+export const UGBIconButton = ({ disabled = false, icon, $onClick, isEnd = true, children }) => {
     const styles = useStyles()
     return (
-        <IconButton onClick={$onClick} disableRipple classes={{ root: clsx(styles.iconButton, isEnd ? styles.iconEnd : styles.IconStart) }}>
+        <IconButton
+            disabled={disabled}
+            onClick={$onClick}
+            disableRipple
+            classes={{
+                root: clsx(
+                    styles.iconButton,
+                    isEnd ? styles.iconEnd : styles.IconStart
+                )
+            }}
+        >
             {icon ?
                 <i className={clsx(icon, styles.icon, styles.iconButtonColor)} />
                 :

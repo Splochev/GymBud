@@ -9,12 +9,20 @@ import { BrandAlert } from './BrandAlert';
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { UGBIconButton } from './UGBButton';
+import UGBLabel from './UGBLabel';
+import { TextareaAutosize } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
     icon: {
         fontSize: '21px',
         color: '#757575'
     },
+    textarea: {
+        width: '100%',
+        maxWidth: '100%',
+        border: '1px solid #1B1B1B',
+        color: "#1B1B1B"
+    }
 }));
 
 const InternalInput = forwardRef(function Input(props, ref) {
@@ -66,17 +74,20 @@ export const UGBInput = withStyles(() => ({
     input: {
         width: '100%',
         height: 40,
-        border: '1px solid #1B1B1B',
         borderRadius: 20,
         boxSizing: 'border-box',
         padding: '8px 16px',
-        background: 'none',
+        background: '#e0e0e01a',
         color: '#1B1B1B',
+        boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)'
         // font: ...,
         // letterSpacing: ...,
     },
     error: {
         borderColor: '#df4759'
+    },
+    validationInputHeight: {
+        // height: '86px'
     }
 }))(({ classes, ...props }) => {
     const {
@@ -109,7 +120,7 @@ export const UGBInput = withStyles(() => ({
     }
 
     return (label ?
-        <label className={classes.root} {...InputLabelProps}>
+        <label className={clsx(classes.root, validator && validatorPassed ? classes.validationInputHeight : null)} {...InputLabelProps}>
             <span className={classes.label}>{label}</span>
             {$value ?
                 <InternalInput
@@ -139,17 +150,24 @@ export const UGBInput = withStyles(() => ({
     );
 });
 
-export function UGBIconInput({ startIcon, endIcon, $$onClick, ...props }) {
+export function UGBIconInput({ startIcon, MuiIconStart, MuiIconEnd, endIcon, $$onClick, ...props }) {
     const styles = useStyles()
     return (
         <UGBInput
             InputProps={{
-                startAdornment: !startIcon ? null : (
+                startAdornment: startIcon ?
                     <InputAdornment position="start">
                         <i className={clsx(startIcon, styles.icon)} />
                     </InputAdornment>
-                ),
-                endAdornment: !endIcon ? null : (
+                    :
+                    MuiIconStart ?
+                        <InputAdornment position="start">
+                            <MuiIconStart className={styles.icon} />
+                        </InputAdornment>
+                        :
+                        null
+                ,
+                endAdornment: endIcon ?
                     <InputAdornment position="end">
                         {$$onClick ?
                             <UGBIconButton icon={endIcon} $onClick={$$onClick} />
@@ -157,7 +175,14 @@ export function UGBIconInput({ startIcon, endIcon, $$onClick, ...props }) {
                             <i className={clsx(endIcon, styles.icon)} />
                         }
                     </InputAdornment>
-                ),
+                    :
+                    MuiIconEnd ?
+                        <InputAdornment position="start">
+                            <MuiIconEnd className={styles.icon} />
+                        </InputAdornment>
+                        :
+                        null
+                ,
                 labelWidth: 70
             }}
             {...props}
@@ -201,5 +226,23 @@ export function UGBPasswordInput({ startIcon, ...props }) {
             }}
             {...props}
         />
+    );
+}
+
+export const UGBInputArea = ({ label, $value }) => {
+    const styles = useStyles()
+    return (
+        <>
+            <UGBLabel variant='subtitle2' type='title'>
+                {label}
+            </UGBLabel>
+            <TextareaAutosize
+                className={styles.textarea}
+                minRows={3}
+                value={$value[0]}
+                onChange={(e) => $value[1](e.target.value)}
+                placeholder='This workout is focused on my back muscles...'
+            />
+        </>
     );
 }

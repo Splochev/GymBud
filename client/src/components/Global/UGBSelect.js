@@ -19,7 +19,7 @@ const useSelectStyles = makeStyles((theme) => ({
         marginRight: '-5px',
         padding: '3px',
         '& .MuiSvgIcon-root': {
-            color: '#1B1B1B',
+            color: '#757575',
         }
     }
 }));
