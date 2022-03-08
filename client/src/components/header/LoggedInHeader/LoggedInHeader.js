@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#1B1B1B",
         padding: 0,
         display: 'flex',
-        border: '2px solid #1B1B1B'
+        borderBottom: '2px solid transparent'
     },
     navItems: {
         display: 'flex',
