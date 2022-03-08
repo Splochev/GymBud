@@ -10,6 +10,7 @@ import { UGBIconInput } from '../Global/UGBInput';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { InputAdornment } from '@material-ui/core';
 import { UGBIconButton } from '../Global/UGBButton';
+import SearchIcon from '@material-ui/icons/Search';
 
 const useStyles = makeStyles(theme => ({
     autocomplete: {
@@ -17,40 +18,30 @@ const useStyles = makeStyles(theme => ({
             display: 'none'
         },
         "& .MuiAutocomplete-popupIndicator": {
-            marginRight: '10px',
-            color: '#1B1B1B',
+            display: 'none'
         },
     },
-    clearIconButton: {
-        marginRight: '-10px',
-        padding: '3px',
-        color: '#1B1B1B'
-    }
 }));
 
-export function ExercisesAutoComplete({label, onSelectedExercise, selectedExercise }) {
+
+export const ExercisesAutoComplete = ({ label, onSelectedExercise, disabled }) => {
     const styles = useStyles();
-    const history = useHistory();
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
-    const [value, setValue] = useState(selectedExercise || '');
+    const [value, setValue] = useState('');
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const history = useHistory();
 
     useEffect(() => {
-        if (value && inputValue === value.name) {
-            setIsLoading(false);
-            return;
-        }
-
         setOpen(inputValue.length > 0);
         (async () => {
             if (!inputValue || !isLoading) {
-                return;
-            }
-            const data = await getData(process.env.REACT_APP_HOST + `/api/artist/?offset=0&limit=${20}&filter=${inputValue}`)
+                return
+            };
+            const data = await getData(process.env.REACT_APP_HOST + `/api/workout/get-exercises?filter=${inputValue}`);
             setIsLoading(false);
-            setOptions(data.items);
+            setOptions(data.data);
         })();
     }, [inputValue, isLoading]);
 
@@ -75,11 +66,13 @@ export function ExercisesAutoComplete({label, onSelectedExercise, selectedExerci
             }}
             value={value}
             onChange={(e, newValue) => {
-                setValue(newValue);
+                setValue('');
                 setInputValue('');
 
-                const exercise = { name: newValue.name, id: newValue.id };
-                onSelectedExercise(exercise);
+                if (newValue) {
+                    const exercise = { exercise: newValue.exercise, id: newValue.id, videoLink: newValue.videoLink };
+                    onSelectedExercise(exercise);
+                }
 
                 setOpen(false);
                 setIsLoading(false);
@@ -88,18 +81,15 @@ export function ExercisesAutoComplete({label, onSelectedExercise, selectedExerci
             blurOnSelect={true}
             clearOnBlur={true}
             clearOnEscape={true}
-            getOptionLabel={(option) => option?.name || ''}
+            getOptionLabel={(option) => option?.exercise || ''}
             getOptionSelected={() => false}
             renderOption={(ex, option) => {
-                return (
-                    <ListItem key={ex.id}>
-                        <ListItemText primary={ex.name} />
-                    </ListItem>
-                )
+                return (<ListItem key={ex.id}>
+                    <ListItemText primary={ex.exercise} />
+                </ListItem>)
             }}
             options={options}
             loading={isLoading}
-            popupIcon={<ExpandMoreIcon />}
             renderInput={(params) => (
                 <UGBIconInput
                     {...params}
@@ -108,30 +98,15 @@ export function ExercisesAutoComplete({label, onSelectedExercise, selectedExerci
                         ...params.InputProps,
                         startAdornment: (
                             <InputAdornment position="start">
-                                <UGBIconButton isEnd={false} $onClick={() => history.push('?tab=add-new-exercise')} >
+                                <UGBIconButton disabled={disabled} isEnd={false} $onClick={() => history.push('?tab=add-new-exercise')} >
                                     ADD
                                 </UGBIconButton>
                             </InputAdornment>
                         ),
                         endAdornment: (
                             <React.Fragment>
-                                {isLoading ?
-                                    <CircularProgress style={{ color: '#1B1B1B' }} size={20} />
-                                    :
-                                    value ?
-                                        <IconButton
-                                            classes={{ root: styles.clearIconButton }}
-                                            onClick={(e) => {
-                                                setValue('');
-                                                setInputValue('');
-                                                onSelectedExercise({});
-                                            }}
-                                        >
-                                            <ClearIcon />
-                                        </IconButton>
-                                        :
-                                        params.InputProps.endAdornment
-                                }
+                                {isLoading ? <CircularProgress style={{ color: '#757575' }} size={20} /> : <SearchIcon style={{ color: '#757575' }} />}
+                                {params.InputProps.endAdornment}
                             </React.Fragment>
                         ),
                     }}
