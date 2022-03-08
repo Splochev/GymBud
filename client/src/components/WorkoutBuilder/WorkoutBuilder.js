@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         gap: 10,
         padding: '16px',
-        maxWidth: '510px'
+        maxWidth: '520px'
     },
     select: {
         width: '100%',
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     },
     exerciseMapping: {
         marginTop: '8px',
-        height: '410px',
+        minHeight: '530px',
     },
     alternativeNamesList: {
         height: '410px',
@@ -87,7 +87,6 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     saveAndResetActions: {
-        marginTop: '16px',
         display: 'flex',
         gap: '16px',
         alignItems: 'baseline',
@@ -187,6 +186,12 @@ const useStyles = makeStyles((theme) => ({
     exercisesContent: {
         background: 'red'
     },
+    collapseExercisesContentTransition: {
+        overflow: 'unset',
+        width: '100%',
+        height: '100%',
+        minHeight: '530px',
+    }
 }));
 
 const dataValidators = {
@@ -429,15 +434,18 @@ function SupersetList({ supersetItems, setExercisesForMerge, exercisesForMerge, 
                     </IconButton>
                 </ListItemIcon>
                 <ListItemText
-                    primary={`Superset: ${!open ?
-                        (() => {
-                            let exercises = [];
-                            supersetItems.superset.forEach(exx => exercises.push(exx.exercise));
-                            return exercises.join(', ');
-                        })()
+                    primary={!open ?
+                        <div >
+                            <span style={{ fontWeight: 'bolder', fontSize: '17px' }}>Superset: </span >
+                            <span>{(() => {
+                                let exercises = [];
+                                supersetItems.superset.forEach(exx => exercises.push(exx.exercise));
+                                return exercises.join(', ');
+                            })()}</span >
+                        </div>
                         :
-                        ''
-                        }`}
+                        <span style={{ fontWeight: 'bolder', fontSize: '17px' }}>Superset: </span >
+                    }
                 />
                 <div className={styles.rightSideSupersetListIem}>
                     <div className={styles.sorts}>
@@ -525,15 +533,15 @@ function SupersetList({ supersetItems, setExercisesForMerge, exercisesForMerge, 
                                 </ListItemIcon>
                                 <ListItemText
                                     primary={ex.exercise}
-                                    secondary={
-                                        <UGBLink
-                                            url={ex.videoLink}
-                                            label='Video Link'
-                                            color='green'
-                                            target='blank'
-                                            onClick={e => e.stopPropagation()}
-                                        />
-                                    }
+                                // secondary={
+                                //     <UGBLink
+                                //         url={ex.videoLink}
+                                //         label='Video Link'
+                                //         color='green'
+                                //         target='blank'
+                                //         onClick={e => e.stopPropagation()}
+                                //     />
+                                // }
                                 />
                                 <div className={styles.sorts}>
                                     <ListItemIcon className={styles.sort}>
@@ -595,7 +603,7 @@ function SupersetList({ supersetItems, setExercisesForMerge, exercisesForMerge, 
                     })}
                 </List>
             </Collapse>
-        </List>
+        </List >
     );
 }
 
@@ -786,7 +794,7 @@ const WorkoutBuilder = () => {
                         Workout Builder
                     </UGBLabel>
                     <UGBLabel variant='subtitle1' type='title'>
-                        Click the "ADD" button to add a new journal, session or exercise
+                        Click the "ADD" button to add a non existing journal, session or exercise
                     </UGBLabel>
                 </div>
                 <div className={styles.select}>
@@ -892,15 +900,15 @@ const WorkoutBuilder = () => {
                                             </ListItemIcon>
                                             <ListItemText
                                                 primary={ex.exercise}
-                                                secondary={
-                                                    <UGBLink
-                                                        url={ex.videoLink}
-                                                        label='Video Link'
-                                                        color='primary'
-                                                        target='blank'
-                                                        onClick={e => e.stopPropagation()}
-                                                    />
-                                                }
+                                            // secondary={
+                                            //     <UGBLink
+                                            //         url={ex.videoLink}
+                                            //         label='Video Link'
+                                            //         color='primary'
+                                            //         target='blank'
+                                            //         onClick={e => e.stopPropagation()}
+                                            //     />
+                                            // }
                                             />
                                             <div className={styles.rightSideListIem}>
                                                 <div className={styles.sorts}>
@@ -997,7 +1005,7 @@ const WorkoutBuilder = () => {
                         styles.exercisesContent,
                         styles.collapseContent,
                         toggleExerciseContent ?
-                            styles.collapseContentTransition
+                            styles.collapseExercisesContentTransition
                             :
                             styles.collapsed
                     )}>
@@ -1008,10 +1016,11 @@ const WorkoutBuilder = () => {
                             <ArrowBackIcon />
                         </IconButton>
                     </div>
-                    <div className={styles.saveAndResetActions}>
-                        {/* <UGBButton className={styles.defaultButton} onClick={resetToDefault} btnType='outlinedPrimary' variant='outlined'>Reset To Default</UGBButton> */}
-                        <UGBButton className={styles.submitButton} onClick={saveChanges} btnType='primary' >Save Changes</UGBButton>
-                    </div>
+
+                </div>
+                <div className={styles.saveAndResetActions}>
+                    {/* <UGBButton className={styles.defaultButton} onClick={resetToDefault} btnType='outlinedPrimary' variant='outlined'>Reset To Default</UGBButton> */}
+                    <UGBButton onClick={saveChanges} btnType='primary' >Save Changes</UGBButton>
                 </div>
             </div>
         </>
