@@ -114,6 +114,12 @@ const useStyles = makeStyles(() => ({
                 color: 'white'
             }
         }
+    },
+    isListItem: {
+        paddingLeft: '20px',
+        paddingRight: '20px',
+        paddingTop: '6px',
+        paddingBottom: '6px',
     }
 }));
 
@@ -124,7 +130,7 @@ export function UGBButton({ btnType, ...params }) {
     );
 }
 
-export const UGBIconButton = ({ disabled = false, icon, $onClick, isEnd = true, children }) => {
+export const UGBIconButton = ({ disabled = false, icon, isListItem = false, MuiIcon, $onClick, isEnd = true, children }) => {
     const styles = useStyles()
     return (
         <IconButton
@@ -134,16 +140,20 @@ export const UGBIconButton = ({ disabled = false, icon, $onClick, isEnd = true, 
             classes={{
                 root: clsx(
                     styles.iconButton,
-                    isEnd ? styles.iconEnd : styles.IconStart
+                    isListItem ? styles.isListItem :
+                        isEnd ? styles.iconEnd : styles.IconStart,
                 )
             }}
         >
             {icon ?
                 <i className={clsx(icon, styles.icon, styles.iconButtonColor)} />
                 :
-                <div className={clsx(styles.text, styles.iconButtonColor)}>
-                    {children}
-                </div>
+                MuiIcon ?
+                    <MuiIcon className={clsx(styles.icon, styles.iconButtonColor)} />
+                    :
+                    <div className={clsx(styles.text, styles.iconButtonColor)}>
+                        {children}
+                    </div>
             }
         </IconButton>
     );

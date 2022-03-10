@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
             color: '#28A745',
             cursor: 'pointer'
         },
-    }, 
+    },
     primary: {
         color: '#1B1B1B',
         textDecoration: 'none',
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const UGBLink = ({ type, url, icon, target, onClick, label, color }) => {
+const UGBLink = ({ type, url, icon, target, onClick, onHover, onMouseLeave, label, color, children }) => {
     const targets = { blank: '_blank', default: '_self' }
     const styles = useStyles();
 
@@ -77,12 +77,15 @@ const UGBLink = ({ type, url, icon, target, onClick, label, color }) => {
             rel="noreferrer"
             target={targets[target]}
             onClick={onClick || null}
+            onMouseEnter={onHover || null}
+            onMouseLeave={onMouseLeave || null}
         >
             {label ?
                 <span>{label}</span>
                 :
                 <i className={clsx(icon, styles.icon)} />
             }
+            {children}
         </a>
     );
 }
