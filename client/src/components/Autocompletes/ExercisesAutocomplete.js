@@ -3,14 +3,12 @@ import { useHistory } from 'react-router-dom';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { debounce, getData } from '../utils/FetchUtils'
-import { IconButton, ListItem, ListItemText } from '@material-ui/core';
+import { ListItem, ListItemText } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import ClearIcon from '@material-ui/icons/Clear';
 import { UGBIconInput } from '../Global/UGBInput';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { InputAdornment } from '@material-ui/core';
 import { UGBIconButton } from '../Global/UGBButton';
 import SearchIcon from '@material-ui/icons/Search';
+import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles(theme => ({
     autocomplete: {
@@ -21,10 +19,19 @@ const useStyles = makeStyles(theme => ({
             display: 'none'
         },
     },
+    missingLabel: {
+        marginRight: '5px'
+    },
+    missingContainer: {
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
 }));
 
 
-export const ExercisesAutoComplete = ({ label, onSelectedExercise, disabled }) => {
+export const ExercisesAutoComplete = ({ label, onSelectedExercise, disabled, setMissingExerciseName }) => {
     const styles = useStyles();
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
@@ -41,7 +48,21 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, disabled }) =
             };
             const data = await getData(process.env.REACT_APP_HOST + `/api/workout/get-exercises?filter=${inputValue}`);
             setIsLoading(false);
-            setOptions(data.data);
+
+            if (data.data.length) {
+                setOptions(data.data);
+            } else {
+                const btnData = [{
+                    id: 'add-button',
+                    onClickAdd: (e) => {
+                        e.stopPropagation();
+                        setMissingExerciseName(inputValue)
+                        history.push('?tab=add-new-exercise');
+                    },
+                }];
+                setOptions(btnData);
+            }
+
         })();
     }, [inputValue, isLoading]);
 
@@ -69,7 +90,7 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, disabled }) =
                 setValue('');
                 setInputValue('');
 
-                if (newValue) {
+                if (newValue && newValue.id !== 'add-button' && !disabled) {
                     const exercise = { exercise: newValue.exercise, id: newValue.id, videoLink: newValue.videoLink };
                     onSelectedExercise(exercise);
                 }
@@ -77,6 +98,7 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, disabled }) =
                 setOpen(false);
                 setIsLoading(false);
             }}
+            filterOptions={(options, state) => options}
             onInputChange={debounceMemo}
             blurOnSelect={true}
             clearOnBlur={true}
@@ -84,9 +106,22 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, disabled }) =
             getOptionLabel={(option) => option?.exercise || ''}
             getOptionSelected={() => false}
             renderOption={(ex, option) => {
-                return (<ListItem key={ex.id}>
-                    <ListItemText primary={ex.exercise} />
-                </ListItem>)
+                if (ex.id === 'add-button') {
+                    return (
+                        <div className={styles.missingContainer}>
+                            <div className={styles.missingLabel}>
+                                Exercise is missing. To add it
+                            </div>
+                            <UGBIconButton isListItem={true} $onClick={ex.onClickAdd} >
+                                Click Here
+                            </UGBIconButton>
+                        </div>
+                    );
+                }
+                return (
+                    <ListItem key={ex.id}>
+                        <ListItemText primary={ex.exercise} />
+                    </ListItem>)
             }}
             options={options}
             loading={isLoading}
@@ -96,13 +131,6 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, disabled }) =
                     label={label}
                     InputProps={{
                         ...params.InputProps,
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <UGBIconButton disabled={disabled} isEnd={false} $onClick={() => history.push('?tab=add-new-exercise')} >
-                                    ADD
-                                </UGBIconButton>
-                            </InputAdornment>
-                        ),
                         endAdornment: (
                             <React.Fragment>
                                 {isLoading ? <CircularProgress style={{ color: '#757575' }} size={20} /> : <SearchIcon style={{ color: '#757575' }} />}
