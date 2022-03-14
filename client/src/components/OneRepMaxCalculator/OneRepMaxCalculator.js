@@ -6,6 +6,7 @@ import UGBLink from '../Global/UGBLink';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { UGBButton } from '../Global/UGBButton';
+import tallyIcon from '../assets/tallyIcon.png'
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -126,7 +127,7 @@ const OneRepMaxCalculator = () => {
                 <UGBIconInput
                     $value={reps}
                     required
-                    startIcon='fas fa-sort-numeric-up'
+                    imgIconStart={tallyIcon}
                     label="Reps"
                 />
             </div>
