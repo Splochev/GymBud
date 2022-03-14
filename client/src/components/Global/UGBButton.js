@@ -94,7 +94,6 @@ const useStyles = makeStyles(() => ({
     iconButton: {
         background: '#28A745',
         color: 'white',
-        borderRadius: '21px',
         textAlign: 'center',
         border: '1px solid transparent',
         boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
@@ -115,6 +114,9 @@ const useStyles = makeStyles(() => ({
             }
         }
     },
+    withRadius: {
+        borderRadius: '21px',
+    },
     isListItem: {
         paddingLeft: '20px',
         paddingRight: '20px',
@@ -130,7 +132,7 @@ export function UGBButton({ btnType, ...params }) {
     );
 }
 
-export const UGBIconButton = ({ disabled = false, icon, isListItem = false, MuiIcon, $onClick, isEnd = true, children }) => {
+export const UGBIconButton = ({ disabled = false, icon, MuiIcon, $onClick, isEnd = true, isListItem = false, withRadius = true, children }) => {
     const styles = useStyles()
     return (
         <IconButton
@@ -140,8 +142,17 @@ export const UGBIconButton = ({ disabled = false, icon, isListItem = false, MuiI
             classes={{
                 root: clsx(
                     styles.iconButton,
-                    isListItem ? styles.isListItem :
-                        isEnd ? styles.iconEnd : styles.IconStart,
+                    withRadius ? styles.withRadius : null,
+                    !withRadius ?
+                        null
+                        :
+                        isListItem ?
+                            styles.isListItem
+                            :
+                            isEnd ?
+                                styles.iconEnd
+                                :
+                                styles.IconStart,
                 )
             }}
         >

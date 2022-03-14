@@ -22,6 +22,11 @@ const useStyles = makeStyles(() => ({
         maxWidth: '100%',
         border: '1px solid #1B1B1B',
         color: "#1B1B1B"
+    },
+    imgIcon: {
+        width: 'auto',
+        height: '90%',
+        marginRight: '10px'
     }
 }));
 
@@ -150,7 +155,7 @@ export const UGBInput = withStyles(() => ({
     );
 });
 
-export function UGBIconInput({ startIcon, MuiIconStart, MuiIconEnd, endIcon, $$onClick, ...props }) {
+export function UGBIconInput({ startIcon, endIcon, MuiIconStart, MuiIconEnd, imgIconStart, $$onClick, ...props }) {
     const styles = useStyles()
     return (
         <UGBInput
@@ -165,7 +170,11 @@ export function UGBIconInput({ startIcon, MuiIconStart, MuiIconEnd, endIcon, $$o
                             <MuiIconStart className={styles.icon} />
                         </InputAdornment>
                         :
-                        null
+                        // null
+                        imgIconStart ?
+                            <img className={styles.imgIcon} src={imgIconStart} alt='' />
+                            :
+                            null
                 ,
                 endAdornment: endIcon ?
                     <InputAdornment position="end">

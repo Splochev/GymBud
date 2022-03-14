@@ -13,13 +13,23 @@ const useStyles = makeStyles((theme) => ({
     cardTitle: {
     },
     cardSubTitle: {
+    },
+    center: {
+        textAlign: 'center'
     }
 }));
 
-const UGBLabel = ({ variant, type, children, minWidth }) => {
+const UGBLabel = ({ component ='div',variant, type, children, minWidth, center = false, props }) => {
     const styles = useStyles();
     return (
-        <Typography style={{ minWidth: minWidth || '' }} variant={variant} component='div' className={clsx(styles.label, styles[type])} >
+        <Typography style={{ minWidth: minWidth || '' }} variant={variant} component={component}
+            className={clsx(
+                styles.label,
+                styles[type],
+                center ? styles.center : null
+            )}
+            {...props}
+        >
             {children}
         </Typography>
     );
