@@ -31,10 +31,15 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import clsx from 'clsx';
 import { Tooltip } from '@material-ui/core';
+import fitnessTracking from '../assets/fitnessTracking.svg'
+import categorize from '../assets/categorize.svg'
+import TimerIcon from '@material-ui/icons/Timer';
+import AddIcon from '@material-ui/icons/Add';
+import tallyIcon from '../assets/tallyIcon.png'
 
 const useStyles = makeStyles((theme) => ({
     titleSection: {
-        marginBottom: '16px',
+        marginBottom: '7px',
     },
     container: {
         display: 'flex',
@@ -62,8 +67,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: '12px',
     },
     exerciseMapping: {
-        marginTop: '8px',
-        minHeight: '530px',
+        minHeight: '536px',
     },
     exercisesList: {
         height: '410px',
@@ -140,9 +144,14 @@ const useStyles = makeStyles((theme) => ({
             flexDirection: 'column',
         }
     },
+    toolbarTitle: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+    },
     mergeBtn: {
-        width: '187px',
         height: '42px',
+        width: '187px',
         '@media (max-width: 560px)': {
             display: 'flex',
             flexDirection: 'row',
@@ -184,9 +193,6 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         height: '100%',
     },
-    exercisesContent: {
-        background: 'red'
-    },
     collapseExercisesContentTransition: {
         overflow: 'unset',
         width: '100%',
@@ -203,7 +209,65 @@ const useStyles = makeStyles((theme) => ({
     tooltipPopper: {
         background: '#1B1B1B',
         paddingTop: '8px'
-    }
+    },
+    exercisesContentContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        marginBottom: '16px',
+        boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
+        borderRadius: 30,
+        '&:hover': {
+            cursor: 'pointer'
+        },
+    },
+    exercisesContent: {
+        width: '220px',
+        height: '220px',
+
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center'
+    },
+    svg: {
+        width: '100%',
+        height: 'auto',
+    },
+    exercisesContentContainersGroup: {
+        padding: 16
+    },
+    exercisesContentHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        textAlign: 'center'
+    },
+    exercisesContentHeaderAlign: {
+        alignItems: 'baseline',
+    },
+    addSet: {
+        display: 'flex',
+        alignItems: 'end',
+        gap: '8px'
+    },
+    addSetBtn: {
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%',
+        marginBottom: '3px'
+    },
+    addSetContainer: {
+        display: 'flex',
+        width: '100%',
+        flexDirection: 'column',
+        gap: 16,
+        height: '430px',
+        overflow: 'auto',
+    },
 }));
 
 const dataValidators = {
@@ -462,7 +526,16 @@ const PopoverLink = ({ ex, color }) => {
     );
 }
 
-function ExerciseListItem({ exType = 'superset', supersetItems, setExercisesForMerge, exercisesForMerge, setSessionExercises, sessionExercises, setToggleExerciseContent, setSelectedSessionExercise }) {
+function ExerciseListItem({
+    exType = 'superset',
+    supersetItems,
+    setExercisesForMerge,
+    exercisesForMerge,
+    setSessionExercises,
+    sessionExercises,
+    setToggleExerciseContent,
+    setSelectedSessionExercise,
+}) {
     const styles = useStyles();
     const [open, setOpen] = useState(false);
 
@@ -728,6 +801,10 @@ const WorkoutBuilder = () => {
     const [toggleExerciseContent, setToggleExerciseContent] = useState(false);
     const [missingExerciseName, setMissingExerciseName] = useState('');
 
+    const [showExerciseAddSet, setShowExerciseAddSet] = useState(false);
+    const [showCategorize, setShowCategorize] = useState(false);
+    const [hideExerciseContent, setHideExerciseContent] = useState(false);
+
     useEffect(() => {
         switch (tab) {
             case 'add-new-workout-journal':
@@ -828,7 +905,21 @@ const WorkoutBuilder = () => {
         setExercisesForMerge([]);
     }
 
+    useEffect(() => {
+        if (exercisesForMergeDisabled && !exercisesForMerge.length) {
+            const checkboxes = document.getElementsByClassName('exercises-list')[0].querySelectorAll('[type~=checkbox]');
+            for (const checkbox of checkboxes) {
+                if (checkbox.checked) {
+                    checkbox.parentElement.parentElement.click();
+                }
+            }
+        }
+    }, [exercisesForMergeDisabled, exercisesForMerge])
+
     function saveChanges() {
+        console.log(sessionExercises);
+        // console.log(selectedWorkoutSessionObj);
+        // console.log(selectedWorkoutJournalObj);
     }
 
     return (
@@ -888,7 +979,7 @@ const WorkoutBuilder = () => {
                         Workout Builder
                     </UGBLabel>
                     <UGBLabel variant='subtitle1' type='title'>
-                        Click the "ADD" button to add a non existing journal, session or exercise
+                        Click the "ADD" button to add a non existing journal or session
                     </UGBLabel>
                 </div>
                 <div className={styles.select}>
@@ -955,9 +1046,11 @@ const WorkoutBuilder = () => {
                         )}
                     >
                         <div className={styles.toolbar}>
-                            <UGBLabel variant='subtitle1' type='title' minWidth='107px'>
-                                Exercises for the following workout session:
-                            </UGBLabel>
+                            <div className={styles.toolbarTitle}>
+                                <UGBLabel variant='subtitle1' type='title' minWidth='107px'>
+                                    Exercises for the following workout session:
+                                </UGBLabel>
+                            </div>
                             <div className={styles.mergeBtn}>
                                 {!exercisesForMergeDisabled ?
                                     <UGBButton disabled={exercisesForMergeDisabled} btnType='primary' onClick={onClickMerge}>Merge Into Superset</UGBButton>
@@ -966,7 +1059,7 @@ const WorkoutBuilder = () => {
                                 }
                             </div>
                         </div>
-                        <List className={styles.exercisesList}>
+                        <List className={clsx(styles.exercisesList, 'exercises-list')}>
                             {sessionExercises.map(ex => {
                                 if (ex.superset) {
                                     return (
@@ -1016,26 +1109,96 @@ const WorkoutBuilder = () => {
                                             return;
                                         }
                                     }
+                                    ex.sets = [{ set: 'Set 1', reps: '', rest: '00:00' }];
                                     setSessionExercises([...sessionExercises, ex])
                                 }}
                             />
                         </div>
                     </div>
                     <div className={clsx(
-                        styles.exercisesContent,
                         styles.collapseContent,
                         toggleExerciseContent ?
                             styles.collapseExercisesContentTransition
                             :
                             styles.collapsed
                     )}>
-                        <IconButton onClick={(e) => {
-                            e.stopPropagation();
-                            setToggleExerciseContent(false);
-                            setSelectedSessionExercise({});
-                        }}>
-                            <ArrowBackIcon />
-                        </IconButton>
+                        <div className={clsx(styles.exercisesContentHeader, hideExerciseContent ? styles.exercisesContentHeaderAlign : null)}>
+                            <IconButton
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (hideExerciseContent) {
+                                        if (showExerciseAddSet) { setShowExerciseAddSet(false); }
+                                        if (showCategorize) { setShowCategorize(false); }
+                                        setHideExerciseContent(false)
+                                    } else {
+                                        setToggleExerciseContent(false);
+                                        setSelectedSessionExercise({});
+                                    }
+                                }}>
+                                <ArrowBackIcon />
+                            </IconButton>
+                            <UGBLabel variant='h5' type='title'>
+                                {selectedSessionExercise.exercise}
+                                {hideExerciseContent ? <br /> : null}
+                                {showExerciseAddSet ? 'Add Sets' : ''}
+                                {showCategorize ? 'Categorize' : ''}
+                            </UGBLabel>
+                            <div style={{ width: '48px' }} />
+                        </div>
+                        <div className={styles.exercisesContentContainersGroup}>
+                            {!hideExerciseContent ?
+                                <>
+                                    <div
+                                        className={styles.exercisesContentContainer}
+                                        onClick={() => {
+                                            setHideExerciseContent(true);
+                                            setShowExerciseAddSet(true);
+                                            setShowCategorize(false);
+                                        }}
+                                    >
+                                        <div className={styles.exercisesContent} >
+                                            <img src={fitnessTracking} alt='fitnessTracking' className={styles.svg} />
+                                            <UGBLabel variant='h5' type='title'>
+                                                Add Sets
+                                            </UGBLabel>
+                                        </div>
+                                    </div>
+                                    <div
+                                        className={styles.exercisesContentContainer}
+                                        onClick={() => {
+                                            setHideExerciseContent(true);
+                                            setShowCategorize(true);
+                                            setShowExerciseAddSet(false);
+                                        }}
+                                    >
+                                        <div className={styles.exercisesContent}  >
+                                            <img src={categorize} alt='categorize' className={styles.svg} />
+                                            <UGBLabel variant='h5' type='title'>
+                                                Categorize
+                                            </UGBLabel>
+                                        </div>
+                                    </div>
+                                </>
+                                :
+                                <>
+                                    {showExerciseAddSet ?
+                                        <AddSets
+                                            sessionExercises={sessionExercises}
+                                            setSessionExercises={setSessionExercises}
+                                            selectedSessionExercise={selectedSessionExercise}
+                                            setSelectedSessionExercise={setSelectedSessionExercise}
+                                        />
+                                        :
+                                        null
+                                    }
+                                    {showCategorize ?
+                                        <Categorize />
+                                        :
+                                        null
+                                    }
+                                </>
+                            }
+                        </div>
                     </div>
                 </div>
                 <div className={styles.saveAndResetActions}>
@@ -1048,3 +1211,76 @@ const WorkoutBuilder = () => {
 }
 
 export default WorkoutBuilder;
+
+const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercise, setSelectedSessionExercise }) => {
+    const styles = useStyles();
+
+    return (
+        <div className={styles.addSetContainer}>
+            {selectedSessionExercise.sets.map((set, i) => {
+                return (
+                    <div key={set.set} className={styles.addSet}>
+                        <IconButton
+                            onClick={(e) => {
+                                const tempSets = selectedSessionExercise.sets;
+                                const exI = tempSets.indexOf(set);
+                                tempSets.splice(exI, 1);
+                                for (let j = 0; j < tempSets.length; j++) {
+                                    tempSets[j].set = `Set ${j + 1}`
+                                }
+                                if (tempSets.length === 0) {
+                                    tempSets.push({ set: 'Set 1', reps: '', rest: '00:00' })
+                                }
+                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets = tempSets, { ...selectedSessionExercise }));
+                                setSessionExercises([...sessionExercises]);
+                            }}
+                        >
+                            <HighlightOffIcon />
+                        </IconButton>
+                        <UGBIconInput
+                            imgIconStart={tallyIcon}
+                            label={`Reps for ${set.set}`}
+                            value={set.reps}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets[i].reps = value, { ...selectedSessionExercise }));
+                                setSessionExercises([...sessionExercises]);
+                            }}
+                        />
+                        <UGBIconInput
+                            MuiIconStart={TimerIcon}
+                            label='Rest time after set'
+                            type="time"
+                            value={set.rest}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets[i].rest = value, { ...selectedSessionExercise }));
+                                setSessionExercises([...sessionExercises])
+                            }}
+                        />
+                    </div>
+                );
+            })}
+            <div className={styles.addSetBtn}>
+                <UGBIconButton
+                    $onClick={() => {
+                        const tempSets = selectedSessionExercise.sets;
+                        const set = `Set ${tempSets.length + 1}`;
+                        tempSets.push({ set: set, reps: '', rest: '00:00' })
+                        setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets = tempSets, { ...selectedSessionExercise }));
+                        setSessionExercises([...sessionExercises])
+                    }}
+                    withRadius={false}
+                    btnType='primary'
+                    MuiIcon={AddIcon}
+                />
+            </div>
+        </div >);
+}
+
+const Categorize = ({ }) => {
+    return (
+        <div>
+            adding categories...
+        </div>);
+}
