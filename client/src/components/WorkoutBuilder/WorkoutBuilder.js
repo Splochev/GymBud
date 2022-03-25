@@ -1,66 +1,70 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useQuery } from '../utils/RouteUtils';
-import { List } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
-import { ListItemIcon } from '@material-ui/core';
-import { ListItem } from '@material-ui/core';
-import { InputAdornment, makeStyles } from '@material-ui/core';
+import { List, IconButton, ListItemIcon, ListItem, InputAdornment, makeStyles, ListItemText, Collapse, Tooltip, Popover, MenuList, MenuItem } from '@material-ui/core';
 import { ExercisesAutoComplete } from '../Autocompletes/ExercisesAutocomplete';
-import { UGBIconButton } from '../Global/UGBButton';
+import { UGBIconButton, UGBButton } from '../Global/UGBButton';
 import { UGBCheckbox } from '../Global/UGBCheckbox';
 import UGBLabel from '../Global/UGBLabel';
 import { UGBMenuItem, UGBSelect } from '../Global/UGBSelect';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { ListItemText } from '@material-ui/core';
-import { UGBButton } from '../Global/UGBButton';
-import { useEffect } from 'react';
 import UGBModal from '../Global/UGBModal';
-import { UGBIconInput, UGBInputArea } from '../Global/UGBInput';
-import { getData, postData } from '../utils/FetchUtils';
-import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
+import { UGBIconInput, UGBInput, UGBInputArea } from '../Global/UGBInput';
+import UGBLink from '../Global/UGBLink';
+import { deleteData, getData, postData, putData } from '../utils/FetchUtils';
+import { useQuery } from '../utils/RouteUtils';
+import { textIsEmpty } from '../utils/ValidationUtils';
 import isURL from 'validator/es/lib/isURL';
 import isEmpty from 'validator/es/lib/isEmpty';
-import UGBLink from '../Global/UGBLink';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import { Collapse } from '@material-ui/core';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import clsx from 'clsx';
-import { Tooltip } from '@material-ui/core';
-import fitnessTracking from '../assets/fitnessTracking.svg'
-import categorize from '../assets/categorize.svg'
 import TimerIcon from '@material-ui/icons/Timer';
 import AddIcon from '@material-ui/icons/Add';
-import tallyIcon from '../assets/tallyIcon.png'
+import EditIcon from '@material-ui/icons/Edit';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import DeleteIcon from '@material-ui/icons/Delete';
+import fitnessTracking from '../assets/fitnessTracking.svg'
+import addMarkersSvg from '../assets/mark.svg'
+import tallyIcon from '../assets/tallyIcon.png';
+import lifting2 from '../assets/lifting2.svg';
+import muscle from '../assets/muscle.svg';
+import inputIcon from '../assets/inputIcon.png';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     titleSection: {
         marginBottom: '7px',
     },
-    container: {
+    leftSideContainer: {
         display: 'flex',
         flexDirection: 'column',
         gap: 10,
         padding: '16px',
-        maxWidth: '520px'
+        minWidth: '520px',
+        '@media (max-width: 1350px)': {
+            minWidth: '450px',
+        },
+        '@media (max-width: 1150px)': {
+            minWidth: '400px',
+        },
+        '@media (max-width: 1000px)': {
+            width: '100%',
+            minWidth: 'auto',
+        }
     },
     select: {
         width: '100%',
         display: 'flex',
-        alignItems: "center",
-        gap: 10,
+        gap: 0,
+        marginTop: '5px',
+        flexDirection: 'column',
+        alignItems: "start",
         '& .MuiAutocomplete-root': {
             width: '100%'
-        },
-        '@media (max-width: 445px)': {
-            flexDirection: 'column',
-            alignItems: "start",
-            gap: 0,
-            marginTop: '5px'
         }
     },
     autocomplete: {
@@ -140,7 +144,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignContent: 'center',
-        '@media (max-width: 560px)': {
+        '@media (max-width: 600px)': {
             flexDirection: 'column',
         }
     },
@@ -152,7 +156,8 @@ const useStyles = makeStyles((theme) => ({
     mergeBtn: {
         height: '42px',
         width: '187px',
-        '@media (max-width: 560px)': {
+        minWidth: '187px',
+        '@media (max-width: 600px)': {
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'end',
@@ -237,9 +242,6 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         height: 'auto',
     },
-    exercisesContentContainersGroup: {
-        padding: 16
-    },
     exercisesContentHeader: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -258,9 +260,11 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center',
         width: '100%',
-        marginBottom: '3px'
+        marginBottom: '3px',
+        marginTop: '3px',
     },
-    addSetContainer: {
+    addSetAndMarkersContainer: {
+        marginTop: '10px',
         display: 'flex',
         width: '100%',
         flexDirection: 'column',
@@ -268,6 +272,81 @@ const useStyles = makeStyles((theme) => ({
         height: '430px',
         overflow: 'auto',
     },
+    rightSideContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        '@media (max-width: 1000px)': {
+            display: 'none'
+        }
+    },
+    pageContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        paddingLeft: '30px',
+        paddingRight: '30px',
+        '@media (max-width: 550px)': {
+            paddingLeft: '0px',
+            paddingRight: '0px',
+        },
+    },
+    editButton: {
+        padding: theme.spacing(1),
+        color: '#28A745',
+        boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
+    },
+    deleteButton: {
+        padding: theme.spacing(1),
+        color: '#DC3545',
+        boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
+    },
+    selectAndEditContainer: {
+        width: '100%',
+        display: 'flex',
+        gap: theme.spacing(1),
+    },
+    showMoreIcon: {
+        padding: theme.spacing(0.7),
+        marginRight: theme.spacing(-2.25),
+    },
+    svgInputIcon: {
+        color: '#757575'
+    },
+    addMarker: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        gap: theme.spacing(1),
+    },
+    addMarkerContainer: {
+        width: '100%',
+        '& .MuiTypography-root': {
+            marginLeft: '50px'
+        }
+    },
+    addMarkerInputs: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        gap: theme.spacing(1),
+        '@media (max-width: 530px)': {
+            flexDirection: 'column',
+            gap: theme.spacing(1),
+        },
+    },
+    markerEquality: {
+        '@media (max-width: 530px)': {
+            display: 'none'
+        },
+    },
+    imgIcon: {
+        width: 'auto',
+        height: '90%',
+        marginRight: '10px'
+    }
 }));
 
 const dataValidators = {
@@ -357,6 +436,164 @@ const AddNewWorkoutJournal = ({ onSubmit, onClose }) => {
     );
 }
 
+const EditWorkoutJournal = ({ selectedWorkoutJournalObj, setSelectedWorkoutJournalObj, workoutJournals, setWorkoutJournals, onClose }) => {
+    const styles = useStyles();
+    const workoutJournalName = useState(selectedWorkoutJournalObj?.name || '');
+    const description = useState(selectedWorkoutJournalObj?.description || '');
+    const workoutJournalNamePassed = useState(true);
+    const [disabled, setDisabled] = useState(true);
+    const [hasNameChanges, setHasNameChanges] = useState(false);
+    const [hasDescriptionChanges, setHasDescriptionChanges] = useState(false);
+
+    function editWorkoutJournal(e) {
+        e.preventDefault();
+        if (!selectedWorkoutJournalObj) {
+            return;
+        }
+
+        if (!(workoutJournalName[0] && workoutJournalNamePassed[0])) {
+            return;
+        }
+        const changes = { id: selectedWorkoutJournalObj.id };
+        if (hasNameChanges) {
+            changes.name = workoutJournalName[0];
+        }
+        if (hasDescriptionChanges) {
+            changes.description = description[0];
+        }
+
+        putData(process.env.REACT_APP_HOST + '/api/workout/edit-workout-journal', changes)
+            .then(data => {
+                const foundWJ = workoutJournals.find(wj => wj.id === selectedWorkoutJournalObj.id);
+                if (hasNameChanges) {
+                    setSelectedWorkoutJournalObj(workoutJournal => (workoutJournal.name = workoutJournalName[0], { ...workoutJournal }))
+                    foundWJ.name = workoutJournalName[0]
+                }
+                if (hasDescriptionChanges) {
+                    setSelectedWorkoutJournalObj(workoutJournal => (workoutJournal.description = description[0], { ...workoutJournal }))
+                    foundWJ.description = description[0]
+                }
+                setWorkoutJournals([...workoutJournals])
+                onClose();
+            }, error => {
+                console.log('LOGOUT ERROR--->', error)
+            })
+    }
+
+    useEffect(() => {
+        if (selectedWorkoutJournalObj && selectedWorkoutJournalObj.name && workoutJournalName[0] === selectedWorkoutJournalObj.name) {
+            setHasNameChanges(false);
+        } else {
+            setHasNameChanges(true);
+        }
+    }, [workoutJournalName[0]])
+
+    useEffect(() => {
+        if (selectedWorkoutJournalObj && selectedWorkoutJournalObj.description && description[0] === selectedWorkoutJournalObj.description) {
+            setHasDescriptionChanges(false);
+        } else {
+            setHasDescriptionChanges(true);
+        }
+    }, [description[0]])
+
+    useEffect(() => {
+        if (workoutJournalName[0] && workoutJournalNamePassed[0] && (hasNameChanges || hasDescriptionChanges)) {
+            setDisabled(false)
+        } else {
+            setDisabled(true)
+        }
+    }, [workoutJournalName[0], workoutJournalNamePassed[0], hasNameChanges, hasDescriptionChanges])
+
+    useEffect(() => {
+        if (selectedWorkoutJournalObj) {
+            workoutJournalName[1](selectedWorkoutJournalObj.name);
+            description[1](selectedWorkoutJournalObj.description);
+        }
+    }, [selectedWorkoutJournalObj])
+
+    return (
+        <form onSubmit={editWorkoutJournal}>
+            <div className={styles.titleSection}>
+                <UGBLabel variant='h5' type='title'>
+                    Edit workout journal: {selectedWorkoutJournalObj?.name || ''}
+                </UGBLabel>
+            </div>
+            <UGBIconInput
+                $value={workoutJournalName}
+                label='Workout Journal Name'
+                startIcon='fa-solid fa-file-signature'
+                validator={dataValidators.isRequired}
+                validatorPassed={workoutJournalNamePassed}
+            />
+            <UGBInputArea
+                label='Description'
+                $value={description}
+            />
+            <div className={styles.actions}>
+                <UGBButton
+                    btnType='secondary'
+                    onClick={() => onClose()}
+                >
+                    Cancel
+                </UGBButton>
+                <UGBButton
+                    disabled={disabled}
+                    type='submit'
+                    btnType='primary'
+                >
+                    Save
+                </UGBButton>
+            </div>
+        </form>
+    );
+}
+
+const DeleteWorkoutJournal = ({ selectedWorkoutJournalObj, refresh, onClose }) => {
+    const styles = useStyles();
+    const workoutJournalName = useState(selectedWorkoutJournalObj?.name || '');
+
+    function deleteWJ(e) {
+        e.preventDefault()
+        deleteData(process.env.REACT_APP_HOST + '/api/workout/delete-workout-journal', { id: selectedWorkoutJournalObj.id })
+            .then(data => {
+                refresh();
+                onClose();
+            }, error => {
+                console.log('LOGOUT ERROR--->', error)
+            })
+    }
+
+    useEffect(() => {
+        if (selectedWorkoutJournalObj) {
+            workoutJournalName[1](selectedWorkoutJournalObj.name);
+        }
+    }, [selectedWorkoutJournalObj])
+
+    return (
+        <form onSubmit={deleteWJ}>
+            <div className={styles.titleSection}>
+                <UGBLabel variant='h5' type='title'>
+                    Are you sure you want to delete workout journal &ldquo;{workoutJournalName}&rdquo;?
+                </UGBLabel>
+            </div>
+            <div className={styles.actions}>
+                <UGBButton
+                    btnType='secondary'
+                    onClick={() => onClose()}
+                >
+                    Cancel
+                </UGBButton>
+                <UGBButton
+                    type='submit'
+                    btnType='outlinedSecondary'
+                >
+                    Delete
+                </UGBButton>
+            </div>
+        </form>
+    );
+}
+
 const AddNewWorkoutSession = ({ workoutJournal, onSubmit, onClose }) => {
     const styles = useStyles();
     const workoutSessionName = useState('');
@@ -413,6 +650,147 @@ const AddNewWorkoutSession = ({ workoutJournal, onSubmit, onClose }) => {
                     btnType='primary'
                 >
                     Add
+                </UGBButton>
+            </div>
+        </form>
+    );
+}
+
+const EditWorkoutSession = ({ selectedWorkoutJournalObj, selectedWorkoutSessionObj, setSelectedWorkoutSessionObj, workoutSessions, setWorkoutSessions, onClose }) => {
+    const styles = useStyles();
+    const workoutSessionName = useState(selectedWorkoutSessionObj?.name || '');
+    const workoutSessionNamePassed = useState(true);
+    const [disabled, setDisabled] = useState(true);
+    const [hasNameChanges, setHasNameChanges] = useState(false);
+
+    function addWorkoutJournal(e) {
+        e.preventDefault();
+        if (!selectedWorkoutSessionObj && !selectedWorkoutJournalObj) {
+            return;
+        }
+
+        if (!(workoutSessionName[0] && workoutSessionNamePassed[0])) {
+            return;
+        }
+
+        const changes = { id: selectedWorkoutSessionObj.id, workoutJournalId: selectedWorkoutJournalObj.id };
+        if (hasNameChanges) {
+            changes.name = workoutSessionName[0];
+        }
+
+        putData(process.env.REACT_APP_HOST + '/api/workout/edit-workout-journal-session', changes)
+            .then(data => {
+                const foundWJ = workoutSessions.find(wj => wj.id === selectedWorkoutSessionObj.id);
+                if (hasNameChanges) {
+                    setSelectedWorkoutSessionObj(workoutJournal => (workoutJournal.name = workoutSessionName[0], { ...workoutJournal }))
+                    foundWJ.name = workoutSessionName[0]
+                }
+                setWorkoutSessions([...workoutSessions])
+                onClose();
+            }, error => {
+                console.log('LOGOUT ERROR--->', error)
+            })
+    }
+
+    useEffect(() => {
+        if (selectedWorkoutSessionObj && selectedWorkoutSessionObj.name && workoutSessionName[0] === selectedWorkoutSessionObj.name) {
+            setHasNameChanges(false);
+        } else {
+            setHasNameChanges(true);
+        }
+    }, [workoutSessionName[0]])
+
+    useEffect(() => {
+        if (workoutSessionName[0] && workoutSessionNamePassed[0] && hasNameChanges) {
+            setDisabled(false)
+        } else {
+            setDisabled(true)
+        }
+    }, [workoutSessionName[0], workoutSessionNamePassed[0], hasNameChanges])
+
+    useEffect(() => {
+        if (selectedWorkoutSessionObj) {
+            workoutSessionName[1](selectedWorkoutSessionObj.name);
+        }
+    }, [selectedWorkoutSessionObj])
+
+    return (
+        <form onSubmit={addWorkoutJournal}>
+            <div className={styles.titleSection}>
+                <UGBLabel variant='h5' type='title'>
+                    Edit workout session: {selectedWorkoutSessionObj?.name || ''}
+                </UGBLabel>
+            </div>
+            <UGBIconInput
+                $value={workoutSessionName}
+                label='Workout Journal Name'
+                startIcon='fa-solid fa-file-signature'
+                validator={dataValidators.isRequired}
+                validatorPassed={workoutSessionNamePassed}
+            />
+            <div className={styles.actions}>
+                <UGBButton
+                    btnType='secondary'
+                    onClick={() => onClose()}
+                >
+                    Cancel
+                </UGBButton>
+                <UGBButton
+                    disabled={disabled}
+                    type='submit'
+                    btnType='primary'
+                >
+                    Save
+                </UGBButton>
+            </div>
+        </form>
+    );
+}
+
+const DeleteWorkoutSession = ({ selectedWorkoutJournalObj, selectedWorkoutSessionObj, refresh, onClose }) => {
+    const styles = useStyles();
+    const workoutSessionName = useState(selectedWorkoutSessionObj?.name || '');
+
+    function deleteWJ(e) {
+        e.preventDefault();
+        if (!selectedWorkoutJournalObj && !selectedWorkoutSessionObj) {
+            return;
+        }
+
+        deleteData(process.env.REACT_APP_HOST + '/api/workout/delete-workout-journal-session', { id: selectedWorkoutSessionObj.id, workoutJournalId: selectedWorkoutJournalObj.id })
+            .then(data => {
+                refresh();
+                onClose();
+            }, error => {
+                console.log('LOGOUT ERROR--->', error)
+            })
+    }
+
+    useEffect(() => {
+        if (selectedWorkoutSessionObj) {
+            workoutSessionName[1](selectedWorkoutSessionObj.name);
+        }
+    }, [selectedWorkoutSessionObj])
+
+    return (
+        <form onSubmit={deleteWJ}>
+            <div className={styles.titleSection}>
+                <UGBLabel variant='h5' type='title'>
+                    Are you sure you want to delete workout session &ldquo;{workoutSessionName}&rdquo;?
+                </UGBLabel>
+            </div>
+            <div className={styles.actions}>
+                <UGBButton
+                    btnType='secondary'
+                    onClick={() => onClose()}
+                >
+                    Cancel
+                </UGBButton>
+                <UGBButton
+                    type='submit'
+                    btnType='outlinedSecondary'
+                >
+                    Delete
                 </UGBButton>
             </div>
         </form>
@@ -771,6 +1149,306 @@ function ExerciseListItem({
     );
 }
 
+const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercise, setSelectedSessionExercise }) => {
+    const styles = useStyles();
+
+    return (
+        <div className={styles.addSetAndMarkersContainer}>
+            {selectedSessionExercise.sets.map((set, i) => {
+                return (
+                    <div key={set.set} className={styles.addSet}>
+                        <IconButton
+                            onClick={(e) => {
+                                const tempSets = selectedSessionExercise.sets;
+                                const exI = tempSets.indexOf(set);
+                                tempSets.splice(exI, 1);
+                                for (let j = 0; j < tempSets.length; j++) {
+                                    tempSets[j].set = `Set ${j + 1}`
+                                }
+                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets = tempSets, { ...selectedSessionExercise }));
+                                setSessionExercises([...sessionExercises]);
+                            }}
+                        >
+                            <HighlightOffIcon />
+                        </IconButton>
+                        <UGBIconInput
+                            imgIconStart={tallyIcon}
+                            label={`Reps for ${set.set}`}
+                            value={set.reps}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets[i].reps = value, { ...selectedSessionExercise }));
+                                setSessionExercises([...sessionExercises]);
+                            }}
+                        />
+                        <UGBIconInput
+                            MuiIconStart={TimerIcon}
+                            label='Rest time after set'
+                            type="time"
+                            value={set.rest}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                value.replace('-', '0');
+                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets[i].rest = value, { ...selectedSessionExercise }));
+                                setSessionExercises([...sessionExercises])
+                            }}
+                        />
+                    </div>
+                );
+            })}
+            <div className={styles.addSetBtn}>
+                <UGBIconButton
+                    disabled={selectedSessionExercise.sets.length >= 10}
+                    $onClick={() => {
+                        const tempSets = selectedSessionExercise.sets;
+                        const set = `Set ${tempSets.length + 1}`;
+                        tempSets.push({ set: set, reps: '', rest: '00:00' })
+                        setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets = tempSets, { ...selectedSessionExercise }));
+                        setSessionExercises([...sessionExercises])
+                    }}
+                    withRadius={false}
+                    btnType='primary'
+                    MuiIcon={AddIcon}
+                />
+            </div>
+        </div >
+    );
+}
+
+const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExercise, setSelectedSessionExercise }) => {
+    const styles = useStyles();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [anchorIndex, setAnchorIndex] = useState(null);
+    const [markers] = useState(['Periodization', 'Intensity Volume', 'Muscle Groups']);
+    const [anchorMarkerValue, setAnchorMarkerValue] = useState(null);
+    const [anchorMarkerValueTypeIndex, setAnchorMarkerValueTypeIndex] = useState(null);
+    const [markerValueType, setMarkerValueType] = useState(null);
+    const [markerValues] = useState({
+        'Muscle Groups': ['Neck', 'Traps', 'Shoulders', 'Chest', 'Biceps', 'Forearms', 'Abs', 'Quadriceps', 'Calves', 'Upper Back', 'Triceps', 'Lower Back', 'Glutes', 'Hamstring'],
+        'Periodization': ['Linear', 'Set Range'],
+        'Intensity Volume': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    });
+
+    const handleClick = (event, index) => {
+        setAnchorEl(event.currentTarget);
+        setAnchorIndex(index)
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setAnchorIndex(null);
+    };
+
+    const handleClickMarkerValueType = (event, index, markerType) => {
+        setMarkerValueType(markerType);
+        setAnchorMarkerValue(event.currentTarget);
+        setAnchorMarkerValueTypeIndex(index);
+    };
+
+    const handleCloseMarkerValueType = () => {
+        setAnchorMarkerValue(null);
+        setAnchorMarkerValueTypeIndex(null);
+    };
+
+    return (
+        <>
+            <Popover
+                anchorEl={anchorEl}
+                keepMounted
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuList>
+                    {markers.map((marker, j) => {
+                        return (
+                            <MenuItem key={j}
+                                onClick={(e) => {
+                                    const value = e.target.textContent;
+                                    if (selectedSessionExercise.markers[anchorIndex].markerValue) {
+                                        setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[anchorIndex].marker = value, selectedSessionExercise.markers[anchorIndex].markerValue = '', { ...selectedSessionExercise }));
+                                    } else {
+                                        setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[anchorIndex].marker = value, { ...selectedSessionExercise }));
+                                    }
+                                    setSessionExercises([...sessionExercises]);
+                                    handleClose();
+                                }}
+                            >
+                                {marker}
+                            </MenuItem>
+                        );
+                    })}
+                </MenuList>
+            </Popover>
+            <Popover
+                anchorEl={anchorMarkerValue}
+                keepMounted
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                open={Boolean(anchorMarkerValue)}
+                onClose={handleCloseMarkerValueType}
+            >
+                <MenuList>
+                    {markerValueType ?
+                        markerValues[markerValueType].map((marker, j) => {
+                            return (
+                                <MenuItem key={j}
+                                    onClick={(e) => {
+                                        const value = e.target.textContent;
+                                        if (selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue.includes(value)) {
+                                            return;
+                                        }
+                                        if (textIsEmpty(selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue) || markerValueType === 'Periodization') {
+                                            setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue = value, { ...selectedSessionExercise }));
+                                        } else {
+                                            setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue += `, ${value}`, { ...selectedSessionExercise }));
+                                        }
+                                        setSessionExercises([...sessionExercises]);
+                                        handleCloseMarkerValueType();
+                                    }}
+                                >
+                                    {marker}
+                                </MenuItem>
+                            );
+                        })
+                        :
+                        null
+                    }
+                </MenuList>
+            </Popover>
+            <div className={styles.addSetAndMarkersContainer}>
+                {selectedSessionExercise.markers.map((marker, i) => {
+                    return (
+                        <div className={styles.addMarkerContainer}>
+                            <UGBLabel variant='subtitle2'>
+                                Marker Type
+                            </UGBLabel>
+                            <div key={i} className={styles.addMarker}>
+                                <IconButton
+                                    onClick={(e) => {
+                                        const tempMarkers = selectedSessionExercise.markers;
+                                        const exI = tempMarkers.indexOf(marker);
+                                        tempMarkers.splice(exI, 1);
+                                        setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers = tempMarkers, { ...selectedSessionExercise }));
+                                        setSessionExercises([...sessionExercises]);
+                                    }}
+                                >
+                                    <HighlightOffIcon />
+                                </IconButton>
+                                <div className={styles.addMarkerInputs}>
+                                    <UGBInput
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment className={styles.svgInputIcon} position="start">
+                                                    <i class="fa-solid fa-highlighter"></i>
+                                                </InputAdornment>
+                                            ),
+                                            endAdornment: (
+                                                <InputAdornment position="start">
+                                                    <IconButton
+                                                        className={styles.showMoreIcon}
+                                                        disableRipple
+                                                        isEnd={false}
+                                                        onClick={(e) => handleClick(e, i)}
+                                                    >
+                                                        <ExpandMoreIcon />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                            labelWidth: 70
+                                        }}
+                                        label=''
+                                        value={marker.marker}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (selectedSessionExercise.markers[i].markerValue) {
+                                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[i].marker = value, selectedSessionExercise.markers[i].markerValue = '', { ...selectedSessionExercise }));
+                                            } else {
+                                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[i].marker = value, { ...selectedSessionExercise }));
+                                            }
+                                            setSessionExercises([...sessionExercises]);
+                                        }}
+                                    />
+                                    <div className={styles.markerEquality}>=</div>
+                                    <UGBInput
+                                        label=''
+                                        value={marker.markerValue}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[i].markerValue = value, { ...selectedSessionExercise }));
+                                            setSessionExercises([...sessionExercises]);
+                                        }}
+                                        InputProps={{
+                                            startAdornment: (
+                                                marker.marker === 'Muscle Groups' ?
+                                                    <img src={muscle} alt='muscle' className={styles.imgIcon} />
+                                                    :
+                                                    marker.marker === 'Intensity Volume' ?
+                                                        <InputAdornment className={styles.svgInputIcon} position="start">
+                                                            <i class="fa-solid fa-percent" />
+                                                        </InputAdornment>
+                                                        :
+                                                        marker.marker === 'Periodization' ?
+                                                            <InputAdornment className={styles.svgInputIcon} position="start">
+                                                                <i class="fa-solid fa-chart-line" />
+                                                            </InputAdornment>
+                                                            :
+                                                            <img src={inputIcon} alt='inputIcon' className={styles.imgIcon} />
+                                            ),
+                                            endAdornment: (
+                                                marker.marker === 'Muscle Groups' || marker.marker === 'Periodization' ?
+                                                    <InputAdornment position="start">
+                                                        <IconButton
+                                                            className={styles.showMoreIcon}
+                                                            disableRipple
+                                                            isEnd={false}
+                                                            onClick={(e) => handleClickMarkerValueType(e, i, marker.marker)}
+                                                        >
+                                                            <ExpandMoreIcon />
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                    :
+                                                    null
+                                            ),
+                                            labelWidth: 70
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+                <div className={styles.addSetBtn}>
+                    <UGBIconButton
+                        $onClick={() => {
+                            const tempMarkers = selectedSessionExercise.markers;
+                            tempMarkers.push({ marker: '', markerValue: '' })
+                            setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers = tempMarkers, { ...selectedSessionExercise }));
+                            setSessionExercises([...sessionExercises])
+                        }}
+                        withRadius={false}
+                        btnType='primary'
+                        MuiIcon={AddIcon}
+                    />
+                </div>
+            </div >
+        </>
+    );
+}
+
 const WorkoutBuilder = () => {
     const styles = useStyles();
     const history = useHistory();
@@ -779,6 +1457,10 @@ const WorkoutBuilder = () => {
     const [showAddNewWorkoutJournal, setShowAddNewWorkoutJournal] = useState(false);
     const [showAddNewWorkoutSession, setShowAddNewWorkoutSession] = useState(true);
     const [showAddNewExercise, setShowAddNewExercise] = useState(true);
+    const [showEditWorkoutJournal, setShowEditWorkoutJournal] = useState(false);
+    const [showDeleteWorkoutJournal, setShowDeleteWorkoutJournal] = useState(false);
+    const [showEditWorkoutSession, setShowEditWorkoutSession] = useState(false);
+    const [showDeleteWorkoutSession, setShowDeleteWorkoutSession] = useState(false);
 
     const selectedWorkoutJournal = useState('');
     const [selectedWorkoutJournalObj, setSelectedWorkoutJournalObj] = useState(null);
@@ -788,12 +1470,11 @@ const WorkoutBuilder = () => {
     const selectedWorkoutSession = useState('');
     const [selectedWorkoutSessionObj, setSelectedWorkoutSessionObj] = useState(null);
     const [workoutSessions, setWorkoutSessions] = useState([]);
+    const [disableWorkoutJournalDependants, setDisableWorkoutJournalDependants] = useState(true);
     const [refreshWorkoutSessions, setRefreshWorkoutSessions] = useState({});
-    const [addWorkoutSessionDisabled, setAddWorkoutSessionDisabled] = useState(true);
 
     const [selectedSessionExercise, setSelectedSessionExercise] = useState({});
     const [sessionExercises, setSessionExercises] = useState([]);
-    const [addSessionExerciseDisabled, setAddSessionExerciseDisabled] = useState(true);
 
     const [exercisesForMerge, setExercisesForMerge] = useState([]);
     const [exercisesForMergeDisabled, setExercisesForMergeDisabled] = useState(true);
@@ -802,7 +1483,7 @@ const WorkoutBuilder = () => {
     const [missingExerciseName, setMissingExerciseName] = useState('');
 
     const [showExerciseAddSet, setShowExerciseAddSet] = useState(false);
-    const [showCategorize, setShowCategorize] = useState(false);
+    const [showAddMarkers, setShowAddMarkers] = useState(false);
     const [hideExerciseContent, setHideExerciseContent] = useState(false);
 
     useEffect(() => {
@@ -811,21 +1492,26 @@ const WorkoutBuilder = () => {
                 setShowAddNewWorkoutJournal(true);
                 setShowAddNewExercise(false);
                 setShowAddNewWorkoutSession(false);
+                setShowEditWorkoutJournal(false);
                 break;
             case 'add-new-workout-session':
                 setShowAddNewWorkoutSession(true);
                 setShowAddNewExercise(false);
                 setShowAddNewWorkoutJournal(false);
+                setShowEditWorkoutJournal(false);
                 break;
             case 'add-new-exercise':
                 setShowAddNewExercise(true);
                 setShowAddNewWorkoutSession(false);
                 setShowAddNewWorkoutJournal(false);
+                setShowEditWorkoutJournal(false);
                 break;
             default:
                 setShowAddNewWorkoutJournal(false);
                 setShowAddNewWorkoutSession(false);
                 setShowAddNewExercise(false);
+                setShowEditWorkoutJournal(false);
+                history.push(window.location.pathname);
                 break;
         }
     }, [tab])
@@ -836,6 +1522,12 @@ const WorkoutBuilder = () => {
                 setWorkoutJournals(data.data);
                 if (data.data.length) {
                     selectedWorkoutJournal[1](data.data[0].id);
+                } else {
+                    selectedWorkoutSession[1]('');
+                    setSelectedWorkoutSessionObj(null)
+                    setWorkoutSessions([]);
+                    setSelectedWorkoutJournalObj(null);
+                    setDisableWorkoutJournalDependants(true);
                 }
             }, error => { })
     }, [refreshWorkoutJournals])
@@ -845,10 +1537,10 @@ const WorkoutBuilder = () => {
             const tempSelectedWorkoutJournalObj = workoutJournals.find(x => x.id === selectedWorkoutJournal[0]);
             if (tempSelectedWorkoutJournalObj) {
                 setSelectedWorkoutJournalObj(tempSelectedWorkoutJournalObj);
-                setAddWorkoutSessionDisabled(false);
+                setDisableWorkoutJournalDependants(false);
             } else {
                 setSelectedWorkoutJournalObj(null);
-                setAddWorkoutSessionDisabled(true);
+                setDisableWorkoutJournalDependants(true);
             }
 
             getData(process.env.REACT_APP_HOST + `/api/workout/get-workout-journal-sessions?filter=${selectedWorkoutJournal[0]}`)
@@ -856,21 +1548,30 @@ const WorkoutBuilder = () => {
                     setWorkoutSessions(data.data);
                     if (data.data.length) {
                         selectedWorkoutSession[1](data.data[0].id);
+                    } else {
+                        selectedWorkoutSession[1]('');
+                        setSelectedWorkoutSessionObj(null);
                     }
                 }, error => { })
         }
     }, [selectedWorkoutJournal[0], refreshWorkoutSessions])
 
     useEffect(() => {
-        //TODO
+        setSelectedSessionExercise({});
+        setSessionExercises([]);
+        setExercisesForMerge([]);
+        setExercisesForMergeDisabled(true);
+        setToggleExerciseContent(false);
+        setShowExerciseAddSet(false);
+        setShowAddMarkers(false);
+        setHideExerciseContent(false);
+
         if (selectedWorkoutSession[0]) {
             const tempSelectedWorkoutSessionObj = workoutSessions.find(x => x.id === selectedWorkoutSession[0]);
             if (tempSelectedWorkoutSessionObj) {
                 setSelectedWorkoutSessionObj(tempSelectedWorkoutSessionObj);
-                setAddSessionExerciseDisabled(false);
             } else {
                 setSelectedWorkoutSessionObj(null);
-                setAddSessionExerciseDisabled(true);
             }
 
             // getData(process.env.REACT_APP_HOST + `/api/workout/get-session-exercises?filter=${selectedWorkoutSession[0]}`)
@@ -917,7 +1618,7 @@ const WorkoutBuilder = () => {
     }, [exercisesForMergeDisabled, exercisesForMerge])
 
     function saveChanges() {
-        console.log(sessionExercises);
+        // console.log(sessionExercises);
         // console.log(selectedWorkoutSessionObj);
         // console.log(selectedWorkoutJournalObj);
     }
@@ -925,6 +1626,56 @@ const WorkoutBuilder = () => {
     return (
         <>
             <>
+                <UGBModal
+                    open={showDeleteWorkoutSession}
+                    onClose={() => setShowDeleteWorkoutSession(false)}
+                    maxWidth='xs'
+                >
+                    <DeleteWorkoutSession
+                        selectedWorkoutJournalObj={selectedWorkoutJournalObj}
+                        selectedWorkoutSessionObj={selectedWorkoutSessionObj}
+                        refresh={() => setRefreshWorkoutSessions({})}
+                        onClose={() => setShowDeleteWorkoutSession(false)}
+                    />
+                </UGBModal>
+                <UGBModal
+                    open={showEditWorkoutSession}
+                    onClose={() => setShowEditWorkoutSession(false)}
+                    maxWidth='xs'
+                >
+                    <EditWorkoutSession
+                        selectedWorkoutJournalObj={selectedWorkoutJournalObj}
+                        selectedWorkoutSessionObj={selectedWorkoutSessionObj}
+                        setSelectedWorkoutSessionObj={setSelectedWorkoutSessionObj}
+                        workoutSessions={workoutSessions}
+                        setWorkoutSessions={setWorkoutSessions}
+                        onClose={() => setShowEditWorkoutSession(false)}
+                    />
+                </UGBModal>
+                <UGBModal
+                    open={showDeleteWorkoutJournal}
+                    onClose={() => setShowDeleteWorkoutJournal(false)}
+                    maxWidth='xs'
+                >
+                    <DeleteWorkoutJournal
+                        selectedWorkoutJournalObj={selectedWorkoutJournalObj}
+                        refresh={() => setRefreshWorkoutJournals({})}
+                        onClose={() => setShowDeleteWorkoutJournal(false)}
+                    />
+                </UGBModal>
+                <UGBModal
+                    open={showEditWorkoutJournal}
+                    onClose={() => setShowEditWorkoutJournal(false)}
+                    maxWidth='xs'
+                >
+                    <EditWorkoutJournal
+                        selectedWorkoutJournalObj={selectedWorkoutJournalObj}
+                        setSelectedWorkoutJournalObj={setSelectedWorkoutJournalObj}
+                        workoutJournals={workoutJournals}
+                        setWorkoutJournals={setWorkoutJournals}
+                        onClose={() => setShowEditWorkoutJournal(false)}
+                    />
+                </UGBModal>
                 <UGBModal
                     open={showAddNewWorkoutJournal}
                     onClose={() => {
@@ -973,99 +1724,160 @@ const WorkoutBuilder = () => {
                     />
                 </UGBModal>
             </>
-            <div className={styles.container}>
-                <div className={styles.titleSection}>
-                    <UGBLabel variant='h5' type='title'>
-                        Workout Builder
-                    </UGBLabel>
-                    <UGBLabel variant='subtitle1' type='title'>
-                        Click the "ADD" button to add a non existing journal or session
-                    </UGBLabel>
-                </div>
-                <div className={styles.select}>
-                    <UGBLabel variant='subtitle2' type='title' minWidth='107px'>
-                        Workout Journal
-                    </UGBLabel>
-                    <UGBSelect
-                        $value={selectedWorkoutJournal}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <UGBIconButton isEnd={false} $onClick={() => history.push('?tab=add-new-workout-journal')} >
-                                        ADD
-                                    </UGBIconButton>
-                                </InputAdornment>
-                            ),
-                            labelWidth: 70
-                        }}
-                    >
-                        {workoutJournals.map(x => {
-                            return (
-                                <UGBMenuItem key={x.id} value={x.id}>
-                                    {x.name}
-                                </UGBMenuItem>
-                            )
-                        })}
-                    </UGBSelect>
-                </div>
-                <div className={styles.select}>
-                    <UGBLabel variant='subtitle2' type='title' minWidth='107px'>
-                        Workout Session
-                    </UGBLabel>
-                    <UGBSelect
-                        $value={selectedWorkoutSession}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <UGBIconButton disabled={addWorkoutSessionDisabled} isEnd={false} $onClick={() => history.push('?tab=add-new-workout-session')} >
-                                        ADD
-                                    </UGBIconButton>
-                                </InputAdornment>
-                            ),
-                            labelWidth: 70
-                        }}
-                    >
-                        {workoutSessions.map(x => {
-                            return (
-                                <UGBMenuItem key={x.id} value={x.id}>
-                                    {x.name}
-                                </UGBMenuItem>
-                            )
-                        })}
-                    </UGBSelect>
-                </div>
-                <div className={styles.exerciseMapping}>
-                    <div
-                        className={clsx(
-                            styles.addedExercises,
-                            styles.collapseContent,
-                            !toggleExerciseContent ?
-                                styles.collapseContentTransition
-                                :
-                                styles.collapsed
-                        )}
-                    >
-                        <div className={styles.toolbar}>
-                            <div className={styles.toolbarTitle}>
-                                <UGBLabel variant='subtitle1' type='title' minWidth='107px'>
-                                    Exercises for the following workout session:
-                                </UGBLabel>
-                            </div>
-                            <div className={styles.mergeBtn}>
-                                {!exercisesForMergeDisabled ?
-                                    <UGBButton disabled={exercisesForMergeDisabled} btnType='primary' onClick={onClickMerge}>Merge Into Superset</UGBButton>
-                                    :
-                                    null
-                                }
-                            </div>
-                        </div>
-                        <List className={clsx(styles.exercisesList, 'exercises-list')}>
-                            {sessionExercises.map(ex => {
-                                if (ex.superset) {
+            <div className={styles.pageContainer}>
+                <div className={styles.leftSideContainer}>
+                    <div className={styles.titleSection}>
+                        <UGBLabel variant='h5' type='title'>
+                            Workout Builder
+                        </UGBLabel>
+                        <UGBLabel variant='subtitle1' type='title'>
+                            Click the "ADD" button to add a non existing journal or session
+                        </UGBLabel>
+                    </div>
+                    <div className={styles.select}>
+                        <UGBLabel variant='subtitle2' type='title' minWidth='107px'>
+                            Workout Journal
+                        </UGBLabel>
+                        <div className={styles.selectAndEditContainer}>
+                            <UGBSelect
+                                disabled={!workoutJournals.length}
+                                $value={selectedWorkoutJournal}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <UGBIconButton
+                                                isEnd={false}
+                                                $onClick={() => history.push('?tab=add-new-workout-journal')}
+                                            >
+                                                ADD
+                                            </UGBIconButton>
+                                        </InputAdornment>
+                                    ),
+                                    labelWidth: 70
+                                }}
+                            >
+                                {workoutJournals.map(x => {
                                     return (
-                                        <List>
+                                        <UGBMenuItem key={x.id} value={x.id}>
+                                            {x.name}
+                                        </UGBMenuItem>
+                                    )
+                                })}
+                            </UGBSelect>
+                            <IconButton
+                                disabled={disableWorkoutJournalDependants}
+                                className={styles.editButton}
+                                onClick={() => setShowEditWorkoutJournal(true)}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                            <IconButton
+                                disabled={disableWorkoutJournalDependants}
+                                className={styles.deleteButton}
+                                onClick={() => setShowDeleteWorkoutJournal(true)}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </div>
+                    </div>
+                    <div className={styles.select}>
+                        <UGBLabel variant='subtitle2' type='title' minWidth='107px'>
+                            Workout Session
+                        </UGBLabel>
+                        <div className={styles.selectAndEditContainer}>
+                            <UGBSelect
+                                disabled={!workoutSessions.length}
+                                $value={selectedWorkoutSession}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <UGBIconButton
+                                                disabled={disableWorkoutJournalDependants}
+                                                isEnd={false}
+                                                $onClick={() => history.push('?tab=add-new-workout-session')}
+                                            >
+                                                ADD
+                                            </UGBIconButton>
+                                        </InputAdornment>
+                                    ),
+                                    labelWidth: 70
+                                }}
+                            >
+                                {workoutSessions.map(x => {
+                                    return (
+                                        <UGBMenuItem key={x.id} value={x.id}>
+                                            {x.name}
+                                        </UGBMenuItem>
+                                    )
+                                })}
+                            </UGBSelect>
+                            <IconButton
+                                disabled={!selectedWorkoutSessionObj}
+                                className={styles.editButton}
+                                onClick={() => setShowEditWorkoutSession(true)}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                            <IconButton
+                                disabled={!selectedWorkoutSessionObj}
+                                className={styles.deleteButton}
+                                onClick={() => setShowDeleteWorkoutSession(true)}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </div>
+                    </div>
+                    <div className={styles.exerciseMapping}>
+                        <div
+                            className={clsx(
+                                styles.addedExercises,
+                                styles.collapseContent,
+                                !toggleExerciseContent ?
+                                    styles.collapseContentTransition
+                                    :
+                                    styles.collapsed
+                            )}
+                        >
+                            <div className={styles.toolbar}>
+                                <div className={styles.toolbarTitle}>
+                                    <UGBLabel variant='subtitle1' type='title' minWidth='107px'>
+                                        Exercises for the following workout session:
+                                    </UGBLabel>
+                                </div>
+                                <div className={styles.mergeBtn}>
+                                    {!exercisesForMergeDisabled ?
+                                        <UGBButton
+                                            disabled={exercisesForMergeDisabled}
+                                            btnType='primary'
+                                            onClick={onClickMerge}>
+                                            Merge Into Superset
+                                        </UGBButton>
+                                        :
+                                        null
+                                    }
+                                </div>
+                            </div>
+                            <List className={clsx(styles.exercisesList, 'exercises-list')}>
+                                {sessionExercises.map(ex => {
+                                    if (ex.superset) {
+                                        return (
+                                            <List>
+                                                <ExerciseListItem
+                                                    exType='superset'
+                                                    supersetItems={ex}
+                                                    setExercisesForMerge={setExercisesForMerge}
+                                                    exercisesForMerge={exercisesForMerge}
+                                                    setSessionExercises={setSessionExercises}
+                                                    sessionExercises={sessionExercises}
+                                                    setToggleExerciseContent={setToggleExerciseContent}
+                                                    setSelectedSessionExercise={setSelectedSessionExercise}
+                                                />
+                                            </List>
+                                        );
+                                    } else {
+                                        return (
                                             <ExerciseListItem
-                                                exType='superset'
+                                                exType='single-exercise'
                                                 supersetItems={ex}
                                                 setExercisesForMerge={setExercisesForMerge}
                                                 exercisesForMerge={exercisesForMerge}
@@ -1074,136 +1886,136 @@ const WorkoutBuilder = () => {
                                                 setToggleExerciseContent={setToggleExerciseContent}
                                                 setSelectedSessionExercise={setSelectedSessionExercise}
                                             />
-                                        </List>
-                                    );
-                                } else {
-                                    return (
-                                        <ExerciseListItem
-                                            exType='single-exercise'
-                                            supersetItems={ex}
-                                            setExercisesForMerge={setExercisesForMerge}
-                                            exercisesForMerge={exercisesForMerge}
-                                            setSessionExercises={setSessionExercises}
-                                            sessionExercises={sessionExercises}
-                                            setToggleExerciseContent={setToggleExerciseContent}
-                                            setSelectedSessionExercise={setSelectedSessionExercise}
-                                        />
-                                    );
-                                }
-                            })
-                            }
-                        </List>
-                        <div className={clsx(styles.select, styles.autocomplete)}>
-                            <UGBLabel variant='subtitle2' type='title' minWidth='53px'>
-                                Exercise
-                            </UGBLabel>
-                            <ExercisesAutoComplete
-                                disabled={addSessionExerciseDisabled}
-                                setMissingExerciseName={setMissingExerciseName}
-                                onSelectedExercise={ex => {
-                                    for (const exx of sessionExercises) {
-                                        if (exx.superset && exx.superset.find(exxx => ex.id === exxx.id)) {
-                                            return;
-                                        }
-                                        if (ex.id === exx.id) {
-                                            return;
-                                        }
+                                        );
                                     }
-                                    ex.sets = [{ set: 'Set 1', reps: '', rest: '00:00' }];
-                                    setSessionExercises([...sessionExercises, ex])
-                                }}
-                            />
+                                })
+                                }
+                            </List>
+                            <div className={clsx(styles.select, styles.autocomplete)}>
+                                <UGBLabel variant='subtitle2' type='title' minWidth='53px'>
+                                    Exercises
+                                </UGBLabel>
+                                <ExercisesAutoComplete
+                                    disabled={!selectedWorkoutSession[0]}
+                                    setMissingExerciseName={setMissingExerciseName}
+                                    onSelectedExercise={ex => {
+                                        if (!selectedWorkoutSession[0]) {
+                                            return;
+                                        }
+
+                                        for (const exx of sessionExercises) {
+                                            if (exx.superset && exx.superset.find(exxx => ex.id === exxx.id)) {
+                                                return;
+                                            }
+                                            if (ex.id === exx.id) {
+                                                return;
+                                            }
+                                        }
+                                        ex.sets = [];
+                                        ex.markers = [];
+                                        setSessionExercises([...sessionExercises, ex])
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div className={clsx(
+                            styles.collapseContent,
+                            toggleExerciseContent ?
+                                styles.collapseExercisesContentTransition
+                                :
+                                styles.collapsed
+                        )}>
+                            <div className={clsx(styles.exercisesContentHeader, hideExerciseContent ? styles.exercisesContentHeaderAlign : null)}>
+                                <IconButton
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (hideExerciseContent) {
+                                            if (showExerciseAddSet) { setShowExerciseAddSet(false); }
+                                            if (showAddMarkers) { setShowAddMarkers(false); }
+                                            setHideExerciseContent(false)
+                                        } else {
+                                            setToggleExerciseContent(false);
+                                            setSelectedSessionExercise({});
+                                        }
+                                    }}>
+                                    <ArrowBackIcon />
+                                </IconButton>
+                                <UGBLabel variant='h5' type='title'>
+                                    {selectedSessionExercise.exercise}
+                                    {hideExerciseContent ? <br /> : null}
+                                    {showExerciseAddSet ? 'Add Sets' : ''}
+                                    {showAddMarkers ? 'Add Markers' : ''}
+                                </UGBLabel>
+                                <div style={{ width: '48px' }} />
+                            </div>
+                            <>
+                                {!hideExerciseContent ?
+                                    <>
+                                        <div
+                                            className={styles.exercisesContentContainer}
+                                            onClick={() => {
+                                                setHideExerciseContent(true);
+                                                setShowExerciseAddSet(true);
+                                                setShowAddMarkers(false);
+                                            }}
+                                        >
+                                            <div className={styles.exercisesContent} >
+                                                <img src={fitnessTracking} alt='fitnessTracking' className={styles.svg} />
+                                                <UGBLabel variant='h5' type='title'>
+                                                    Add Sets
+                                                </UGBLabel>
+                                            </div>
+                                        </div>
+                                        <div
+                                            className={styles.exercisesContentContainer}
+                                            onClick={() => {
+                                                setHideExerciseContent(true);
+                                                setShowAddMarkers(true);
+                                                setShowExerciseAddSet(false);
+                                            }}
+                                        >
+                                            <div className={styles.exercisesContent}  >
+                                                <img src={addMarkersSvg} alt='Add Markers' className={styles.svg} />
+                                                <UGBLabel variant='h5' type='title'>
+                                                    Add Markers
+                                                </UGBLabel>
+                                            </div>
+                                        </div>
+                                    </>
+                                    :
+                                    <>
+                                        {showExerciseAddSet ?
+                                            <AddSets
+                                                sessionExercises={sessionExercises}
+                                                setSessionExercises={setSessionExercises}
+                                                selectedSessionExercise={selectedSessionExercise}
+                                                setSelectedSessionExercise={setSelectedSessionExercise}
+                                            />
+                                            :
+                                            null
+                                        }
+                                        {showAddMarkers ?
+                                            <AddMarkers
+                                                sessionExercises={sessionExercises}
+                                                setSessionExercises={setSessionExercises}
+                                                selectedSessionExercise={selectedSessionExercise}
+                                                setSelectedSessionExercise={setSelectedSessionExercise}
+                                            />
+                                            :
+                                            null
+                                        }
+                                    </>
+                                }
+                            </>
                         </div>
                     </div>
-                    <div className={clsx(
-                        styles.collapseContent,
-                        toggleExerciseContent ?
-                            styles.collapseExercisesContentTransition
-                            :
-                            styles.collapsed
-                    )}>
-                        <div className={clsx(styles.exercisesContentHeader, hideExerciseContent ? styles.exercisesContentHeaderAlign : null)}>
-                            <IconButton
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (hideExerciseContent) {
-                                        if (showExerciseAddSet) { setShowExerciseAddSet(false); }
-                                        if (showCategorize) { setShowCategorize(false); }
-                                        setHideExerciseContent(false)
-                                    } else {
-                                        setToggleExerciseContent(false);
-                                        setSelectedSessionExercise({});
-                                    }
-                                }}>
-                                <ArrowBackIcon />
-                            </IconButton>
-                            <UGBLabel variant='h5' type='title'>
-                                {selectedSessionExercise.exercise}
-                                {hideExerciseContent ? <br /> : null}
-                                {showExerciseAddSet ? 'Add Sets' : ''}
-                                {showCategorize ? 'Categorize' : ''}
-                            </UGBLabel>
-                            <div style={{ width: '48px' }} />
-                        </div>
-                        <div className={styles.exercisesContentContainersGroup}>
-                            {!hideExerciseContent ?
-                                <>
-                                    <div
-                                        className={styles.exercisesContentContainer}
-                                        onClick={() => {
-                                            setHideExerciseContent(true);
-                                            setShowExerciseAddSet(true);
-                                            setShowCategorize(false);
-                                        }}
-                                    >
-                                        <div className={styles.exercisesContent} >
-                                            <img src={fitnessTracking} alt='fitnessTracking' className={styles.svg} />
-                                            <UGBLabel variant='h5' type='title'>
-                                                Add Sets
-                                            </UGBLabel>
-                                        </div>
-                                    </div>
-                                    <div
-                                        className={styles.exercisesContentContainer}
-                                        onClick={() => {
-                                            setHideExerciseContent(true);
-                                            setShowCategorize(true);
-                                            setShowExerciseAddSet(false);
-                                        }}
-                                    >
-                                        <div className={styles.exercisesContent}  >
-                                            <img src={categorize} alt='categorize' className={styles.svg} />
-                                            <UGBLabel variant='h5' type='title'>
-                                                Categorize
-                                            </UGBLabel>
-                                        </div>
-                                    </div>
-                                </>
-                                :
-                                <>
-                                    {showExerciseAddSet ?
-                                        <AddSets
-                                            sessionExercises={sessionExercises}
-                                            setSessionExercises={setSessionExercises}
-                                            selectedSessionExercise={selectedSessionExercise}
-                                            setSelectedSessionExercise={setSelectedSessionExercise}
-                                        />
-                                        :
-                                        null
-                                    }
-                                    {showCategorize ?
-                                        <Categorize />
-                                        :
-                                        null
-                                    }
-                                </>
-                            }
-                        </div>
+                    <div className={styles.saveAndResetActions}>
+                        {/* <UGBButton className={styles.defaultButton} onClick={resetToDefault} btnType='outlinedPrimary' variant='outlined'>Reset To Default</UGBButton> */}
+                        <UGBButton onClick={saveChanges} btnType='primary' >Save Changes</UGBButton>
                     </div>
                 </div>
-                <div className={styles.saveAndResetActions}>
-                    {/* <UGBButton className={styles.defaultButton} onClick={resetToDefault} btnType='outlinedPrimary' variant='outlined'>Reset To Default</UGBButton> */}
-                    <UGBButton onClick={saveChanges} btnType='primary' >Save Changes</UGBButton>
+                <div className={styles.rightSideContainer}>
+                    <img src={lifting2} alt='lifting2' className={styles.svg} />
                 </div>
             </div>
         </>
@@ -1211,76 +2023,3 @@ const WorkoutBuilder = () => {
 }
 
 export default WorkoutBuilder;
-
-const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercise, setSelectedSessionExercise }) => {
-    const styles = useStyles();
-
-    return (
-        <div className={styles.addSetContainer}>
-            {selectedSessionExercise.sets.map((set, i) => {
-                return (
-                    <div key={set.set} className={styles.addSet}>
-                        <IconButton
-                            onClick={(e) => {
-                                const tempSets = selectedSessionExercise.sets;
-                                const exI = tempSets.indexOf(set);
-                                tempSets.splice(exI, 1);
-                                for (let j = 0; j < tempSets.length; j++) {
-                                    tempSets[j].set = `Set ${j + 1}`
-                                }
-                                if (tempSets.length === 0) {
-                                    tempSets.push({ set: 'Set 1', reps: '', rest: '00:00' })
-                                }
-                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets = tempSets, { ...selectedSessionExercise }));
-                                setSessionExercises([...sessionExercises]);
-                            }}
-                        >
-                            <HighlightOffIcon />
-                        </IconButton>
-                        <UGBIconInput
-                            imgIconStart={tallyIcon}
-                            label={`Reps for ${set.set}`}
-                            value={set.reps}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets[i].reps = value, { ...selectedSessionExercise }));
-                                setSessionExercises([...sessionExercises]);
-                            }}
-                        />
-                        <UGBIconInput
-                            MuiIconStart={TimerIcon}
-                            label='Rest time after set'
-                            type="time"
-                            value={set.rest}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets[i].rest = value, { ...selectedSessionExercise }));
-                                setSessionExercises([...sessionExercises])
-                            }}
-                        />
-                    </div>
-                );
-            })}
-            <div className={styles.addSetBtn}>
-                <UGBIconButton
-                    $onClick={() => {
-                        const tempSets = selectedSessionExercise.sets;
-                        const set = `Set ${tempSets.length + 1}`;
-                        tempSets.push({ set: set, reps: '', rest: '00:00' })
-                        setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets = tempSets, { ...selectedSessionExercise }));
-                        setSessionExercises([...sessionExercises])
-                    }}
-                    withRadius={false}
-                    btnType='primary'
-                    MuiIcon={AddIcon}
-                />
-            </div>
-        </div >);
-}
-
-const Categorize = ({ }) => {
-    return (
-        <div>
-            adding categories...
-        </div>);
-}

@@ -11,10 +11,14 @@ module.exports = class WorkoutController {
     }
     attachEndpoints() {
         this.router.post('/add-workout-journal', AuthHelpers.loggedIn, (req, res) => this.addWorkoutJournal(req, res));
+        this.router.put('/edit-workout-journal', AuthHelpers.loggedIn, (req, res) => this.editWorkoutJournal(req, res));
         this.router.get('/get-workout-journals', AuthHelpers.loggedIn, (req, res) => this.getWorkoutJournals(req, res));
+        this.router.delete('/delete-workout-journal', AuthHelpers.loggedIn, (req, res) => this.deleteWorkoutJournals(req, res));
 
         this.router.post('/add-workout-journal-session', AuthHelpers.loggedIn, (req, res) => this.addWorkoutJournalSession(req, res));
+        this.router.put('/edit-workout-journal-session', AuthHelpers.loggedIn, (req, res) => this.editWorkoutJournalSession(req, res));
         this.router.get('/get-workout-journal-sessions', AuthHelpers.loggedIn, (req, res) => this.getWorkoutJournalSessions(req, res));
+        this.router.delete('/delete-workout-journal-session', AuthHelpers.loggedIn, (req, res) => this.deleteWorkoutJournalSession(req, res));
 
         this.router.post('/add-exercise', AuthHelpers.loggedIn, (req, res) => this.addExercise(req, res));
         this.router.get('/get-exercises', AuthHelpers.loggedIn, (req, res) => this.getExercises(req, res));
@@ -51,6 +55,95 @@ module.exports = class WorkoutController {
                 res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.conflict, 'A workout journal with that name already exists!'));
                 return;
             }
+
+            res.json({ success: true });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+    async editWorkoutJournal(req, res) {
+        try {
+            const user = req.user;
+            const id = req.body.id;
+            const description = req.body.description;
+            const name = req.body.name;
+
+            if (!user || !id) {
+                let invalidParam = ''
+                if (!user) {
+                    invalidParam = 'user'
+                } else if (!id) {
+                    invalidParam = 'id'
+                }
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
+                return;
+            }
+
+            const existingWJ = await MysqlAdapter.query(`
+                SELECT name FROM workouts
+                WHERE
+                    user_id = ${escape(user.id)}
+                    AND name = ${escape(name)}
+            `);
+
+            if (existingWJ.length) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Duplicate workout journals not allowed`));
+                return;
+            }
+
+            let edits = '';
+            if (name && !description) {
+                edits = `name=${escape(name)}`
+            } else if (description && !name) {
+                edits = `description=${escape(description)}`
+            } else if (description && name) {
+                edits = `name=${escape(name)}, description=${escape(description)}`
+            }
+
+            if (!edits) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `No edit options`));
+                return;
+            }
+
+            const editWJ = await MysqlAdapter.query(`
+                UPDATE workouts
+                SET ${edits}
+                WHERE
+                    user_id = ${escape(user.id)}
+                    AND id= ${escape(id)}
+            `);
+
+            res.json({ success: true });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+    async deleteWorkoutJournals(req, res) {
+        try {
+            const user = req.user;
+            const id = req.body.id;
+
+            if (!user || !id) {
+                let invalidParam = ''
+                if (!user) {
+                    invalidParam = 'user'
+                } else if (!id) {
+                    invalidParam = 'id'
+                }
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
+                return;
+            }
+
+            const deleteWJ = await MysqlAdapter.query(`
+                DELETE FROM workouts
+                WHERE
+                    user_id = ${escape(user.id)}
+                    AND id= ${escape(id)}
+            `);
 
             res.json({ success: true });
         } catch (error) {
@@ -131,6 +224,100 @@ module.exports = class WorkoutController {
                 res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.conflict, 'A workout journal with that name already exists!'));
                 return;
             }
+
+            res.json({ success: true });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+    async editWorkoutJournalSession(req, res) {
+        try {
+            const user = req.user;
+            const id = req.body.id;
+            const workoutJournalId = req.body.workoutJournalId;
+            const name = req.body.name;
+
+            if (!user || !id || !workoutJournalId) {
+                let invalidParam = ''
+                if (!user) {
+                    invalidParam = 'user'
+                } else if (!id) {
+                    invalidParam = 'workout session id'
+                } else if (!workoutJournalId) {
+                    invalidParam = 'workout journal id'
+                }
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
+                return;
+            }
+
+            const existingWS = await MysqlAdapter.query(`
+                SELECT name FROM daily_workout
+                WHERE
+                    user_id = ${escape(user.id)}
+                    AND workouts_id = ${escape(workoutJournalId)}
+                    AND name = ${escape(name)}
+            `);
+
+            if (existingWS.length) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Duplicate workout sessions not allowed`));
+                return;
+            }
+
+            let edits = '';
+            if (name) {
+                edits = `name=${escape(name)}`
+            }
+
+            if (!edits) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `No edit options`));
+                return;
+            }
+
+            const editWS = await MysqlAdapter.query(`
+                UPDATE daily_workout
+                SET ${edits}
+                WHERE
+                    user_id = ${escape(user.id)}
+                    AND id = ${escape(id)}
+                    AND workouts_id = ${escape(workoutJournalId)}
+            `);
+
+            res.json({ success: true });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+
+    async deleteWorkoutJournalSession(req, res) {
+        try {
+            const user = req.user;
+            const id = req.body.id;
+            const workoutJournalId = req.body.workoutJournalId;
+
+            if (!user || !id) {
+                let invalidParam = ''
+                if (!user) {
+                    invalidParam = 'user'
+                } else if (!id) {
+                    invalidParam = 'workout session id'
+                } else if (!workoutJournalId) {
+                    workoutJournalId = 'workout journal id'
+                }
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
+                return;
+            }
+
+            const deleteWS = await MysqlAdapter.query(`
+                DELETE FROM daily_workout
+                WHERE
+                    user_id = ${escape(user.id)}
+                    AND id= ${escape(id)}
+                    AND workouts_id = ${escape(workoutJournalId)}
+            `);
 
             res.json({ success: true });
         } catch (error) {
