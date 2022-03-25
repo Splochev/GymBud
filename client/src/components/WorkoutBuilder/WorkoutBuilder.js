@@ -1379,7 +1379,7 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
                                 <MenuItem key={j}
                                     onClick={(e) => {
                                         const value = marker;
-                                        if (selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue.includes(value)) {
+                                        if (selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue === value) {
                                             setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue = '', { ...selectedSessionExercise }));
                                         } else if (markerValueType === 'Periodization' || markerValueType === 'Intensity Volume') {
                                             setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue = value, { ...selectedSessionExercise }));
