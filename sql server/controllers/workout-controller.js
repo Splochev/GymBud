@@ -291,7 +291,6 @@ module.exports = class WorkoutController {
         }
     };
 
-
     async deleteWorkoutJournalSession(req, res) {
         try {
             const user = req.user;
@@ -371,6 +370,7 @@ module.exports = class WorkoutController {
             const user = req.user;
             const exercise = req.body.exercise;
             const videoUrl = req.body.videoUrl;
+            const muscleGroups = req.body.muscleGroups;
 
             if (!exercise || !user) {
                 let invalidParam = ''
@@ -385,11 +385,12 @@ module.exports = class WorkoutController {
 
             try {
                 await MysqlAdapter.query(`
-                    INSERT INTO exercises (user_id,exercise,video_url)
+                    INSERT INTO exercises (user_id,exercise,video_url,muscle_groups)
                         VALUES (
                             ${escape(user.id)},
                             ${escape(exercise)},
-                            ${videoUrl ? escape(videoUrl) : "NULL"}
+                            ${videoUrl ? escape(videoUrl) : "NULL"},
+                            ${muscleGroups ? escape(muscleGroups) : "NULL"}
                         )
                  `);
             } catch (err) {
