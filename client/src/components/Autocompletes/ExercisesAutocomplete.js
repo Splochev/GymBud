@@ -8,7 +8,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { UGBIconInput } from '../Global/UGBInput';
 import { UGBIconButton } from '../Global/UGBButton';
 import SearchIcon from '@material-ui/icons/Search';
-import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles(theme => ({
     autocomplete: {
@@ -31,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export const ExercisesAutoComplete = ({ label, onSelectedExercise, disabled, setMissingExerciseName }) => {
+export const ExercisesAutoComplete = ({ label, onSelectedExercise, setMissingExerciseName, disabled=false }) => {
     const styles = useStyles();
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
@@ -90,7 +89,7 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, disabled, set
                 setValue('');
                 setInputValue('');
 
-                if (newValue && newValue.id !== 'add-button' && !disabled) {
+                if (newValue && newValue.id !== 'add-button') {
                     const exercise = { exercise: newValue.exercise, id: newValue.id, videoLink: newValue.videoLink };
                     onSelectedExercise(exercise);
                 }
@@ -103,6 +102,7 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, disabled, set
             blurOnSelect={true}
             clearOnBlur={true}
             clearOnEscape={true}
+            disabled={disabled}
             getOptionLabel={(option) => option?.exercise || ''}
             getOptionSelected={() => false}
             renderOption={(ex, option) => {
