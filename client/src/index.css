@@ -21,4 +21,7 @@ input[type=number] {
   white-space: normal;
 }
 
-input[type="time"]::-webkit-calendar-picker-indicator { background: none; display:none; }
+input[type="time"]::-webkit-calendar-picker-indicator { 
+  background: none; 
+  display:none;
+ }
