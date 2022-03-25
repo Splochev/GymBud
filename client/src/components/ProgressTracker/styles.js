@@ -132,8 +132,8 @@ export default makeStyles(() => ({
         border: 'none',
         borderBottom: '1px solid #3DA1D7',
         marginTop: '-20px',
-        marginLeft: '67px',
-        minWidth: 'calc(100% - 67px)'
+        marginLeft: '56px',
+        minWidth: 'calc(100% - 56px)'
     },
     barChart: {
         width: '100%',

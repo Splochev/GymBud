@@ -41,8 +41,9 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
     const [fillTable, setFillTable] = useState(true);
     const [minSelectedLimitDate, setMinSelectedLimitDate] = useState(selectedOffsetDate);
     const [chartLabels, setChartLabels] = useState([]);
-    const [chartValues, setChartValues] = useState([]);
     const [lineChartValues, setLineChartValues] = useState([]);
+    const [barChartValues, setBarChartValues] = useState([]);
+    const [avgWeightIncrementor, setAvgWeightIncrementor] = useState(0);
     const [chartWidth, setChartWidth] = useState('100%');
     const [changes, setChanges] = useState({});
     const [headCells] = useState([
@@ -112,18 +113,21 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
     ]);
 
     useEffect(() => {
+        setAvgWeightIncrementor(rows[0] ? rows[0].avgWeight : 0)
         const labels = [];
         const values = [];
-        const tempLineChartValues = [];
+        const tempBarChartValues = [];
         for (let i = 0; i < rows.length; i++) {
             labels.push(rows[i].startDate + '|' + rows[i].endDate);
-            values.push(rows[i].avgWeight);
-            tempLineChartValues.push(rows[i].weightChange);
+            values.push(rows[i].avgWeight - rows[0].avgWeight);
+            if (i !== 0) {
+                tempBarChartValues.push(rows[i].weightChange);
+            }
         }
         setChartWidth(getBarChartWidth(values.length));
         setChartLabels(labels);
-        setChartValues(values);
-        setLineChartValues(tempLineChartValues);
+        setLineChartValues(values);
+        setBarChartValues(tempBarChartValues);
     }, [rows])
 
     useEffect(() => {
@@ -196,12 +200,11 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
 
             const tempRows = [];
             for (let i = 0; i < weeksAmount; i++) {
-
-
                 tempRows.push({ startDate: parseDate(startDate), endDate: parseDate(endDate) });
                 let weightSum = 0;
                 let avgWeightCounter = 0;
                 let dateCounter = 1;
+
                 while (startDate.getTime() <= endDate.getTime()) {
                     tempRows[i][dateCounter] = null;
                     dateCounter++;
@@ -219,9 +222,6 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                     tempRows[i].weightChange = !tempRows[i].avgWeight ? 0 : Math.round(((tempRows[i].avgWeight - tempRows[i - 1].avgWeight) / tempRows[i - 1].avgWeight * 100) * 100) / 100;
                 }
                 endDate.setDate(endDate.getDate() + 7);
-
-
-
             }
             setPage(Math.ceil(tempRows.length / 5));
             setRows(tempRows);
@@ -270,33 +270,39 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
             </div>
             <div className={styles.charts}>
                 <div className={styles.barChart}>
-                    <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Average Weight Tracker:</Typography>
+                    <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >
+                        Weight Change(%) Tracker:
+                    </Typography>
                     <div style={{ width: chartWidth }}>
                         <UGBVerticalBarsChart
                             data={rows}
-                            tooltipLabel='Average Weight'
-                            hoverTooltipLabel=' kg'
+                            tooltipLabel='Weight Change'
+                            hoverTooltipLabel='%'
                             colorTop='#3DA1D7'
                             height='250px'
                             type='bar'
                             chartLabels={chartLabels}
-                            chartValues={chartValues}
+                            chartValues={barChartValues}
+                            incrementor={0}
                         />
                     </div>
                     <hr style={{ width: `calc(${chartWidth} - 67px)` }} className={styles.chartLine} />
                 </div>
                 <div style={{ width: '100%' }}>
-                    <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >Weight Change(%) Tracker:</Typography>
+                    <Typography variant='h6' component='div' style={{ marginBottom: 15, color: '#1B1B1B' }} >
+                        Average Weight Tracker:
+                    </Typography>
                     <UGBVerticalBarsChart
                         data={rows}
-                        tooltipLabel='Weight Change'
-                        hoverTooltipLabel='%'
+                        tooltipLabel='Average Weight'
+                        hoverTooltipLabel=' kg'
                         colorTop='#3DA1D7'
                         colorBottom='#3DA1D7'
                         height='250px'
                         type='line'
                         chartLabels={chartLabels}
                         chartValues={lineChartValues}
+                        incrementor={avgWeightIncrementor}
                     />
                 </div>
             </div>
