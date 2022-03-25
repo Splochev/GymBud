@@ -346,6 +346,9 @@ const useStyles = makeStyles((theme) => ({
         width: 'auto',
         height: '90%',
         marginRight: '10px'
+    },
+    selectedPopoverElement: {
+        background: '#F5F5F5',
     }
 }));
 
@@ -801,9 +804,12 @@ const AddNewExercise = ({ onClose, missingExerciseName }) => {
     const styles = useStyles();
     const videoLink = useState('');
     const videoLinkPassed = useState(true);
-
     const exercise = useState(missingExerciseName || '');
     const exercisePassed = useState(true);
+    const [muscleGroups] = useState(['Neck', 'Traps', 'Shoulders', 'Chest', 'Biceps', 'Forearms', 'Abs', 'Quadriceps', 'Calves', 'Upper Back', 'Triceps', 'Lower Back', 'Glutes', 'Hamstring']);
+    const [selectedMuscleGroupsStr, setSelectedMuscleGroupsStr] = useState('');
+    const [selectedMuscleGroupsArr, setSelectedMuscleGroupsArr] = useState([]);
+    const [anchorEl, setAnchorEl] = useState(false);
     const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
@@ -814,13 +820,17 @@ const AddNewExercise = ({ onClose, missingExerciseName }) => {
         }
     }, [exercise[0], exercisePassed[0], videoLinkPassed[0]])
 
+    useEffect(() => {
+        setSelectedMuscleGroupsStr(selectedMuscleGroupsArr.join(', '))
+    }, [selectedMuscleGroupsArr])
+
     function addExercise(e) {
         e.preventDefault();
         if (!(exercise[0] && exercisePassed[0] && videoLinkPassed[0])) {
             return;
         }
 
-        postData(process.env.REACT_APP_HOST + '/api/workout/add-exercise', { exercise: exercise[0], videoUrl: videoLink[0] })
+        postData(process.env.REACT_APP_HOST + '/api/workout/add-exercise', { exercise: exercise[0], videoUrl: videoLink[0], muscleGroups: selectedMuscleGroupsStr })
             .then(data => {
                 onClose();
             }, error => {
@@ -829,42 +839,104 @@ const AddNewExercise = ({ onClose, missingExerciseName }) => {
     }
 
     return (
-        <form onSubmit={addExercise}>
-            <div className={styles.titleSection}>
-                <UGBLabel variant='h5' type='title'>
-                    Add a new exercise
-                </UGBLabel>
-            </div>
-            <UGBIconInput
-                $value={exercise}
-                label='Exercise'
-                MuiIconStart={FitnessCenterIcon}
-                validator={dataValidators.isRequired}
-                validatorPassed={exercisePassed}
-            />
-            <UGBIconInput
-                $value={videoLink}
-                label='Video link'
-                startIcon='fa-solid fa-link'
-                validator={dataValidators.isLink}
-                validatorPassed={videoLinkPassed}
-            />
-            <div className={styles.actions}>
-                <UGBButton
-                    btnType='secondary'
-                    onClick={() => onClose()}
-                >
-                    Cancel
-                </UGBButton>
-                <UGBButton
-                    disabled={disabled}
-                    type='submit'
-                    btnType='primary'
-                >
-                    Add
-                </UGBButton>
-            </div>
-        </form>
+        <>
+            <Popover
+                anchorEl={anchorEl}
+                keepMounted
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={() => setAnchorEl(null)}
+            >
+                <MenuList>
+                    {muscleGroups.map((muscleGroup, j) => {
+                        return (
+                            <MenuItem
+                                classes={{ root: selectedMuscleGroupsArr.indexOf(muscleGroup) >= 0 ? styles.selectedPopoverElement : null }}
+                                key={j}
+                                onClick={(e) => {
+                                    const selectedMuscleGroupsArrIndex = selectedMuscleGroupsArr.indexOf(muscleGroup);
+                                    if (selectedMuscleGroupsArrIndex >= 0) {
+                                        const tempSelectedMuscleGroupsArr = selectedMuscleGroupsArr;
+                                        tempSelectedMuscleGroupsArr.splice(selectedMuscleGroupsArrIndex, 1);
+                                        setSelectedMuscleGroupsArr([...tempSelectedMuscleGroupsArr]);
+                                    } else {
+                                        setSelectedMuscleGroupsArr([...selectedMuscleGroupsArr, muscleGroup])
+                                    }
+                                }}
+                            >
+                                {muscleGroup}
+                            </MenuItem>
+                        );
+                    })}
+                </MenuList>
+            </Popover>
+            <form onSubmit={addExercise}>
+                <div className={styles.titleSection}>
+                    <UGBLabel variant='h5' type='title'>
+                        Add a new exercise
+                    </UGBLabel>
+                </div>
+                <UGBIconInput
+                    $value={exercise}
+                    label='Exercise'
+                    MuiIconStart={FitnessCenterIcon}
+                    validator={dataValidators.isRequired}
+                    validatorPassed={exercisePassed}
+                />
+                <UGBIconInput
+                    $value={videoLink}
+                    label='Video link'
+                    startIcon='fa-solid fa-link'
+                    validator={dataValidators.isLink}
+                    validatorPassed={videoLinkPassed}
+                />
+                <UGBInput
+                    label='Targeted Muscle Groups'
+                    value={selectedMuscleGroupsStr}
+                    onClick={(e) => setAnchorEl(e.currentTarget)}
+                    InputProps={{
+                        startAdornment: (
+                            <img src={muscle} alt='muscle' className={styles.imgIcon} />
+                        ),
+                        endAdornment: (
+                            <InputAdornment position="start">
+                                <IconButton
+                                    className={styles.showMoreIcon}
+                                    disableRipple
+                                    isEnd={false}
+                                    onClick={(e) => setAnchorEl(e.currentTarget)}
+                                >
+                                    <ExpandMoreIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                        labelWidth: 70
+                    }}
+                />
+                <div className={styles.actions}>
+                    <UGBButton
+                        btnType='secondary'
+                        onClick={() => onClose()}
+                    >
+                        Cancel
+                    </UGBButton>
+                    <UGBButton
+                        disabled={disabled}
+                        type='submit'
+                        btnType='primary'
+                    >
+                        Add
+                    </UGBButton>
+                </div>
+            </form>
+        </>
     );
 }
 
@@ -1219,14 +1291,13 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
     const styles = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
     const [anchorIndex, setAnchorIndex] = useState(null);
-    const [markers] = useState(['Periodization', 'Intensity Volume', 'Muscle Groups']);
+    const [markers] = useState(['Periodization', 'Intensity Volume']);
     const [anchorMarkerValue, setAnchorMarkerValue] = useState(null);
     const [anchorMarkerValueTypeIndex, setAnchorMarkerValueTypeIndex] = useState(null);
     const [markerValueType, setMarkerValueType] = useState(null);
     const [markerValues] = useState({
-        'Muscle Groups': ['Neck', 'Traps', 'Shoulders', 'Chest', 'Biceps', 'Forearms', 'Abs', 'Quadriceps', 'Calves', 'Upper Back', 'Triceps', 'Lower Back', 'Glutes', 'Hamstring'],
         'Periodization': ['Linear', 'Set Range'],
-        'Intensity Volume': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        'Intensity Volume': ['10', '20', '30', '40', '50', '60', '70', '80', '90', '100']
     });
 
     const handleClick = (event, index) => {
@@ -1307,14 +1378,11 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
                             return (
                                 <MenuItem key={j}
                                     onClick={(e) => {
-                                        const value = e.target.textContent;
+                                        const value = marker;
                                         if (selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue.includes(value)) {
-                                            return;
-                                        }
-                                        if (textIsEmpty(selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue) || markerValueType === 'Periodization') {
+                                            setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue = '', { ...selectedSessionExercise }));
+                                        } else if (markerValueType === 'Periodization' || markerValueType === 'Intensity Volume') {
                                             setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue = value, { ...selectedSessionExercise }));
-                                        } else {
-                                            setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[anchorMarkerValueTypeIndex].markerValue += `, ${value}`, { ...selectedSessionExercise }));
                                         }
                                         setSessionExercises([...sessionExercises]);
                                         handleCloseMarkerValueType();
@@ -1387,29 +1455,29 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
                                         label=''
                                         value={marker.markerValue}
                                         onChange={(e) => {
+                                            if (marker.marker === 'Periodization' || marker.marker === 'Intensity Volume') {
+                                                return;
+                                            }
                                             const value = e.target.value;
                                             setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.markers[i].markerValue = value, { ...selectedSessionExercise }));
                                             setSessionExercises([...sessionExercises]);
                                         }}
                                         InputProps={{
                                             startAdornment: (
-                                                marker.marker === 'Muscle Groups' ?
-                                                    <img src={muscle} alt='muscle' className={styles.imgIcon} />
+                                                marker.marker === 'Intensity Volume' ?
+                                                    <InputAdornment className={styles.svgInputIcon} position="start">
+                                                        <i class="fa-solid fa-percent" />
+                                                    </InputAdornment>
                                                     :
-                                                    marker.marker === 'Intensity Volume' ?
+                                                    marker.marker === 'Periodization' ?
                                                         <InputAdornment className={styles.svgInputIcon} position="start">
-                                                            <i class="fa-solid fa-percent" />
+                                                            <i class="fa-solid fa-chart-line" />
                                                         </InputAdornment>
                                                         :
-                                                        marker.marker === 'Periodization' ?
-                                                            <InputAdornment className={styles.svgInputIcon} position="start">
-                                                                <i class="fa-solid fa-chart-line" />
-                                                            </InputAdornment>
-                                                            :
-                                                            <img src={inputIcon} alt='inputIcon' className={styles.imgIcon} />
+                                                        <img src={inputIcon} alt='inputIcon' className={styles.imgIcon} />
                                             ),
                                             endAdornment: (
-                                                marker.marker === 'Muscle Groups' || marker.marker === 'Periodization' ?
+                                                marker.marker === 'Periodization' || marker.marker === 'Intensity Volume' ?
                                                     <InputAdornment position="start">
                                                         <IconButton
                                                             className={styles.showMoreIcon}
