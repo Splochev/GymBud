@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export const ExercisesAutoComplete = ({ label, onSelectedExercise, setMissingExerciseName, disabled=false }) => {
+export const ExercisesAutoComplete = ({ label, onSelectedExercise, setMissingExerciseName, disabled = false }) => {
     const styles = useStyles();
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
@@ -48,17 +48,19 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, setMissingExe
             const data = await getData(process.env.REACT_APP_HOST + `/api/workout/get-exercises?filter=${inputValue}`);
             setIsLoading(false);
 
+            const btnData = [{
+                onClickAdd: (e) => {
+                    e.stopPropagation();
+                    setMissingExerciseName(inputValue)
+                    history.push('?tab=add-new-exercise');
+                },
+            }];
+
             if (data.data.length) {
-                setOptions(data.data);
+                btnData[0].id = 'last-list-item'
+                setOptions([...data.data, btnData[0]]);
             } else {
-                const btnData = [{
-                    id: 'add-button',
-                    onClickAdd: (e) => {
-                        e.stopPropagation();
-                        setMissingExerciseName(inputValue)
-                        history.push('?tab=add-new-exercise');
-                    },
-                }];
+                btnData[0].id = 'add-button'
                 setOptions(btnData);
             }
 
@@ -106,11 +108,18 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, setMissingExe
             getOptionLabel={(option) => option?.exercise || ''}
             getOptionSelected={() => false}
             renderOption={(ex, option) => {
-                if (ex.id === 'add-button') {
+                if (ex.id === 'add-button' || ex.id === 'last-list-item') {
                     return (
                         <div className={styles.missingContainer}>
                             <div className={styles.missingLabel}>
-                                Exercise is missing. To add it
+                                {ex.id === 'add-button' ?
+                                    'Exercise is missing. To add it'
+                                    :
+                                    ex.id === 'last-list-item' ?
+                                        "Can't find this exercise? To add it"
+                                        :
+                                        null
+                                }
                             </div>
                             <UGBIconButton isListItem={true} $onClick={ex.onClickAdd} >
                                 Click Here
@@ -118,6 +127,8 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, setMissingExe
                         </div>
                     );
                 }
+
+
                 return (
                     <ListItem key={ex.id}>
                         <ListItemText primary={ex.exercise} />
