@@ -29,7 +29,17 @@ function getGradient(ctx, chartArea) {
     return gradient;
 }
 
-export function UGBVerticalBarsChart({ type, chartLabels, chartValues, tooltipLabel, hoverTooltipLabel, colorTop, colorBottom, height, ...props }) {
+export function UGBVerticalBarsChart({
+    type,
+    chartLabels,
+    chartValues,
+    tooltipLabel,
+    hoverTooltipLabel,
+    colorTop,
+    colorBottom,
+    height,
+    incrementor,
+    ...props }) {
     const styles = useStyles();
 
 
@@ -84,7 +94,7 @@ export function UGBVerticalBarsChart({ type, chartLabels, chartValues, tooltipLa
                         const week = context[0].label.split('|');
                         const startDate = parseDate(new Date(week[0]), '/');
                         const endDate = parseDate(new Date(week[1]), '/');
-                        let label = `${context[0].raw}${hoverTooltipLabel}\n${startDate} - ${endDate}`;
+                        let label = `${context[0].raw + Number(incrementor)}${hoverTooltipLabel}\n${startDate} - ${endDate}`;
                         return label;
                     }
                 },
@@ -99,7 +109,7 @@ export function UGBVerticalBarsChart({ type, chartLabels, chartValues, tooltipLa
                 ticks: {
                     callback: function (value, index, values) {
                         try {
-                            return `${value.toFixed(2)}${hoverTooltipLabel}`;
+                            return `${(Number(incrementor) + value).toFixed(2)}${hoverTooltipLabel}`;
                         } catch (err) {
                             return '';
                         }

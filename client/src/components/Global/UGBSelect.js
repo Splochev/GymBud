@@ -24,7 +24,7 @@ const useSelectStyles = makeStyles((theme) => ({
     }
 }));
 
-export function UGBSelect({ label, value, onChange, onChangeWithNotify, children, ...props }) {
+export function UGBSelect({ label, value, disabled, onChange, onChangeWithNotify, children, ...props }) {
     const styles = useSelectStyles();
     const [open, setOpen] = useState(false);
 
@@ -38,13 +38,21 @@ export function UGBSelect({ label, value, onChange, onChangeWithNotify, children
             value={props.$value[0]}
             onChange={e => props.$value[1](e.target.value)}
             open={open}
-            onOpen={() => setOpen(true)}
-            onClose={() => setOpen(false)}
+            onOpen={() => {
+                setOpen(true)
+            }}
+            onClose={() => {
+                setOpen(false)
+            }}
+            disabled={disabled}
             IconComponent={(props) => {
                 return (
                     <IconButton
+                        disabled={disabled}
                         classes={{ root: styles.icon }}
-                        onClick={() => setOpen(!open)}
+                        onClick={() => {
+                            setOpen(!open)
+                        }}
                     >
                         <ExpandMoreIcon {...props} />
                     </IconButton>

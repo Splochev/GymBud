@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
             outline: 'none'
         },
         "&:disabled": {
-            backgroundColor: '#087F23',
+            backgroundColor: '#82BD8F',
             "& .MuiButton-label": {
                 color: 'white'
             }
@@ -60,6 +60,21 @@ const useStyles = makeStyles(() => ({
             background: 'transparent',
             border: '1px solid #1E7E34',
             boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
+            outline: 'none'
+        },
+    },
+    outlinedSecondary: {
+        border: '1px solid #dc3545',
+        color: '#dc3545',
+        background: 'transparent',
+        '&:hover': {
+            background: 'transparent',
+            border: '1px solid #C82333',
+        },
+        '&:focus': {
+            background: 'transparent',
+            border: '1px solid #C82333',
+            boxShadow: 'rgb(240,169,176) 0px 0px 0px 3px',
             outline: 'none'
         },
     },
@@ -108,7 +123,7 @@ const useStyles = makeStyles(() => ({
             outline: 'none'
         },
         "&:disabled": {
-            backgroundColor: '#087F23',
+            backgroundColor: '#82BD8F',
             "& .MuiButton-label": {
                 color: 'white'
             }

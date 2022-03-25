@@ -52,6 +52,27 @@ const theme = createTheme({
         MuiButtonBase: {
             disableRipple: true
         }
+    },
+    overrides: {
+        MuiPaper: {
+            root: {
+                '& .MuiPickersCalendar-week': {
+                    '& .MuiPickersDay-daySelected': {
+                        backgroundColor: '#28A745',
+                        color: 'white',
+                        '&:hover': {
+                            backgroundColor: '#218838',
+                            color:'white'
+                        },
+                        '&:focus': {
+                            background: '#218838',
+                            boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
+                            outline: 'none'
+                        },
+                    }
+                }
+            },
+        }
     }
 });
 
@@ -184,7 +205,7 @@ export function UGBDatePicker({ label = 'Choose Date', selectedDate, setSelected
 
 
 
-export const UGBStaticDatePicker = ({ date, changeDate}) => {
+export const UGBStaticDatePicker = ({ date, changeDate }) => {
 
 
     // prettier-ignore
