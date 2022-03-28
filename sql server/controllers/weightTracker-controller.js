@@ -63,11 +63,17 @@ module.exports = class WeightTrackerController {
 
             const mappedWeightData = {};
             let startDateOfWeek = !minSelectedOffsetDateIsSet && new Date(minOffsetDate).getTime() < new Date(offsetDate).getTime() ? new Date(offsetDate) : new Date(weightData[0].date);
+            if (startDateOfWeek.getHours() !== 2) {
+                startDateOfWeek.setHours(2);
+            }
             const parsedLimit = new Date(limit).getTime();
 
             while (startDateOfWeek.getTime() <= parsedLimit) {
                 mappedWeightData[startDateOfWeek.getTime()] = 1;
                 startDateOfWeek.setDate(startDateOfWeek.getDate() + 1);
+                if (startDateOfWeek.getHours() !== 2) {
+                    startDateOfWeek.setHours(2);
+                }
             }
 
             for (const weightEntry of weightData) {
