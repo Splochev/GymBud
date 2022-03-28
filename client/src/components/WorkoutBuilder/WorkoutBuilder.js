@@ -1286,6 +1286,7 @@ const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercis
 }
 
 const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExercise, setSelectedSessionExercise }) => {
+    //TODO make the user unable to select Periodization or Intensity Volume more than once
     const styles = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
     const [anchorIndex, setAnchorIndex] = useState(null);
@@ -1398,7 +1399,7 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
             <div className={styles.addSetAndMarkersContainer}>
                 {selectedSessionExercise.markers.map((marker, i) => {
                     return (
-                        <div className={styles.addMarkerContainer}>
+                        <div key={marker + i} className={styles.addMarkerContainer}>
                             <UGBLabel variant='subtitle2'>
                                 Marker Type
                             </UGBLabel>
@@ -1511,6 +1512,31 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
             </div >
         </>
     );
+}
+
+function getMarkers(markers) {
+    let resMarkers = [];
+    let periodization = '';
+    let intensityVolume = '';
+
+    for (const marker of markers) {
+        if (marker.marker === 'Periodization') {
+            periodization = marker.markerValue;
+        } else if (marker.marker === 'Intensity Volume') {
+            intensityVolume = marker.markerValue;
+        } else {
+            resMarkers.push(`${marker.marker}|${marker.markerValue}`)
+        }
+    }
+    return { markers: resMarkers, periodization: periodization, intensityVolume }
+}
+
+function getSets(sets) {
+    let resSets = [];
+    for (const set of sets) {
+        resSets.push(`${set.set.slice(4)}|${set.reps || ''}|${set.rest || ''}`)
+    }
+    return resSets;
 }
 
 const WorkoutBuilder = () => {
@@ -1637,10 +1663,10 @@ const WorkoutBuilder = () => {
                 setSelectedWorkoutSessionObj(null);
             }
 
-            // getData(process.env.REACT_APP_HOST + `/api/workout/get-session-exercises?filter=${selectedWorkoutSession[0]}`)
-            //     .then(data => {
-            //             setSessionExercises(data.data);
-            //     }, error => { })
+            getData(process.env.REACT_APP_HOST + `/api/workout/get-workout-journal-session-exercises?workoutSessionId=${selectedWorkoutSession[0]}`)
+                .then(data => {
+                    setSessionExercises(data.data);
+                }, error => { })
         }
     }, [selectedWorkoutSession[0]])
 
@@ -1681,7 +1707,38 @@ const WorkoutBuilder = () => {
     }, [exercisesForMergeDisabled, exercisesForMerge])
 
     function saveChanges() {
-        // console.log(sessionExercises);
+        //setSavingChangesLoading(true);
+        const tempSessionExercises = [];
+        let order = 1;
+
+        for (const sessionExercise of sessionExercises) {
+            if (sessionExercise.superset) {
+                let supersetOrder = 1;
+                for (const supersetSessionExercise of sessionExercise.superset) {
+                    let sets = getSets(supersetSessionExercise.sets)
+                    let markersData = getMarkers(supersetSessionExercise.markers);
+                    let markers = markersData.markers;
+                    let periodization = markersData.periodization;
+                    let intensityVolume = markersData.intensityVolume;
+                    tempSessionExercises.push({ ...supersetSessionExercise, ordered: Number(`${order}.${supersetOrder}`), sets: sets.join(','), markers: markers.join(','), periodization: periodization, intensityVolume: intensityVolume })
+                    supersetOrder++;
+                }
+            } else {
+                let sets = getSets(sessionExercise.sets)
+                let markersData = getMarkers(sessionExercise.markers);
+                let markers = markersData.markers;
+                let periodization = markersData.periodization;
+                let intensityVolume = markersData.intensityVolume;
+                tempSessionExercises.push({ ...sessionExercise, ordered: order, sets: sets.join(','), markers: markers.join(','), periodization: periodization, intensityVolume: intensityVolume })
+            }
+            order++;
+        }
+
+        //setSavingChangesLoading(false);
+        //setSavedChanges(true);
+        
+        console.log(sessionExercises)
+        // console.log(tempSessionExercises)
         // console.log(selectedWorkoutSessionObj);
         // console.log(selectedWorkoutJournalObj);
     }
@@ -1922,8 +1979,9 @@ const WorkoutBuilder = () => {
                                 {sessionExercises.map(ex => {
                                     if (ex.superset) {
                                         return (
-                                            <List>
+                                            <List key={`superset-${ex.superset[0].id}-${ex.superset[1].id}`}>
                                                 <ExerciseListItem
+                                                    key={`superset-exerciseListItem-${ex.superset[0].id}-${ex.superset[1].id}`}
                                                     exType='superset'
                                                     supersetItems={ex}
                                                     setExercisesForMerge={setExercisesForMerge}
@@ -1938,6 +1996,7 @@ const WorkoutBuilder = () => {
                                     } else {
                                         return (
                                             <ExerciseListItem
+                                                key={ex.id}
                                                 exType='single-exercise'
                                                 supersetItems={ex}
                                                 setExercisesForMerge={setExercisesForMerge}

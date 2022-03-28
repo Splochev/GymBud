@@ -22,6 +22,7 @@ module.exports = class WorkoutController {
 
         this.router.post('/add-exercise', AuthHelpers.loggedIn, (req, res) => this.addExercise(req, res));
         this.router.get('/get-exercises', AuthHelpers.loggedIn, (req, res) => this.getExercises(req, res));
+        this.router.get('/get-workout-journal-session-exercises', AuthHelpers.loggedIn, (req, res) => this.getWorkoutJournalSessionExercises(req, res));
     }
 
     async addWorkoutJournal(req, res) {
@@ -447,5 +448,102 @@ module.exports = class WorkoutController {
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
         }
     };
+
+    async getWorkoutJournalSessionExercises(req, res) {
+        try {
+            const user = req.user;
+            const workoutSessionId = req.query.workoutSessionId;
+
+            if (!user) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid user`));
+                return;
+            }
+
+            if (!workoutSessionId) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid workout session id`));
+                return;
+            }
+
+            const exercises = await MysqlAdapter.query(`
+                SELECT
+                    dwd.id as dailyWorkoutDataId,
+                    dwd.daily_workout_id as workoutSessionId,
+                    dwd.ordered,
+                    dwd.sets,
+                    dwd.periodization,
+                    dwd.intensity_volume as intensityVolume,
+                    dwd.markers,
+                    e.id as id,
+                    e.exercise,
+                    e.video_url as videoLink,
+                    e.muscle_groups as muscleGroups
+                FROM daily_workout_data dwd
+                LEFT JOIN exercises e ON dwd.exercise_id = e.id 
+                WHERE
+                    dwd.user_id = ${escape(user.id)}
+                    AND dwd.daily_workout_id = ${escape(workoutSessionId)}
+                ORDER BY dwd.ordered
+            `);
+
+            const supersetIndexes = {};
+            const resExercises = [];
+            let index = 0;
+
+            for (const exercise of exercises) {
+                const sets = exercise.sets ? exercise.sets.split(',') : [];
+                const tempSets = [];
+                for (const set of sets) {
+                    const setTokens = set.split('|')
+                    tempSets.push({ set: `Set ${setTokens[0] || 1}`, reps: setTokens[1] || '', rest: setTokens[2] || '' })
+                }
+
+                const markers = exercise.markers ? exercise.markers.split(',') : [];
+                const tempMarkers = [];
+
+                if (exercise.periodization) {
+                    tempMarkers.push({ marker: 'Periodization', markerValue: exercise.periodization })
+                }
+                delete exercise.periodization;
+
+                if (exercise.intensityVolume) {
+                    tempMarkers.push({ marker: 'Intensity Volume', markerValue: exercise.intensityVolume })
+                }
+                delete exercise.intensityVolume;
+
+                for (const marker of markers) {
+                    const markerTokens = marker.split('|')
+                    tempMarkers.push({ marker: markerTokens[0], markerValue: markerTokens[1] })
+                }
+
+                exercise.markers = tempMarkers;
+                exercise.sets = tempSets;
+
+                const tempOrdered = exercise.ordered.toString().split('.');
+                if (tempOrdered.length > 1) {
+                    if (supersetIndexes[tempOrdered[0]]) {
+                        supersetIndexes[tempOrdered[0]].push(index);
+                    } else {
+                        supersetIndexes[tempOrdered[0]] = [index];
+                    }
+                } else {
+                    resExercises[Number(tempOrdered[0])-1] = exercise;
+                }
+                index++;
+            }
+
+            for (const [key, values] of Object.entries(supersetIndexes)) {
+                const superset = [];
+                for (const value of values) {
+                    superset.push(exercises[value]);
+                }
+                resExercises[Number(key)-1] = { superset: superset };
+            }
+
+            res.json({ data: resExercises });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    }
 
 }
