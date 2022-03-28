@@ -916,8 +916,7 @@ const AddNewExercise = ({ onClose, missingExerciseName }) => {
                                     <ExpandMoreIcon />
                                 </IconButton>
                             </InputAdornment>
-                        ),
-                        labelWidth: 70
+                        )
                     }}
                 />
                 <div className={styles.actions}>
@@ -1260,7 +1259,6 @@ const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercis
                             value={set.rest}
                             onChange={(e) => {
                                 const value = e.target.value;
-                                value.replace('-', '0');
                                 setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets[i].rest = value, { ...selectedSessionExercise }));
                                 setSessionExercises([...sessionExercises])
                             }}
@@ -1274,7 +1272,7 @@ const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercis
                     $onClick={() => {
                         const tempSets = selectedSessionExercise.sets;
                         const set = `Set ${tempSets.length + 1}`;
-                        tempSets.push({ set: set, reps: '', rest: '00:00' })
+                        tempSets.push({ set: set, reps: '', rest: '' })
                         setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets = tempSets, { ...selectedSessionExercise }));
                         setSessionExercises([...sessionExercises])
                     }}
@@ -1435,8 +1433,7 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
                                                         <ExpandMoreIcon />
                                                     </IconButton>
                                                 </InputAdornment>
-                                            ),
-                                            labelWidth: 70
+                                            )
                                         }}
                                         label=''
                                         value={marker.marker}
@@ -1490,8 +1487,7 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
                                                     </InputAdornment>
                                                     :
                                                     null
-                                            ),
-                                            labelWidth: 70
+                                            )
                                         }}
                                     />
                                 </div>
@@ -1579,7 +1575,6 @@ const WorkoutBuilder = () => {
                 setShowAddNewWorkoutSession(false);
                 setShowAddNewExercise(false);
                 setShowEditWorkoutJournal(false);
-                history.push(window.location.pathname);
                 break;
         }
     }, [tab])
@@ -1820,8 +1815,7 @@ const WorkoutBuilder = () => {
                                                 ADD
                                             </UGBIconButton>
                                         </InputAdornment>
-                                    ),
-                                    labelWidth: 70
+                                    )
                                 }}
                             >
                                 {workoutJournals.map(x => {
@@ -1867,8 +1861,7 @@ const WorkoutBuilder = () => {
                                                 ADD
                                             </UGBIconButton>
                                         </InputAdornment>
-                                    ),
-                                    labelWidth: 70
+                                    )
                                 }}
                             >
                                 {workoutSessions.map(x => {

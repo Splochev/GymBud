@@ -191,8 +191,6 @@ export function UGBIconInput({ startIcon, endIcon, MuiIconStart, MuiIconEnd, img
                         </InputAdornment>
                         :
                         null
-                ,
-                labelWidth: 70
             }}
             {...props}
         />

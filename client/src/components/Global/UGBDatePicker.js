@@ -98,8 +98,7 @@ export function UGBDatePicker({ label = 'Choose Date', selectedDate, setSelected
                                     <InputAdornment position="start">
                                         <EventIcon />
                                     </InputAdornment>
-                                ),
-                                labelWidth: 70
+                                )
                             }}
                             minDate={parseDate(minDate)}
                             maxDate={parseDate(maxDate)}
@@ -128,8 +127,7 @@ export function UGBDatePicker({ label = 'Choose Date', selectedDate, setSelected
                                         <InputAdornment position="end">
                                             <EventIcon />
                                         </InputAdornment>
-                                    ),
-                                    labelWidth: 70
+                                    )
                                 }}
                                 maxDate={parseDate(maxDate)}
                                 disableToolbar
@@ -156,8 +154,7 @@ export function UGBDatePicker({ label = 'Choose Date', selectedDate, setSelected
                                             <InputAdornment position="end">
                                                 <EventIcon />
                                             </InputAdornment>
-                                        ),
-                                        labelWidth: 70
+                                        )
                                     }}
                                     minDate={parseDate(minDate)}
                                     disableToolbar
@@ -184,8 +181,7 @@ export function UGBDatePicker({ label = 'Choose Date', selectedDate, setSelected
                                                 <InputAdornment position="end">
                                                     <EventIcon />
                                                 </InputAdornment>
-                                            ),
-                                            labelWidth: 70
+                                            )
                                         }}
                                         disableToolbar
                                         autoOk={true}
