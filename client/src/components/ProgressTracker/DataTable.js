@@ -14,7 +14,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import ClearIcon from '@material-ui/icons/Clear';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { parseDate } from '../utils/utilFunc'
+import { parseDate, getTime } from '../utils/utilFunc'
 import Pagination from '@material-ui/lab/Pagination';
 import { createTheme } from "@material-ui/core";
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -37,8 +37,8 @@ const theme = createTheme({
 
 function descendingComparator(a, b, orderBy) {
     if (orderBy === 'dateRange') {
-        const aDate = Date.parse(a.startDate);
-        const bDate = Date.parse(b.startDate);
+        const aDate = getTime(new Date(a.startDate));
+        const bDate = getTime(new Date(b.startDate));
         if (bDate < aDate) {
             return 1;
         }
@@ -270,10 +270,10 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, sel
                                             let helperText = '';
 
                                             if (headCell && headCell.id >= 1 && headCell.id <= 7) {
-                                                title = "Edit cell"
+                                                title = "Edit cell";
                                                 const date = new Date(row.startDate);
-                                                date.setDate(date.getDate() + headCell.id - 1)
-                                                const parsedDate = Date.parse(parseDate(date))
+                                                date.setDate(date.getDate() + headCell.id - 1);
+                                                const parsedDate = getTime(new Date(parseDate(date)));
                                                 helperText = parsedDate <= selectedLimitDate ? date.toDateString().slice(0, -4) : '';
                                             }
 

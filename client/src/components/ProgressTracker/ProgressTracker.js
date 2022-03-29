@@ -3,7 +3,7 @@ import DataTable from "./DataTable";
 import 'date-fns';
 import useStyles from './styles'
 import { getData, putData } from '../utils/FetchUtils';
-import { parseDate } from '../utils/utilFunc'
+import { parseDate, getTime } from '../utils/utilFunc'
 import { UGBDatePicker } from '../Global/UGBDatePicker'
 import { UGBVerticalBarsChart } from '../Global/UGBCharts'
 import { Typography } from '@material-ui/core';
@@ -162,7 +162,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
 
                 if (!minSelectedOffsetDateIsSet) {
                     const minxOffsetDate = new Date(data.minOffsetDate);
-                    if (minSelectedOffsetDate.getTime() < minxOffsetDate.getTime()) {
+                    if (getTime(minSelectedOffsetDate) < getTime(minxOffsetDate)) {
                         setIsFetched(true);
                         setMinSelectedOffsetDateIsSet(true);
                         setMinSelectedOffsetDate(minxOffsetDate);
@@ -190,8 +190,8 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
             return;
         }
 
-        const parsedSelectedOffsetDateToTime = selectedOffsetDate.getTime();
-        const parsedSelectedLimitDateToTime = selectedLimitDate.getTime();
+        const parsedSelectedOffsetDateToTime = getTime(selectedOffsetDate);
+        const parsedSelectedLimitDateToTime = getTime(selectedLimitDate);
         if (parsedSelectedOffsetDateToTime < parsedSelectedLimitDateToTime) {
             const weeksAmount = getWeeksAmount(parsedSelectedLimitDateToTime, parsedSelectedOffsetDateToTime) + 1;
             let startDate = new Date(selectedOffsetDate);
@@ -205,7 +205,7 @@ const ProgressTracker = ({ refreshTableData, setRefreshTableData }) => {
                 let avgWeightCounter = 0;
                 let dateCounter = 1;
 
-                while (startDate.getTime() <= endDate.getTime()) {
+                while (getTime(startDate) <= getTime(endDate)) {
                     tempRows[i][dateCounter] = null;
                     dateCounter++;
                     startDate.setDate(startDate.getDate() + 1);

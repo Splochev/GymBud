@@ -5,7 +5,15 @@ const ErrorHandler = require('../utils/error-handler');
 const AuthHelpers = require('../utils/auth-helpers');
 
 function parseDate(date) {
-    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+    const month = date.getMonth() + 1
+    return `${date.getFullYear()}-${month < 10 ? `0${month}` : month}-${date.getDate()}`
+}
+
+function getTime(dateInput) {
+    const month = (dateInput.getMonth() + 1) * 2629743;
+    const year = dateInput.getFullYear() * 31556926;
+    const date = dateInput.getDate() * 86400;
+    return year + month + date;
 }
 
 module.exports = class WeightTrackerController {
@@ -22,16 +30,16 @@ module.exports = class WeightTrackerController {
     async getWeightData(req, res) {
         try {
             const user = req.user;
-            const limit = req.query.limitDate ? req.query.limitDate : parseDate(new Date());
+            const limit = req.query.limitDate;
+            let offsetDate = req.query.offsetDate;
             const minSelectedOffsetDateIsSet = req.query.getMinOffsetDate;
-            let offsetDate = req.query.offsetDate ? req.query.offsetDate : new Date();
 
-            if (!req.query.offsetDate) {
-                offsetDate.setDate(offsetDate.getDate() - 90);
-                offsetDate = parseDate(offsetDate);
+            if (!offsetDate || isNaN(new Date(offsetDate).getTime())) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Start date for date range required`));
+                return;
             }
-            if (new Date(offsetDate).getTime() > new Date(limit).getTime()) {
-                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, 'Invalid dates'));
+            if (!limit || isNaN(new Date(limit).getTime())) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `End date for date range required`));
                 return;
             }
 
@@ -46,7 +54,7 @@ module.exports = class WeightTrackerController {
             `);
 
             if (!weightData.length) {
-                res.json({ data: [] });
+                res.json({ data: [], minOffsetDate: new Date() });
                 return;
             }
 
@@ -59,34 +67,36 @@ module.exports = class WeightTrackerController {
                     date ASC
                 limit 1; 
             `)
-            minOffsetDate = minOffsetDate[0].date
+            minOffsetDate = minOffsetDate[0].date;
+            const parsedOffsetDate = new Date(offsetDate)
+            const parsedLimit = new Date(limit);
+            const parsedFirstEntry = new Date(weightData[0].date);
 
+            const minOffsetDateToTime = getTime(minOffsetDate);
+            const parsedLimitToTime = getTime(parsedLimit);
+            const parsedOffsetDateToTime = getTime(parsedOffsetDate);
             const mappedWeightData = {};
-            let startDateOfWeek = !minSelectedOffsetDateIsSet && new Date(minOffsetDate).getTime() < new Date(offsetDate).getTime() ? new Date(offsetDate) : new Date(weightData[0].date);
-            if (startDateOfWeek.getHours() !== 2) {
-                startDateOfWeek.setHours(2);
-            }
-            const parsedLimit = new Date(limit).getTime();
+            let startDateOfWeek = !minSelectedOffsetDateIsSet && minOffsetDateToTime < parsedOffsetDateToTime ?
+                new Date(parsedOffsetDate)
+                :
+                new Date(parsedFirstEntry);
 
-            while (startDateOfWeek.getTime() <= parsedLimit) {
-                mappedWeightData[startDateOfWeek.getTime()] = 1;
+            while (getTime(startDateOfWeek) <= parsedLimitToTime) {
+                mappedWeightData[getTime(startDateOfWeek)] = 1;
                 startDateOfWeek.setDate(startDateOfWeek.getDate() + 1);
-                if (startDateOfWeek.getHours() !== 2) {
-                    startDateOfWeek.setHours(2);
-                }
             }
 
             for (const weightEntry of weightData) {
-                const weightEntryDate = new Date(weightEntry.date);
-                if (weightEntryDate.getHours() !== 2) {
-                    weightEntryDate.setHours(2);
-                }
-                mappedWeightData[weightEntryDate.getTime()] = { ...weightEntry };
+                const weightEntryDate = weightEntry.date;
+                mappedWeightData[getTime(weightEntryDate)] = { ...weightEntry };
             }
 
             const weeksAmount = Math.ceil(Object.keys(mappedWeightData).length / 7);
-            startDateOfWeek = !minSelectedOffsetDateIsSet && new Date(minOffsetDate).getTime() < new Date(offsetDate).getTime() ? new Date(offsetDate) : new Date(weightData[0].date);
-            const endDateOfWeek = !minSelectedOffsetDateIsSet && new Date(minOffsetDate).getTime() < new Date(offsetDate).getTime() ? new Date(offsetDate) : new Date(weightData[0].date);
+            startDateOfWeek = !minSelectedOffsetDateIsSet && minOffsetDateToTime < parsedOffsetDateToTime ?
+                new Date(parsedOffsetDate)
+                :
+                new Date(parsedFirstEntry);
+            const endDateOfWeek = new Date(startDateOfWeek);
             endDateOfWeek.setDate(endDateOfWeek.getDate() + 6);
             const responseWeightData = [];
 
@@ -96,8 +106,8 @@ module.exports = class WeightTrackerController {
                 let avgWeightCounter = 0;
                 let dateCounter = 1;
 
-                while (startDateOfWeek.getTime() <= endDateOfWeek.getTime()) {
-                    const startDateOfWeekAsTime = startDateOfWeek.getTime();
+                while (getTime(startDateOfWeek) <= getTime(endDateOfWeek)) {
+                    const startDateOfWeekAsTime = getTime(startDateOfWeek);
                     if (mappedWeightData[startDateOfWeekAsTime] && mappedWeightData[startDateOfWeekAsTime] !== 1) {
                         responseWeightData[i][dateCounter] = mappedWeightData[startDateOfWeekAsTime].weight;
                         weightSum += mappedWeightData[startDateOfWeekAsTime].weight;
