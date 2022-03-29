@@ -91,7 +91,7 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, setMissingExe
                 setValue('');
                 setInputValue('');
 
-                if (newValue && newValue.id !== 'add-button') {
+                if (newValue && newValue.id !== 'add-button' && newValue.id !== 'last-list-item') {
                     const exercise = { exercise: newValue.exercise, id: newValue.id, videoLink: newValue.videoLink };
                     onSelectedExercise(exercise);
                 }
