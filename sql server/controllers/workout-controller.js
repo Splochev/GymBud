@@ -23,6 +23,7 @@ module.exports = class WorkoutController {
         this.router.post('/add-exercise', AuthHelpers.loggedIn, (req, res) => this.addExercise(req, res));
         this.router.get('/get-exercises', AuthHelpers.loggedIn, (req, res) => this.getExercises(req, res));
         this.router.get('/get-workout-journal-session-exercises', AuthHelpers.loggedIn, (req, res) => this.getWorkoutJournalSessionExercises(req, res));
+        this.router.post('/add-workout-journal-session-exercises', AuthHelpers.loggedIn, (req, res) => this.addWorkoutJournalSessionExercises(req, res));
     }
 
     async addWorkoutJournal(req, res) {
@@ -526,7 +527,7 @@ module.exports = class WorkoutController {
                         supersetIndexes[tempOrdered[0]] = [index];
                     }
                 } else {
-                    resExercises[Number(tempOrdered[0])-1] = exercise;
+                    resExercises[Number(tempOrdered[0]) - 1] = exercise;
                 }
                 index++;
             }
@@ -536,7 +537,7 @@ module.exports = class WorkoutController {
                 for (const value of values) {
                     superset.push(exercises[value]);
                 }
-                resExercises[Number(key)-1] = { superset: superset };
+                resExercises[Number(key) - 1] = { superset: superset };
             }
 
             res.json({ data: resExercises });
@@ -546,4 +547,78 @@ module.exports = class WorkoutController {
         }
     }
 
+    async addWorkoutJournalSessionExercises(req, res) {
+        try {
+            const user = req.user;
+            const workoutSessionId = req.body.workoutSessionId;
+            const sessionExercises = req.body.sessionExercises;
+
+            if (!user) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid user`));
+                return;
+            }
+            if (!workoutSessionId) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid workout session id`));
+                return;
+            }
+            if (!sessionExercises) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid session exercises`));
+                return;
+            }
+            if (sessionExercises.length) {
+                if (sessionExercises.length >= 15) {
+                    res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `You are not allowed to have more than 15 exercises per workout session`));
+                    return;
+                }
+                for (const ex of sessionExercises) {
+                    const exLabel = ex.exercise ? ` for ${ex.exercise}` : '';
+                    let returnMessage = '';
+                    if (!ex.id) {
+                        returnMessage = `Missing exercise id${exLabel}`;
+                    } else if (!ex.ordered) {
+                        returnMessage = `Missing order of exercise${exLabel}`;
+                    } else if ((ex.setsCount && !ex.sets) || (!ex.setsCount && ex.sets)) {
+                        returnMessage = `Invalid sets${exLabel}`;
+                    } else if ((ex.markersCount && !(ex.markers.length + ex.periodization.length + ex.intensityVolume.toString().length)) || (!ex.markersCount && (ex.markers.length || ex.periodization.length || ex.intensityVolume.toString().length))) {
+                        returnMessage = `Invalid markers${exLabel}`;
+                    }
+
+                    if (returnMessage) {
+                        res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, returnMessage));
+                        return;
+                    }
+                }
+            }
+
+            const values = []
+            for (const ex of sessionExercises) {
+                let insert = `(${escape(user.id)},${escape(workoutSessionId)},${escape(ex.id)},${ex.markers ? escape(ex.markers) : "NULL"},${ex.periodization ? escape(ex.periodization) : "NULL"},${ex.intensityVolume ? escape(ex.intensityVolume) : "NULL"},${ex.sets ? escape(ex.sets) : "NULL"},${escape(ex.ordered)})`;
+                values.push(insert);
+            }
+
+            await MysqlAdapter.transactionScope(async transactionQuery => {
+                await transactionQuery(`
+                    DELETE FROM
+                        daily_workout_data
+                    WHERE
+                        user_id = ${escape(user.id)}
+                        AND daily_workout_id = ${escape(workoutSessionId)}
+                `)
+                if (values.length) {
+                    await transactionQuery(`
+                    INSERT INTO 
+                        daily_workout_data
+                            (user_id, daily_workout_id, exercise_id, markers, periodization, intensity_volume, sets, ordered)
+                    VALUES
+                        ${values.join(',')}
+                    `)
+                }
+            });
+
+            res.json({ success: true });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    }
 }

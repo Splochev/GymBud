@@ -11,7 +11,6 @@ import { UGBIconInput, UGBInput, UGBInputArea } from '../Global/UGBInput';
 import UGBLink from '../Global/UGBLink';
 import { deleteData, getData, postData, putData } from '../utils/FetchUtils';
 import { useQuery } from '../utils/RouteUtils';
-import { textIsEmpty } from '../utils/ValidationUtils';
 import isURL from 'validator/es/lib/isURL';
 import isEmpty from 'validator/es/lib/isEmpty';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
@@ -1720,27 +1719,54 @@ const WorkoutBuilder = () => {
                     let markers = markersData.markers;
                     let periodization = markersData.periodization;
                     let intensityVolume = markersData.intensityVolume;
-                    tempSessionExercises.push({ ...supersetSessionExercise, ordered: Number(`${order}.${supersetOrder}`), sets: sets.join(','), markers: markers.join(','), periodization: periodization, intensityVolume: intensityVolume })
+                    tempSessionExercises.push({
+                        ...supersetSessionExercise,
+                        ordered: Number(`${order}.${supersetOrder}`),
+                        sets: sets.join(','),
+                        markers: markers.join(','),
+                        periodization: periodization,
+                        intensityVolume: intensityVolume,
+                        setsCount: supersetSessionExercise.sets.length,
+                        markersCount: supersetSessionExercise.markers.length
+                    })
                     supersetOrder++;
                 }
             } else {
-                let sets = getSets(sessionExercise.sets)
+                let sets = getSets(sessionExercise.sets);
                 let markersData = getMarkers(sessionExercise.markers);
                 let markers = markersData.markers;
                 let periodization = markersData.periodization;
                 let intensityVolume = markersData.intensityVolume;
-                tempSessionExercises.push({ ...sessionExercise, ordered: order, sets: sets.join(','), markers: markers.join(','), periodization: periodization, intensityVolume: intensityVolume })
+                tempSessionExercises.push({
+                    ...sessionExercise,
+                    ordered: order,
+                    sets: sets.join(','),
+                    markers: markers.join(','),
+                    periodization: periodization,
+                    intensityVolume: intensityVolume,
+                    setsCount: sessionExercise.sets.length,
+                    markersCount: sessionExercise.markers.length
+                })
             }
             order++;
         }
 
-        //setSavingChangesLoading(false);
-        //setSavedChanges(true);
-        
-        console.log(sessionExercises)
-        // console.log(tempSessionExercises)
+
+        postData(process.env.REACT_APP_HOST + '/api/workout/add-workout-journal-session-exercises', {
+            workoutSessionId: selectedWorkoutSessionObj.id,
+            sessionExercises: tempSessionExercises
+        }).then(data => {
+        }, error => {
+            console.log('LOGOUT ERROR--->', error)
+        })
+
+        // console.log(sessionExercises)
+        console.log(tempSessionExercises)
         // console.log(selectedWorkoutSessionObj);
         // console.log(selectedWorkoutJournalObj);
+
+        //setSavingChangesLoading(false);
+        //setSavedChanges(true);
     }
 
     return (
