@@ -1564,6 +1564,7 @@ const WorkoutBuilder = () => {
 
     const [selectedSessionExercise, setSelectedSessionExercise] = useState({});
     const [sessionExercises, setSessionExercises] = useState([]);
+    const [sessionExercisesAsString, setSessionExercisesAsString] = useState('[]');
 
     const [exercisesForMerge, setExercisesForMerge] = useState([]);
     const [exercisesForMergeDisabled, setExercisesForMergeDisabled] = useState(true);
@@ -1574,6 +1575,7 @@ const WorkoutBuilder = () => {
     const [showExerciseAddSet, setShowExerciseAddSet] = useState(false);
     const [showAddMarkers, setShowAddMarkers] = useState(false);
     const [hideExerciseContent, setHideExerciseContent] = useState(false);
+    const [disableSave, setDisableSave] = useState(false);
 
     useEffect(() => {
         switch (tab) {
@@ -1645,8 +1647,8 @@ const WorkoutBuilder = () => {
     }, [selectedWorkoutJournal[0], refreshWorkoutSessions])
 
     useEffect(() => {
+        setSessionExercisesAsString('[]');
         setSelectedSessionExercise({});
-        setSessionExercises([]);
         setExercisesForMerge([]);
         setExercisesForMergeDisabled(true);
         setToggleExerciseContent(false);
@@ -1664,6 +1666,7 @@ const WorkoutBuilder = () => {
 
             getData(process.env.REACT_APP_HOST + `/api/workout/get-workout-journal-session-exercises?workoutSessionId=${selectedWorkoutSession[0]}`)
                 .then(data => {
+                    setSessionExercisesAsString(JSON.stringify(data.data))
                     setSessionExercises(data.data);
                 }, error => { })
         }
@@ -1693,6 +1696,15 @@ const WorkoutBuilder = () => {
         setSessionExercises(tempSessionExercises);
         setExercisesForMerge([]);
     }
+
+    useEffect(() => {
+        const tempSessionExercisesAsString = JSON.stringify(sessionExercises)
+        if (sessionExercisesAsString === tempSessionExercisesAsString) {
+            setDisableSave(true);
+        } else {
+            setDisableSave(false);
+        }
+    }, [sessionExercises, sessionExercisesAsString])
 
     useEffect(() => {
         if (exercisesForMergeDisabled && !exercisesForMerge.length) {
@@ -1756,8 +1768,9 @@ const WorkoutBuilder = () => {
             workoutSessionId: selectedWorkoutSessionObj.id,
             sessionExercises: tempSessionExercises
         }).then(data => {
+            setSessionExercisesAsString(JSON.stringify(sessionExercises));
         }, error => {
-            console.log('LOGOUT ERROR--->', error)
+            console.log('LOGOUT ERROR--->', error);
         })
 
         // console.log(sessionExercises)
@@ -2157,7 +2170,7 @@ const WorkoutBuilder = () => {
                     </div>
                     <div className={styles.saveAndResetActions}>
                         {/* <UGBButton className={styles.defaultButton} onClick={resetToDefault} btnType='outlinedPrimary' variant='outlined'>Reset To Default</UGBButton> */}
-                        <UGBButton onClick={saveChanges} btnType='primary' >Save Changes</UGBButton>
+                        <UGBButton onClick={saveChanges} btnType='primary' disabled={disableSave} >Save Changes</UGBButton>
                     </div>
                 </div>
                 <div className={styles.rightSideContainer}>

@@ -358,6 +358,8 @@ module.exports = class WorkoutController {
                     dw.user_id = ${escape(user.id)}
                 AND dw.workouts_id LIKE ${escape(`%${filter}%`)}
                 ${limitQuery ? limitQuery : ''}
+                ORDER BY 
+                    dw.name ASC
             `);
 
             res.json({ data: workoutJournalSession });
