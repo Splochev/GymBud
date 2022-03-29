@@ -1650,6 +1650,7 @@ const WorkoutBuilder = () => {
         setSessionExercisesAsString('[]');
         setSelectedSessionExercise({});
         setExercisesForMerge([]);
+        setSessionExercises([]);
         setExercisesForMergeDisabled(true);
         setToggleExerciseContent(false);
         setShowExerciseAddSet(false);
