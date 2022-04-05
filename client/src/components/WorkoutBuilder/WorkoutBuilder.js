@@ -26,7 +26,7 @@ import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DeleteIcon from '@material-ui/icons/Delete';
-import fitnessTracking from '../assets/fitnessTracking.svg'
+import lifting3 from '../assets/lifting3.svg'
 import addMarkersSvg from '../assets/mark.svg'
 import tallyIcon from '../assets/tallyIcon.png';
 import lifting2 from '../assets/lifting2.svg';
@@ -2120,7 +2120,7 @@ const WorkoutBuilder = () => {
                                             }}
                                         >
                                             <div className={styles.exercisesContent} >
-                                                <img src={fitnessTracking} alt='fitnessTracking' className={styles.svg} />
+                                                <img src={lifting3} alt='lifting' className={styles.svg} />
                                                 <UGBLabel variant='h5' type='title'>
                                                     Add Sets
                                                 </UGBLabel>
