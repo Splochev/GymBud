@@ -348,6 +348,7 @@ const useStyles = makeStyles((theme) => ({
     },
     selectedPopoverElement: {
         background: '#F5F5F5',
+        color: '#28A745',
     }
 }));
 
