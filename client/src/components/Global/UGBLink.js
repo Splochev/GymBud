@@ -3,11 +3,11 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
-        fontSize: '20px'
+        fontSize: theme.spacing(2.5)
     },
     white: {
         color: 'white',
-        fontSize: '15px',
+        fontSize: theme.spacing(1.875),
         textDecoration: 'none',
         '&:hover': {
             color: 'white',
@@ -41,10 +41,10 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     outlineLight: {
-        width: '35px',
-        height: '35px',
+        width: theme.spacing(4.375),
+        height: theme.spacing(4.375),
         border: '1px solid white',
-        borderRadius: '0.25rem',
+        borderRadius: theme.spacing(0.25),
         backgroundColor: '#1B1B1B',
         fontWeight: 400,
         lineHeight: 1.5,

@@ -9,7 +9,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const useStyles = makeStyles((theme) => ({
     hasPadding: {
-        padding: '1.5rem'
+        padding: theme.spacing(1.5),
     },
     actions: {
         display: 'flex',
@@ -18,12 +18,12 @@ const useStyles = makeStyles((theme) => ({
             marginRight: theme.spacing(2),
         },
         "& button": {
-            width: '93px'
+            width: theme.spacing(11.625),
         }
     }
 }));
 
-function UGBModal({ open, onClose, maxWidth, hasPadding = true, fullWidth=true, children }) {
+function UGBModal({ open, onClose, maxWidth, hasPadding = true, fullWidth = true, children }) {
     const styles = useStyles();
     return (
         <Dialog

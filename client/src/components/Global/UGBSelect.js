@@ -16,8 +16,8 @@ const useSelectStyles = makeStyles((theme) => ({
         },
     },
     icon: {
-        marginRight: '-5px',
-        padding: '3px',
+        marginRight: theme.spacing(-0.625),
+        padding: theme.spacing(0.375),
         '& .MuiSvgIcon-root': {
             color: '#757575',
         }

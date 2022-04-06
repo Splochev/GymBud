@@ -6,10 +6,18 @@ import Radio from '@material-ui/core/Radio';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { UGBRadioButtonsGroup } from '../../../Global/UGBRadioButtonsGroup'
 import clsx from 'clsx'
-import { Typography } from '@material-ui/core';
 import useWindowSize from '../../../utils/useWindowSize';
 import { UGBButton } from '../../../Global/UGBButton';
 import { useEffect } from 'react';
+import UGBLabel from '../../../Global/UGBLabel';
+
+const customStyles = {
+    resultLabel: {
+        textAlign: 'left',
+        width: 160,
+        marginTop: 8
+    }
+}
 
 const KnowsLbmFalse = ({ bmr }) => {
     const styles = useStyles();
@@ -48,7 +56,7 @@ const KnowsLbmFalse = ({ bmr }) => {
                 customMap={() => {
                     return (
                         <>
-                            <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon,styles.radioIcon)} />} />
+                            <FormControlLabel key={'male'} value={'male'} control={<Radio />} label={<i className={clsx("fas fa-mars", styles.icon, styles.radioIcon)} />} />
                             <FormControlLabel key={'female'} value={'female'} control={<Radio />} label={<i className={clsx("fas fa-venus", styles.icon, styles.radioIcon)} />} />
                         </>
                     );
@@ -74,12 +82,12 @@ const KnowsLbmFalse = ({ bmr }) => {
             >
                 Calculate
             </UGBButton>
-            <Typography
-                className={clsx(styles.subTitle, styles.marginTopTitle, styles.resultLabel)}
-                variant='subtitle2'
-                component='div'>
+            <UGBLabel
+                variant='subtitle1'
+                style={customStyles.resultLabel}
+            >
                 Your BMR is: {!isNaN(Number(bmr[0])) ? <span className={styles.result}>{bmr[0]}</span> : null}
-            </Typography>
+            </UGBLabel>
         </form >
     );
 }

@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
-import { createTheme, InputAdornment, Typography } from "@material-ui/core";
+import { createTheme, InputAdornment } from "@material-ui/core";
 import { ThemeProvider } from '@material-ui/core/styles';
 import { parseDate } from '../utils/utilFunc'
 import { makeStyles } from '@material-ui/core';
 import EventIcon from '@material-ui/icons/Event';
+import UGBLabel from "./UGBLabel";
 
 const useStyles = makeStyles((theme) => ({
     datePicker: {
@@ -27,24 +28,19 @@ const useStyles = makeStyles((theme) => ({
                 content: 'none'
             },
             width: '100%',
-            height: 40,
-            borderRadius: 20,
+            height: theme.spacing(5),
+            borderRadius: theme.spacing(2.5),
             boxSizing: 'border-box',
             padding: '8px 16px',
             background: '#e0e0e01a',
             color: '#1B1B1B',
             boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
             '& .MuiSvgIcon-root': {
-                fontSize: '21px',
+                fontSize: theme.spacing(2.625),
                 color: '#757575'
             },
         }
-    },
-    subTitle: {
-        width: '100%',
-        marginBottom: 2,
-        color: '#1B1B1B',
-    },
+    }
 }))
 
 const theme = createTheme({
@@ -62,7 +58,7 @@ const theme = createTheme({
                         color: 'white',
                         '&:hover': {
                             backgroundColor: '#218838',
-                            color:'white'
+                            color: 'white'
                         },
                         '&:focus': {
                             background: '#218838',
@@ -86,7 +82,9 @@ export function UGBDatePicker({ label = 'Choose Date', selectedDate, setSelected
         maxDate && minDate ?
             <div className={styles.datePicker}>
                 {label ?
-                    <Typography variant='subtitle2' component='div' className={styles.subTitle} >{label}</Typography>
+                    <UGBLabel variant='subtitle1' >
+                        {label}
+                    </UGBLabel>
                     :
                     null
                 }
@@ -118,7 +116,9 @@ export function UGBDatePicker({ label = 'Choose Date', selectedDate, setSelected
             :
             maxDate ?
                 <div className={styles.datePicker}>
-                    <Typography variant='subtitle2' component='div' className={styles.subTitle} >{label}</Typography>
+                    <UGBLabel variant='subtitle1' >
+                        {label}
+                    </UGBLabel>
                     <ThemeProvider theme={theme}>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <DatePicker
@@ -145,7 +145,9 @@ export function UGBDatePicker({ label = 'Choose Date', selectedDate, setSelected
                 :
                 minDate ?
                     <div className={styles.datePicker}>
-                        <Typography variant='subtitle2' component='div' className={styles.subTitle} >{label}</Typography>
+                        <UGBLabel variant='subtitle1' >
+                            {label}
+                        </UGBLabel>
                         <ThemeProvider theme={theme}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <DatePicker
@@ -172,7 +174,9 @@ export function UGBDatePicker({ label = 'Choose Date', selectedDate, setSelected
                     :
                     <>
                         <div className={styles.datePicker}>
-                            <Typography variant='subtitle2' component='div' className={styles.subTitle} >{label}</Typography>
+                            <UGBLabel variant='subtitle1' >
+                                {label}
+                            </UGBLabel>
                             <ThemeProvider theme={theme}>
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <DatePicker
@@ -202,8 +206,6 @@ export function UGBDatePicker({ label = 'Choose Date', selectedDate, setSelected
 
 
 export const UGBStaticDatePicker = ({ date, changeDate }) => {
-
-
     // prettier-ignore
     return (
         <>

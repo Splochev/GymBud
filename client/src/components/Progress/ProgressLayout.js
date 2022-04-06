@@ -104,13 +104,13 @@ const Progress = () => {
     return (
         <div className={styles.pageLayout}>
             <div className={styles.title}>
-                <UGBLabel variant='h5' type='title'>
+                <UGBLabel variant='h5'>
                     Track Progress
                 </UGBLabel>
             </div>
             <div className={styles.toolbar}>
                 <div className={styles.select}>
-                    <UGBLabel variant='subtitle2' minWidth='81px'>
+                    <UGBLabel variant='subtitle2'>
                         Tracker Type
                     </UGBLabel>
                     <UGBSelect label='' $value={selectedProgressType}>

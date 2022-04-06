@@ -3,10 +3,11 @@ import { useStoreContext } from '../store/Store';
 import { postData } from '../utils/FetchUtils'
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
-import { Typography } from '@material-ui/core';
 import UGBLink from '../Global/UGBLink';
 import { makeStyles } from '@material-ui/core';
 import { UGBButton } from '../Global/UGBButton';
+import UGBHr from '../Global/UGBHr';
+import UGBLabel from '../Global/UGBLabel';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -15,15 +16,10 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    hr: {
-        width: '100%',
-        color: '#CED4DA',
-        opacity: 0.3
-    },
     forgotPass: {
         width: '100%',
         display: 'flex',
-        gap: 5,
+        gap: theme.spacing(0.5),
         justifyContent: 'start'
     },
     actions: {
@@ -35,13 +31,18 @@ const useStyles = makeStyles((theme) => ({
             marginRight: theme.spacing(2),
         },
         "& button": {
-            width: '93px'
+            width: theme.spacing(11.625),
         }
     },
 }));
 
-
-
+const customStyles = {
+    subtitle: {
+        textAlign: 'left',
+        width: '100%',
+        marginBottom: 8,
+    }
+}
 
 const Login = ({ setShowLogin }) => {
     const styles = useStyles();
@@ -66,21 +67,18 @@ const Login = ({ setShowLogin }) => {
 
     return (
         <form className={styles.form} onSubmit={onLogin}>
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Sign In:</Typography>
-            <hr className={styles.hr} />
-            <Typography
-                variant='inherit'
-                component='div'
-                style={{
-                    color: '#1B1B1B',
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'start',
-                    marginBottom: 10,
-                }}
+            <UGBLabel
+                variant='h5'
+            >
+                Sign In
+            </UGBLabel>
+            <UGBHr type='horizontal' />
+            <UGBLabel
+                variant='subtitle1'
+                style={customStyles.subtitle}
             >
                 Please fill in this form to sign in.
-            </Typography>
+            </UGBLabel>
             <UGBIconInput
                 $value={email}
                 required

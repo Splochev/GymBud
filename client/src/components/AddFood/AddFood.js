@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import UGBMissingFields from '../Global/UGBMissingFields';
 import { UGBIconInput } from '../Global/UGBInput'
-import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { UGBButton } from '../Global/UGBButton';
+import UGBHr from '../Global/UGBHr';
+import UGBLabel from '../Global/UGBLabel';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -12,35 +13,26 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 15
-    },
-    hr: {
-        width: '100%',
-        color: '#CED4DA',
-        opacity: 0.3
+        gap: theme.spacing(2),
     },
     actions: {
         width: '100%',
         display: 'flex',
         justifyContent: "flex-end",
         marginTop: theme.spacing(2),
-        gap: 10,
+        gap: theme.spacing(1),
         '& button': {
-            width: '76px'
+            width: theme.spacing(9.5),
         }
     },
     inputs: {
         display: 'flex',
         width: '100%',
-        gap: 16,
+        gap: theme.spacing(2),
         '@media (max-width: 460px)': {
             flexDirection: 'column',
         }
-    },
-    title: {
-        textAlign: 'center',
-        color: '#1B1B1B'
-    },
+    }
 }));
 
 function calculateWeightAndCalories(carbs, fat, protein, req) {
@@ -110,8 +102,10 @@ const AddFood = () => {
 
     return (
         <form className={styles.form} onSubmit={addFood}>
-            <Typography variant='h5' component='div' className={styles.title} >Add Food</Typography>
-            <hr className={styles.hr} />
+            <UGBLabel variant='h5'>
+                Add Food
+            </UGBLabel>
+            <UGBHr type='horizontal' />
             {alert}
             <div className={styles.inputs}>
                 <UGBIconInput

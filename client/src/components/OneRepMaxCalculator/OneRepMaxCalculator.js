@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import UGBMissingFields from '../Global/UGBMissingFields';
 import { UGBIconInput } from '../Global/UGBInput';
-import { makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import UGBLink from '../Global/UGBLink';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { UGBButton } from '../Global/UGBButton';
+import UGBHr from '../Global/UGBHr';
 import tallyIcon from '../assets/tallyIcon.png'
+import UGBLabel from '../Global/UGBLabel';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -15,15 +17,10 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    hr: {
-        width: '100%',
-        color: '#CED4DA',
-        opacity: 0.3
-    },
     inputs: {
         width: '100%',
         display: 'flex',
-        gap: 10,
+        gap: theme.spacing(1.25),
         '@media (max-width: 365px)': {
             flexDirection: 'column'
         }
@@ -37,25 +34,27 @@ const useStyles = makeStyles((theme) => ({
             marginRight: theme.spacing(2),
         },
     },
-    subTitle: {
-        color: '#1B1B1B',
-        padding: 0,
-        fontSize: '1rem',
-        fontWeight: '400',
-        lineHeight: '1',
-        letterSpacing: '0.00938em',
-        textAlign: 'center',
-        width: '185px',
-        marginBottom: 10
-    },
     result: {
         fontWeight: "bolder",
-        letterSpacing: '1.2',
+        letterSpacing: 1.2,
     },
     icon: {
-        fontSize: '20px'
+        fontSize: theme.spacing(2.5)
     },
 }));
+
+const customStyles = {
+    title: {
+        textAlign: 'center'
+    },
+    text: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        marginBottom: 8,
+        gap: 16
+    }
+}
 
 const OneRepMaxCalculator = () => {
     const styles = useStyles();
@@ -69,8 +68,6 @@ const OneRepMaxCalculator = () => {
         e.preventDefault();
         const parsedWeight = Number(weight[0]);
         const parsedReps = Number(reps[0]);
-        console.log(parsedWeight, parsedReps)
-
 
         if ((parsedReps <= 10 && parsedReps >= 4) && (parsedWeight > 0)) {
             const result = (parsedWeight / (1.0278 - 0.0278 * parsedReps)).toFixed(2);
@@ -82,19 +79,16 @@ const OneRepMaxCalculator = () => {
 
     return (
         <form className={styles.form} onSubmit={calculate}>
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >One Rep Max Calculator</Typography>
-            <hr className={styles.hr} />
-            <Typography
+            <UGBLabel
+                variant='h5'
+                style={customStyles.title}
+            >
+                One Rep Max Calculator
+            </UGBLabel>
+            <UGBHr type='horizontal' />
+            <UGBLabel
                 variant='inherit'
-                component='div'
-                style={{
-                    color: '#1B1B1B',
-                    width: '100%',
-                    marginBottom: 10,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 15
-                }}
+                style={customStyles.text}
             >
                 <div>
                     One Rep Max(1RM) is one of the best and safest ways to measure your strength.
@@ -115,7 +109,7 @@ const OneRepMaxCalculator = () => {
                     Going above 10 repetitions is not recommended.The golden range for the formula is between 4-6
                     repetitions.
                 </div>
-            </Typography>
+            </UGBLabel>
             {alert}
             <div className={styles.inputs}>
                 <UGBIconInput
@@ -131,12 +125,9 @@ const OneRepMaxCalculator = () => {
                     label="Reps"
                 />
             </div>
-            <Typography
-                className={styles.subTitle}
-                variant='subtitle2'
-                component='div'>
+            <UGBLabel variant='subtitle1'>
                 Your one rep max is: {!isNaN(Number(oneRM[0])) ? <span className={styles.result}>{oneRM[0]}</span> : null}
-            </Typography>
+            </UGBLabel>
             <UGBButton
                 type='submit'
                 btnType='primary'

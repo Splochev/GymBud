@@ -2,8 +2,9 @@ import { useState } from 'react';
 import KnowsLbmTrue from './knowsLbmTrue/KnowsLbmTrue'
 import KnowsLbmFalse from './knowsLbmFalse/KnowsLbmFalse'
 import { UGBRadioButtonsGroup } from '../../Global/UGBRadioButtonsGroup';
-import { FormControlLabel, Radio, Typography } from '@material-ui/core';
+import { FormControlLabel, Radio } from '@material-ui/core';
 import useStyles from '../styles'
+import UGBLabel from '../../Global/UGBLabel';
 
 const KatchMcardleFormula = ({ bmr }) => {
     const styles = useStyles();
@@ -12,7 +13,10 @@ const KatchMcardleFormula = ({ bmr }) => {
     return (
         <div className={styles.katchFormulaLayout}>
             <div >
-                <Typography className={styles.subTitle} variant='subtitle2' component='div'>Do you know your LBM?</Typography>
+                <UGBLabel
+                    variant='subtitle1'>
+                    Do you know your LBM?
+                </UGBLabel>
                 <UGBRadioButtonsGroup
                     display='inline'
                     $checkedValue={knowsLbmLayout}

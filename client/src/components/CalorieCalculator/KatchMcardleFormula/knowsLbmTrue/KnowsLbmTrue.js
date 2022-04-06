@@ -2,10 +2,18 @@ import useStyles from '../../styles'
 import { useState } from 'react';
 import UGBMissingFields from '../../../Global/UGBMissingFields.js';
 import { UGBIconInput } from '../../../Global/UGBInput'
-import { Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import { UGBButton } from '../../../Global/UGBButton';
 import { useEffect } from 'react';
+import UGBLabel from '../../../Global/UGBLabel';
+
+const customStyles = {
+    resultLabel: {
+        textAlign: 'left',
+        width: 160,
+        marginTop: 8
+    }
+}
 
 const KnowsLbmTrue = ({ bmr }) => {
     const styles = useStyles();
@@ -44,12 +52,12 @@ const KnowsLbmTrue = ({ bmr }) => {
             >
                 Calculate
             </UGBButton>
-            <Typography
-                className={clsx(styles.subTitle, styles.marginTopTitle, styles.resultLabel)}
-                variant='subtitle2'
-                component='div'>
+            <UGBLabel
+                variant='subtitle1'
+                style={customStyles.resultLabel}
+            >
                 Your BMR is: {!isNaN(Number(bmr[0])) ? <span className={styles.result}>{bmr[0]}</span> : null}
-            </Typography>
+            </UGBLabel>
         </form>
     );
 }

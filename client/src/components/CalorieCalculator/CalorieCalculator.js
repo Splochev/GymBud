@@ -6,13 +6,28 @@ import UGBMissingFields from '../Global/UGBMissingFields';
 import { UGBRadioButtonsGroup } from '../Global/UGBRadioButtonsGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
-import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import useWindowSize from '../utils/useWindowSize';
 import { UGBButton } from '../Global/UGBButton';
 import { UGBSelect, UGBMenuItem } from '../Global/UGBSelect';
+import UGBHr from '../Global/UGBHr';
+import UGBLabel from '../Global/UGBLabel';
 
+const customStyles = {
+    title: {
+        textAlign: 'center',
+        marginBottom: 8
+    },
+    subtitle1: {
+        textAlign: 'center',
+        marginBottom: -10
+    },
+    resultLabel: {
+        textAlign: 'left',
+        width: 160,
+    }
+}
 
 const CalorieCalculator = () => {
     const size = useWindowSize();
@@ -49,11 +64,23 @@ const CalorieCalculator = () => {
         }
     }
 
+
+
     return (
         <div className={styles.calorieCalculatorContainer}>
             <div className={styles.container}>
-                <Typography variant='h5' component='div' className={clsx(styles.title, styles.marginBottomTitle)} >Calorie Calculator</Typography>
-                <Typography variant='subtitle2' component='div' className={styles.subTitle} >Choose Formula:</Typography>
+                <UGBLabel
+                    variant='h5'
+                    style={customStyles.title}
+                >
+                    Calorie Calculator
+                </UGBLabel>
+                <UGBLabel
+                    variant='subtitle1'
+                    style={customStyles.subtitle1}
+                >
+                    Choose Formula:
+                </UGBLabel>
                 <UGBRadioButtonsGroup
                     display={size.width > 425 ? 'inline' : 'block'}
                     $checkedValue={formula}
@@ -66,13 +93,23 @@ const CalorieCalculator = () => {
                         );
                     }}
                 />
-                <hr className={styles.hr} />
-                <Typography variant='h6' component='div' className={clsx(styles.title, styles.marginBottomTitle)} >BMR Calculator</Typography>
+                <UGBHr variant='horizontal' />
+                <UGBLabel
+                    variant='h5'
+                    style={customStyles.title}
+                >
+                    BMR Calculator
+                </UGBLabel>
                 {formula[0] === 'KatchMcardleFormula' ? <KatchMcardleFormula bmr={bmr} /> : null}
                 {formula[0] === 'MifflinStJeorFormula' ? <MifflinStJeorFormula bmr={bmr} /> : null}
-                <hr className={styles.hr} />
+                <UGBHr variant='horizontal' />
                 <div className={styles.tdeeResult}>
-                    <Typography variant='h6' component='div' className={clsx(styles.title)} >TDEE calculator:</Typography>
+                    <UGBLabel
+                        variant='h5'
+                        style={customStyles.title}
+                    >
+                        BMR Calculator
+                    </UGBLabel>
                     <UGBSelect label='Activity Index' $value={selectedActivityIndex}>
                         {activityIndexes.map(x => {
                             return (
@@ -90,12 +127,12 @@ const CalorieCalculator = () => {
                     >
                         Calculate
                     </UGBButton>
-                    <Typography
-                        className={clsx(styles.subTitle, styles.resultLabel)}
-                        variant='subtitle2'
-                        component='div'>
+                    <UGBLabel
+                        variant='subtitle1'
+                        style={customStyles.resultLabel}
+                    >
                         Your TDEE is: {!isNaN(Number(tdee[0])) ? <span className={styles.result}>{tdee[0].toFixed(2)}</span> : null}
-                    </Typography>
+                    </UGBLabel>
                 </div>
                 {alert}
             </div>

@@ -18,13 +18,13 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     fill: {
-        marginLeft: '20px'
+        marginLeft: theme.spacing(2.5),
     },
     links: {
         display: 'flex',
-        gap: 10,
-        marginTop: 5,
-        marginBottom: 5,
+        gap: theme.spacing(1.25),
+        marginTop: theme.spacing(0.625),
+        marginBottom: theme.spacing(0.625),
     }
 }));
 

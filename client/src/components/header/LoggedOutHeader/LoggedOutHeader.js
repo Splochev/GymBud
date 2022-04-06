@@ -25,9 +25,9 @@ const useStyles = makeStyles((theme) => ({
     },
     authLinks: {
         height: '100%',
-        width: '140px',
+        width: theme.spacing(17.5),
         display: 'flex',
-        gap: 10,
+        gap: theme.spacing(1),
         alignItems: 'center',
         '@media (max-width: 418px)': {
             gap: 0,
@@ -37,10 +37,10 @@ const useStyles = makeStyles((theme) => ({
     },
     btnContainer: {
         '@media (max-width: 970px)': {
-            width: '175px',
+            width: theme.spacing(21.875)
         },
         '@media (max-width: 418px)': {
-            width: '104px',
+            width: theme.spacing(13)
         }
     },
     navigationBar: {
@@ -57,13 +57,13 @@ const useStyles = makeStyles((theme) => ({
             padding: 0
         },
         '@media (max-width: 418px)': {
-            width: '104px',
+            width: theme.spacing(13),
         }
     },
     navItems: {
         display: 'flex',
         alignItems: 'center',
-        gap: 15,
+        gap: theme.spacing(2),
         height: '100%'
     },
     navItemsContainer: {
@@ -80,13 +80,16 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: "#1B1B1B",
-        gap: 10,
+        gap: theme.spacing(1.25),
         transition: 'height 0.2s'
     },
     collapseNavTransition: {
         overflow: 'unset',
-        paddingBottom: 10,
-        paddingLeft: 10,
+        paddingBottom: theme.spacing(1.25),
+        paddingLeft: theme.spacing(1.25),
+    },
+    iconColor: {
+        color: '#FFFFFF'
     }
 }));
 
@@ -270,14 +273,14 @@ const Auth = ({ setToggleNav }) => {
                     onClick={(e) => setAnchorMore(e.currentTarget)}
                     component="span" disableTouchRipple
                 >
-                    <MoreVertIcon fontSize='large' style={{ color: 'white' }} />
+                    <MoreVertIcon fontSize='large' className={styles.iconColor} />
                 </IconButton>
             </LiItem>
         </div>
     );
 }
 
-const NavItems = ({ setToggleNav}) => {
+const NavItems = ({ setToggleNav }) => {
     const size = useWindowSize();
     const { tab } = useQuery();
 

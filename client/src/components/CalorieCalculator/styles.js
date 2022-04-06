@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 
 export default makeStyles((theme) => ({
     icon: {
-        fontSize: '20px',
+        fontSize: theme.spacing(2.5),
     },
     calorieCalculatorContainer: {
         display: 'flex',
@@ -11,28 +11,18 @@ export default makeStyles((theme) => ({
         width: '100%'
     },
     tdeeResult: {
-        marginBottom: 10,
+        marginBottom: theme.spacing(1),
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
-        gap: 10,
-    },
-    activityIndex: {
-        '& button': {
-            width: '235px'
-        }
+        gap: theme.spacing(1),
     },
     form: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column'
-    },
-    hr: {
-        width: '100%',
-        color: '#CED4DA',
-        opacity: 0.3
     },
     actions: {
         width: '100%',
@@ -44,49 +34,25 @@ export default makeStyles((theme) => ({
         },
     },
     container: {
-        minHeight: '745px',
+        minHeight: theme.spacing(93.125),
         width: '100%'
     },
     katchFormulaLayout: {
         display: 'flex',
         width: '100%',
         justifyContent: "space-between",
-        gap: 15,
+        gap: theme.spacing(2),
         '@media (max-width: 500px)': {
             flexDirection: 'column',
         }
     },
-    subTitle: {
-        color: '#1B1B1B',
-        padding: 0,
-        fontSize: '1rem',
-        fontWeight: '400',
-        lineHeight: '1',
-        letterSpacing: '0.00938em',
-        textAlign: 'center',
-    },
-    title: {
-        textAlign: 'center',
-        color: '#1B1B1B'
-    },
-    marginTopTitle: {
-        marginTop: 10
-    },
-    marginBottomTitle: {
-        marginBottom: 10
-    },
     inputs: {
         display: 'flex',
         width: '100%',
-        gap: 16,
-    },
-    resultLabel: {
-        width: '160px',
-        textAlign:'left'
+        gap: theme.spacing(2),
     },
     result: {
         fontWeight: "bolder",
-        letterSpacing: '1.2'
     },
     radioIcon: {
         color: '#757575'

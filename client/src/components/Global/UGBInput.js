@@ -12,9 +12,9 @@ import { UGBIconButton } from './UGBButton';
 import UGBLabel from './UGBLabel';
 import { TextareaAutosize } from '@material-ui/core';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     icon: {
-        fontSize: '21px',
+        fontSize: theme.spacing(2.625),
         color: '#757575'
     },
     textarea: {
@@ -26,7 +26,11 @@ const useStyles = makeStyles(() => ({
     imgIcon: {
         width: 'auto',
         height: '90%',
-        marginRight: '10px'
+        marginRight: theme.spacing(1.25)
+    },
+    iconButton: {
+        padding: theme.spacing(0.625),
+        marginRight: theme.spacing(-1.375)
     }
 }));
 
@@ -225,7 +229,7 @@ export function UGBPasswordInput({ startIcon, ...props }) {
                 ),
                 endAdornment: (
                     <InputAdornment position="end">
-                        <IconButton style={{ padding: '5px', marginRight: '-11px' }} onClick={handleClickShowPassword}>
+                        <IconButton className={styles.iconButton} onClick={handleClickShowPassword}>
                             {show ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                     </InputAdornment>

@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     },
     container: {
         "& .MuiTableContainer-root": {
-            minHeight: '577px',
+            minHeight: theme.spacing(72.125),
             borderRadius: '5px 5px 0 0',
             boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
         },
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
             },
             "& .MuiSvgIcon-root": {
                 color: 'white !important',
-                fontSize: '20px'
+                fontSize: theme.spacing(2.5),
             },
             "& .MuiTableCell-root": {
                 borderBottom: '1px solid #1B1B1B',
@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
     },
     textField: {
         "& .MuiFormControl-root": {
-            width: '92px',
+            width: theme.spacing(11.5),
         },
         "& .MuiFormLabel-root": {
             color: "#868686"
@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     pagination: {
-        marginTop: 10,
+        marginTop: theme.spacing(1.25),
         display: 'flex',
         justifyContent: 'center'
     }

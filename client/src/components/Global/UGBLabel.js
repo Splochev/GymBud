@@ -14,20 +14,21 @@ const useStyles = makeStyles((theme) => ({
     },
     cardSubTitle: {
     },
-    center: {
-        textAlign: 'center'
-    }
+
+
 }));
 
-const UGBLabel = ({ component ='div',variant, type, children, minWidth, center = false, props }) => {
+const UGBLabel = ({ component = 'div', variant, type, children, style, props }) => {
     const styles = useStyles();
     return (
-        <Typography style={{ minWidth: minWidth || '' }} variant={variant} component={component}
+        <Typography
+            component={component}
+            variant={variant}
             className={clsx(
                 styles.label,
-                styles[type],
-                center ? styles.center : null
+                styles[type]
             )}
+            style={style}
             {...props}
         >
             {children}

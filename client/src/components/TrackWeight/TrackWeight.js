@@ -1,10 +1,12 @@
-import { makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { useState } from 'react';
 import { UGBDatePicker } from '../Global/UGBDatePicker';
 import { UGBInput } from '../Global/UGBInput';
 import { postData } from '../utils/FetchUtils';
 import { parseDate } from '../utils/utilFunc';
 import { UGBButton } from '../Global/UGBButton';
+import UGBLabel from '../Global/UGBLabel';
+import UGBHr from '../Global/UGBHr';
 
 const useStyles = makeStyles((theme) => ({
     actions: {
@@ -15,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
             marginRight: theme.spacing(2),
         },
         "& button": {
-            width: '93px'
+            width: theme.spacing(11.625),
         }
     },
     inputs: {
@@ -27,17 +29,15 @@ const useStyles = makeStyles((theme) => ({
         "& .MuiFormControl-root": {
             width: '100%'
         }
-    },
-    title: {
-        color: '#1B1B1B',
-        textAlign: 'center'
-    },
-    hr: {
-        width: '100%',
-        color: '#CED4DA',
-        opacity: 0.3
-    },
+    }
 }));
+
+const customStyles = {
+    title: {
+        textAlign: 'center',
+        width: '100%',
+    }
+}
 
 const TrackWeight = ({ onClose }) => {
     const styles = useStyles();
@@ -69,14 +69,10 @@ const TrackWeight = ({ onClose }) => {
 
     return (
         <form onSubmit={onSubmitWeight}>
-            <Typography
-                className={styles.title}
-                variant='h6'
-                component='div'
-            >
+            <UGBLabel variant='h5' style={customStyles.title}>
                 Track Daily Weight
-            </Typography>
-            <hr className={styles.hr} />
+            </UGBLabel>
+            <UGBHr type='horizontal' />
             <div className={styles.inputs}>
                 <div className={styles.datePicker}>
                     <UGBDatePicker
@@ -87,10 +83,8 @@ const TrackWeight = ({ onClose }) => {
                     />
                 </div>
                 <UGBInput
-                    type='number'
                     $value={weight}
                     label='Weight'
-                    min='1'
                     iconStart='fas fa-balance-scale'
                 />
             </div>

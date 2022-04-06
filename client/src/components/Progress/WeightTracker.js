@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
-        width: '73px'
+        width: theme.spacing(9.125),
     },
     startDate: {
         borderBottom: "1px solid #757575"
@@ -107,6 +107,15 @@ const useStyles = makeStyles((theme) => ({
             gap: theme.spacing(1.25),
             width: '100%'
         }
+    },
+    actions: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: "flex-end",
+        marginTop: theme.spacing(2),
+        "& button:first-child": {
+            marginRight: theme.spacing(2),
+        },
     }
 }));
 
@@ -121,6 +130,7 @@ function getBarChartWidth(barsCount) {
 
 const EditWeightEntries = () => {
     const styles = useStyles();
+    const history = useHistory();
     const [limitDate, setLimitDate] = useState(new Date());
     const [offsetDate, setOffsetDate] = useState(null);
     const [maxDate] = useState(new Date());
@@ -303,6 +313,17 @@ const EditWeightEntries = () => {
                 limitDate={maxDate}
                 setChanges={setChanges}
             />
+            <div className={styles.actions}>
+                <UGBButton
+                    type='submit'
+                    btnType='secondary'
+                    onClick={() => {
+                        history.push(history.pathName);
+                    }}
+                >
+                    Close
+                </UGBButton>
+            </div>
         </>
     );
 }

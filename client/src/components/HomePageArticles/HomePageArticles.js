@@ -8,7 +8,7 @@ import { useStoreContext } from '../store/Store';
 
 const useStyles = makeStyles((theme) => ({
     homePageContainer: {
-        padding: '1.5rem',
+        padding: theme.spacing(1.5),
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -24,9 +24,9 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         flexDirection: 'row',
         '@media (max-width: 1060px)': {
-            justifyContent: '',
+            justifyContent: 'inherit',
             flexDirection: 'column',
-            gap: 50
+            gap: theme.spacing(6.25)
         }
     },
     svg: {
@@ -37,25 +37,25 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         color: '#1B1B1B',
         fontWeight: 'bolder',
-        fontSize: '50px',
+        fontSize: theme.spacing(6.25)
     },
     subTitle: {
         textAlign: 'center',
         color: '#1B1B1B',
         '@media (max-width: 1060px)': {
-            marginBottom: 70
+            marginBottom: theme.spacing(8.75)
         }
     },
     cardTitle: {
         textAlign: 'center',
         fontWeight: 'bolder',
-        fontSize: '25px',
+        fontSize: theme.spacing(3.125),
         color: '#1B1B1B',
-        marginBottom: 16
+        marginBottom: theme.spacing(2)
     },
     cardSubTitle: {
         textAlign: 'center',
-        fontSize: '18px',
+        fontSize: theme.spacing(2.25),
         color: '#1B1B1B',
         display: 'flex',
         flexDirection: 'column',

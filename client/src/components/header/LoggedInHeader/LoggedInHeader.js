@@ -62,9 +62,9 @@ const useStyles = makeStyles((theme) => ({
     },
     authLinks: {
         height: '100%',
-        width: '140px',
+        width: theme.spacing(17.5),
         display: 'flex',
-        gap: 10,
+        gap: theme.spacing(1.25),
         alignItems: 'center',
         '@media (max-width: 418px)': {
             gap: 0,
@@ -74,10 +74,10 @@ const useStyles = makeStyles((theme) => ({
     },
     btnContainer: {
         '@media (max-width: 970px)': {
-            width: '101px',
+            width: theme.spacing(12.625),
         },
         '@media (max-width: 418px)': {
-            width: '104px',
+            width: theme.spacing(13),
         }
     },
     navigationBar: {
@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
     navItems: {
         display: 'flex',
         alignItems: 'center',
-        gap: 15,
+        gap: theme.spacing(2),
         height: '100%'
     },
     navItemsContainer: {
@@ -106,16 +106,19 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: "#1B1B1B",
-        gap: 10,
+        gap: theme.spacing(1.25),
         transition: 'height 0.2s'
     },
     collapseNavTransition: {
         overflow: 'unset',
-        paddingBottom: 10,
-        paddingLeft: 10,
+        paddingBottom: theme.spacing(1.25),
+        paddingLeft: theme.spacing(1.25),
     },
     icon: {
-        fontSize: '21px'
+        fontSize: theme.spacing(2.625),
+    },
+    iconColor: {
+        color: '#FFFFFF'
     }
 }));
 
@@ -284,7 +287,7 @@ const UserAndMore = ({ setToggleNav }) => {
                     component="span" disableTouchRipple
                 >
                     <Avatar>{store[0].user.first_name.charAt(0) + store[0].user.last_name.charAt(0)}</Avatar>
-                    <ExpandMoreIcon style={{ color: '#FFFFFF' }} />
+                    <ExpandMoreIcon className={styles.iconColor} />
                 </Button>
             </LiItem>
             <LiItem
@@ -298,7 +301,7 @@ const UserAndMore = ({ setToggleNav }) => {
                     onClick={(e) => setAnchorMore(e.currentTarget)}
                     component="span" disableTouchRipple
                 >
-                    <MoreVertIcon fontSize='large' style={{ color: 'white' }} />
+                    <MoreVertIcon fontSize='large' className={styles.iconColor} />
                 </IconButton>
             </LiItem>
         </div>

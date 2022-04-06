@@ -17,8 +17,8 @@ const useStylesTest = makeStyles((theme) => ({
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            width: '187px',
-            height: '30px',
+            width: theme.spacing(23.375),
+            height: theme.spacing(3.75),
             color: 'white',
             background: '#28A745',
         },
@@ -26,12 +26,12 @@ const useStylesTest = makeStyles((theme) => ({
             background: '#28A745',
         },
         '& .MuiButtonBase-root:first-child': {
-            width: '37px',
-            height: '37px',
+            width: theme.spacing(4.625),
+            height: theme.spacing(4.625),
             background: 'transparent',
             color: 'white',
             border: '1px solid white',
-            borderRadius: '0.25rem',
+            borderRadius: theme.spacing(0.25),
             '&:focus': {
                 outline: 'none',
                 boxShadow: '#969A9D 0px 0px 0px 3px',
@@ -41,7 +41,7 @@ const useStylesTest = makeStyles((theme) => ({
                 color: '#1B1B1B',
             },
             '& .MuiFab-label': {
-                height:'100%'
+                height: '100%'
             }
         }
     },

@@ -3,13 +3,11 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import { parseDate } from '../utils/utilFunc';
-import { useState } from 'react';
-import { useEffect } from 'react';
 Chart.register(...registerables);
 
 const useStyles = makeStyles((theme) => ({
     canvasContainer250px: {
-        height: '250px',
+        height: theme.spacing(31.25),
         width: '100%'
     }
 }));

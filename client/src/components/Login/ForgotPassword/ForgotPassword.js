@@ -1,9 +1,10 @@
 import { UGBIconInput } from '../../Global/UGBInput';
-import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { UGBButton } from '../../Global/UGBButton';
+import UGBHr from '../../Global/UGBHr';
+import UGBLabel from '../../Global/UGBLabel';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -11,11 +12,6 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    hr: {
-        width: '100%',
-        color: '#CED4DA',
-        opacity: 0.3
     },
     actions: {
         width: '100%',
@@ -28,6 +24,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const customStyles = {
+    subtitle: {
+        textAlign: 'left',
+        width: '100%',
+        marginBottom: 8,
+    }
+}
+
 const ForgotPassword = () => {
     const styles = useStyles();
     const history = useHistory();
@@ -35,21 +39,19 @@ const ForgotPassword = () => {
 
     return (
         <form className={styles.form}>
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Reset Your Password</Typography>
-            <hr className={styles.hr} />
-            <Typography
-                variant='inherit'
-                component='div'
-                style={{
-                    color: '#1B1B1B',
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'start',
-                    marginBottom: 10,
-                }}
+            <UGBLabel
+                variant='h5'
+            >
+                Reset Your Password
+            </UGBLabel>
+            <UGBHr type='horizontal' />
+
+            <UGBLabel
+                variant='subtitle1'
+                style={customStyles.subtitle}
             >
                 Please provide your account email to reset your password.
-            </Typography>
+            </UGBLabel>
             <UGBIconInput
                 $value={email}
                 required

@@ -1,19 +1,30 @@
 import { useHistory } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+    logo: {
+        display: 'inline-block',
+        lineHeight: 'inherit',
+        whiteSpace: 'nowrap',
+        paddingTop: theme.spacing(0.3125),
+        paddingBottom: theme.spacing(0.3125),
+        fontSize: theme.spacing(1.25),
+        marginRight: theme.spacing(1),
+        marginLeft: theme.spacing(0.5),
+    },
+    image: {
+        height: theme.spacing(5.25)
+    }
+}));
+
 
 const UGBLogo = ({ setToggleNav }) => {
     const history = useHistory();
+    const styles = useStyles();
+    
     return (
         <a
-            style={{
-                display: 'inline-block',
-                paddingTop: '0.3125rem',
-                paddingBottom: '0.3125rem',
-                fontSize: "1.25rem",
-                lineHeight: 'inherit',
-                whiteSpace: 'nowrap',
-                marginRight: '1rem',
-                marginLeft: '0.5rem',
-            }}
+            className={styles.logo}
             href="#!"
             onClick={(e) => {
                 e.preventDefault();
@@ -23,7 +34,7 @@ const UGBLogo = ({ setToggleNav }) => {
                 }
             }}
         >
-            <img src="/UrGymBudLogoLight.png" alt="Logo" style={{ height: '42px' }}></img>
+            <img src="/UrGymBudLogoLight.png" alt="Logo" className={styles.image} />
         </a>
     );
 }

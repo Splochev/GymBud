@@ -1,4 +1,4 @@
-import { FormControlLabel, Radio, Typography } from '@material-ui/core';
+import { FormControlLabel, Radio } from '@material-ui/core';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { UGBIconInput, UGBPasswordInput } from '../Global/UGBInput';
@@ -9,21 +9,18 @@ import { useHistory } from 'react-router-dom';
 import { UGBButton } from '../Global/UGBButton';
 import { useEffect } from 'react';
 import { UGBMenuItem, UGBSelect } from '../Global/UGBSelect';
+import UGBHr from '../Global/UGBHr';
+import UGBLabel from '../Global/UGBLabel';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
-        fontSize: '20px'
+        fontSize: theme.spacing(2.5),
     },
     form: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    hr: {
-        width: '100%',
-        color: '#CED4DA',
-        opacity: 0.3
     },
     actions: {
         width: '100%',
@@ -34,13 +31,13 @@ const useStyles = makeStyles((theme) => ({
             marginRight: theme.spacing(2),
         },
         "& button": {
-            width: '93px'
+            width: theme.spacing(11.625),
         }
     },
     inputs: {
         width: '100%',
         display: 'flex',
-        gap: 15,
+        gap: theme.spacing(2),
         '@media (max-width: 460px)': {
             flexDirection: 'column',
             gap: 0,
@@ -51,15 +48,27 @@ const useStyles = makeStyles((theme) => ({
     },
     birthDate: {
         '@media (max-width: 460px)': {
-            gap: 10,
+            gap: theme.spacing(1),
         },
-    }
+    },
+
 }));
+
+const customStyles = {
+    subtitle: {
+        textAlign: 'left',
+        width: '100%',
+        marginBottom: 8,
+    },
+    birthDate: {
+        width: '100%',
+        marginBottom: 5,
+    }
+}
 
 function yearIsLeap(year) {
     return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
 }
-
 
 const monthsLabel = {
     1: 'Jan',
@@ -171,19 +180,16 @@ const Register = () => {
 
     return (
         <form className={styles.form} onSubmit={register}>
-            <Typography variant='h6' component='div' style={{ textAlign: 'center', color: '#1B1B1B' }} >Sign Up</Typography>
-            <hr className={styles.hr} />
-            <Typography
-                variant='inherit'
-                component='div'
-                style={{
-                    color: '#1B1B1B',
-                    width: '100%',
-                    marginBottom: 10,
-                }}
+            <UGBLabel variant='h5'>
+                Sign Up
+            </UGBLabel>
+            <UGBHr type='horizontal' />
+            <UGBLabel
+                variant='subtitle1'
+                style={customStyles.subtitle}
             >
                 Please sign this form to create an account.
-            </Typography>
+            </UGBLabel>
             <div className={styles.inputs}>
                 <UGBIconInput
                     $value={firstName}
@@ -218,17 +224,12 @@ const Register = () => {
                     startIcon='fas fa-lock'
                 />
             </div>
-            <Typography
-                variant='inherit'
-                component='div'
-                style={{
-                    color: '#1B1B1B',
-                    width: '100%',
-                    marginBottom: 5,
-                }}
+            <UGBLabel
+                variant='subtitle1'
+                style={customStyles.birthDate}
             >
                 Birth Date
-            </Typography>
+            </UGBLabel>
             <div className={clsx(styles.inputs, styles.birthDate)}>
                 <UGBSelect label='' $value={day}>
                     {days.map(x => {

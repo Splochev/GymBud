@@ -19,13 +19,16 @@ const useStyles = makeStyles(theme => ({
         },
     },
     missingLabel: {
-        marginRight: '5px'
+        marginRight: theme.spacing(0.625)
     },
     missingContainer: {
         width: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    icon: {
+        color: '#757575'
     }
 }));
 
@@ -127,8 +130,6 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, setMissingExe
                         </div>
                     );
                 }
-
-
                 return (
                     <ListItem key={ex.id}>
                         <ListItemText primary={ex.exercise} />
@@ -144,7 +145,7 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, setMissingExe
                         ...params.InputProps,
                         endAdornment: (
                             <React.Fragment>
-                                {isLoading ? <CircularProgress style={{ color: '#757575' }} size={20} /> : <SearchIcon style={{ color: '#757575' }} />}
+                                {isLoading ? <CircularProgress className={styles.icon} size={20} /> : <SearchIcon className={styles.icon} />}
                                 {params.InputProps.endAdornment}
                             </React.Fragment>
                         ),

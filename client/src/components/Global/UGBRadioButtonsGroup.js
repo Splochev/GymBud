@@ -31,15 +31,15 @@ const useRadioStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent:'center',
-        gap: 10,
+        justifyContent: 'center',
+        gap: theme.spacing(1.25),
     },
     blockFormControl: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 10,
+        gap: theme.spacing(1.25),
     },
     inlineRadioGroup: {
         display: 'flex',
@@ -54,6 +54,9 @@ const useRadioStyles = makeStyles((theme) => ({
         flexWrap: 'nowrap',
         justifyContent: 'center',
         width: '100%'
+    },
+    labelColor: {
+        color: '#1B1B1B'
     }
 }));
 
@@ -67,7 +70,7 @@ export function UGBRadioButtonsGroup({ label, $checkedValue, radios, customMap, 
     return (
         <ThemeProvider theme={theme}>
             <FormControl className={clsx(styles.formControl, styles[`${displayFormControl}FormControl`])} >
-                <FormLabel style={{ color: '#1B1B1B' }}>{label}</FormLabel>
+                <FormLabel className={styles.labelColor}>{label}</FormLabel>
                 <RadioGroup
                     className={styles[`${display}RadioGroup`]}
                     name={label}

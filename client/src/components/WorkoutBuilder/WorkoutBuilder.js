@@ -36,19 +36,18 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     titleSection: {
-        marginBottom: '7px',
+        marginBottom: theme.spacing(1),
     },
     leftSideContainer: {
         display: 'flex',
         flexDirection: 'column',
-        gap: 10,
-        padding: '16px',
-        minWidth: '520px',
+        padding: theme.spacing(2),
+        minWidth: theme.spacing(65),
         '@media (max-width: 1350px)': {
-            minWidth: '450px',
+            minWidth: theme.spacing(56.25),
         },
         '@media (max-width: 1150px)': {
-            minWidth: '400px',
+            minWidth: theme.spacing(50),
         },
         '@media (max-width: 1000px)': {
             width: '100%',
@@ -59,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         display: 'flex',
         gap: 0,
-        marginTop: '5px',
+        marginTop: theme.spacing(1),
         flexDirection: 'column',
         alignItems: "start",
         '& .MuiAutocomplete-root': {
@@ -67,13 +66,14 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     autocomplete: {
-        marginTop: '12px',
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
     },
     exerciseMapping: {
-        minHeight: '536px',
+        minHeight: theme.spacing(66.25),
     },
     exercisesList: {
-        height: '410px',
+        height: theme.spacing(49),
         overflow: 'auto',
         '& .MuiListItem-gutters': {
             paddingLeft: 0,
@@ -89,14 +89,14 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     clearBtn: {
-        minWidth: '40px',
+        minWidth: theme.spacing(5),
         '& .MuiListItemIcon-root': {
-            minWidth: '40px',
+            minWidth: theme.spacing(5),
         }
     },
     saveAndResetActions: {
         display: 'flex',
-        gap: '16px',
+        gap: theme.spacing(2),
         alignItems: 'baseline',
         justifyContent: 'end'
     },
@@ -108,11 +108,11 @@ const useStyles = makeStyles((theme) => ({
             marginRight: theme.spacing(2),
         },
         "& button": {
-            width: '93px'
+            width: theme.spacing(11.625)
         }
     },
     changePadding: {
-        padding: '3px'
+        padding: theme.spacing(0.375)
     },
     sort: {
         minWidth: 'auto',
@@ -139,6 +139,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row'
     },
     toolbar: {
+        marginTop: theme.spacing(1),
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -153,9 +154,9 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
     },
     mergeBtn: {
-        height: '42px',
-        width: '187px',
-        minWidth: '187px',
+        height: theme.spacing(5.25),
+        width: theme.spacing(23.375),
+        minWidth: theme.spacing(23.375),
         '@media (max-width: 600px)': {
             display: 'flex',
             flexDirection: 'row',
@@ -176,7 +177,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
     },
     nested: {
-        paddingLeft: '20px',
+        paddingLeft: theme.spacing(2.5),
     },
     nestedListItem: {
         '& .MuiTypography-root': {
@@ -201,18 +202,18 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'unset',
         width: '100%',
         height: '100%',
-        minHeight: '530px',
+        minHeight: theme.spacing(66.25),
     },
     contentBox: {
         display: 'initial'
     },
     tooltipImg: {
         height: '100%',
-        width: '250px'
+        width: theme.spacing(31.25)
     },
     tooltipPopper: {
         background: '#1B1B1B',
-        paddingTop: '8px'
+        paddingTop: theme.spacing(1)
     },
     exercisesContentContainer: {
         display: 'flex',
@@ -220,17 +221,16 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        marginBottom: '16px',
+        marginBottom: theme.spacing(2),
         boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
-        borderRadius: 30,
+        borderRadius: theme.spacing(3.75),
         '&:hover': {
             cursor: 'pointer'
         },
     },
     exercisesContent: {
-        width: '220px',
-        height: '220px',
-
+        width: theme.spacing(27.5),
+        height: theme.spacing(27.5),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -253,22 +253,22 @@ const useStyles = makeStyles((theme) => ({
     addSet: {
         display: 'flex',
         alignItems: 'end',
-        gap: '8px'
+        gap: theme.spacing(1)
     },
     addSetBtn: {
         display: 'flex',
         justifyContent: 'center',
         width: '100%',
-        marginBottom: '3px',
-        marginTop: '3px',
+        marginBottom: theme.spacing(0.375),
+        marginTop: theme.spacing(0.375),
     },
     addSetAndMarkersContainer: {
-        marginTop: '10px',
+        marginTop: theme.spacing(1.25),
         display: 'flex',
         width: '100%',
         flexDirection: 'column',
-        gap: 16,
-        height: '430px',
+        gap: theme.spacing(2),
+        height: theme.spacing(53.75),
         overflow: 'auto',
     },
     rightSideContainer: {
@@ -283,8 +283,8 @@ const useStyles = makeStyles((theme) => ({
     pageContainer: {
         display: 'flex',
         justifyContent: 'space-between',
-        paddingLeft: '30px',
-        paddingRight: '30px',
+        paddingLeft: theme.spacing(3.75),
+        paddingRight: theme.spacing(3.75),
         '@media (max-width: 550px)': {
             paddingLeft: '0px',
             paddingRight: '0px',
@@ -322,7 +322,7 @@ const useStyles = makeStyles((theme) => ({
     addMarkerContainer: {
         width: '100%',
         '& .MuiTypography-root': {
-            marginLeft: '50px'
+            marginLeft: theme.spacing(6.25)
         }
     },
     addMarkerInputs: {
@@ -344,11 +344,24 @@ const useStyles = makeStyles((theme) => ({
     imgIcon: {
         width: 'auto',
         height: '90%',
-        marginRight: '10px'
+        marginRight: theme.spacing(1.25)
     },
     selectedPopoverElement: {
         background: '#F5F5F5',
         color: '#28A745',
+    },
+    supersetLabel: {
+        fontWeight: 'bolder',
+        fontSize: theme.spacing(2.125)
+    },
+    divFiller: {
+        width: theme.spacing(6)
+    },
+    iconPrimaryColor: {
+        color: '#757575'
+    },
+    iconSecondaryColor: {
+
     }
 }));
 
@@ -405,7 +418,7 @@ const AddNewWorkoutJournal = ({ onSubmit, onClose }) => {
     return (
         <form onSubmit={addWorkoutJournal}>
             <div className={styles.titleSection}>
-                <UGBLabel variant='h5' type='title'>
+                <UGBLabel variant='h5'>
                     Add a new workout journal
                 </UGBLabel>
             </div>
@@ -517,7 +530,7 @@ const EditWorkoutJournal = ({ selectedWorkoutJournalObj, setSelectedWorkoutJourn
     return (
         <form onSubmit={editWorkoutJournal}>
             <div className={styles.titleSection}>
-                <UGBLabel variant='h5' type='title'>
+                <UGBLabel variant='h5'>
                     Edit workout journal: {selectedWorkoutJournalObj?.name || ''}
                 </UGBLabel>
             </div>
@@ -575,7 +588,7 @@ const DeleteWorkoutJournal = ({ selectedWorkoutJournalObj, refresh, onClose }) =
     return (
         <form onSubmit={deleteWJ}>
             <div className={styles.titleSection}>
-                <UGBLabel variant='h5' type='title'>
+                <UGBLabel variant='h5'>
                     Are you sure you want to delete workout journal &ldquo;{workoutJournalName}&rdquo;?
                 </UGBLabel>
             </div>
@@ -629,7 +642,7 @@ const AddNewWorkoutSession = ({ workoutJournal, onSubmit, onClose }) => {
     return (
         <form onSubmit={addWorkoutSession}>
             <div className={styles.titleSection}>
-                <UGBLabel variant='h5' type='title'>
+                <UGBLabel variant='h5'>
                     Add a new session for the workout journal: {workoutJournal?.name || ''}
                 </UGBLabel>
             </div>
@@ -720,7 +733,7 @@ const EditWorkoutSession = ({ selectedWorkoutJournalObj, selectedWorkoutSessionO
     return (
         <form onSubmit={addWorkoutJournal}>
             <div className={styles.titleSection}>
-                <UGBLabel variant='h5' type='title'>
+                <UGBLabel variant='h5'>
                     Edit workout session: {selectedWorkoutSessionObj?.name || ''}
                 </UGBLabel>
             </div>
@@ -778,7 +791,7 @@ const DeleteWorkoutSession = ({ selectedWorkoutJournalObj, selectedWorkoutSessio
     return (
         <form onSubmit={deleteWJ}>
             <div className={styles.titleSection}>
-                <UGBLabel variant='h5' type='title'>
+                <UGBLabel variant='h5'>
                     Are you sure you want to delete workout session &ldquo;{workoutSessionName}&rdquo;?
                 </UGBLabel>
             </div>
@@ -879,7 +892,7 @@ const AddNewExercise = ({ onClose, missingExerciseName }) => {
             </Popover>
             <form onSubmit={addExercise}>
                 <div className={styles.titleSection}>
-                    <UGBLabel variant='h5' type='title'>
+                    <UGBLabel variant='h5'>
                         Add a new exercise
                     </UGBLabel>
                 </div>
@@ -1017,7 +1030,7 @@ function ExerciseListItem({
                         exType === 'superset' ?
                             !open ?
                                 <div >
-                                    <span style={{ fontWeight: 'bolder', fontSize: '17px' }}>Superset: </span >
+                                    <span className={styles.supersetLabel}>Superset: </span >
                                     <span>{(() => {
                                         let exercises = [];
                                         supersetItems.superset.forEach(exx => exercises.push(exx.exercise));
@@ -1025,7 +1038,7 @@ function ExerciseListItem({
                                     })()}</span >
                                 </div>
                                 :
-                                <span style={{ fontWeight: 'bolder', fontSize: '17px' }}>Superset: </span >
+                                <span className={styles.supersetLabel}>Superset: </span >
                             :
                             supersetItems.exercise
                     }
@@ -1102,9 +1115,9 @@ function ExerciseListItem({
                         </ListItemIcon>
                         {exType === 'superset' ?
                             open ?
-                                <ExpandLess style={{ color: '#757575' }} />
+                                <ExpandLess className={styles.iconPrimaryColor} />
                                 :
-                                <ExpandMore style={{ color: '#757575' }} />
+                                <ExpandMore className={styles.iconPrimaryColor} />
                             :
                             <ListItemIcon className={styles.sort}>
                                 <IconButton
@@ -1145,7 +1158,7 @@ function ExerciseListItem({
                                                 setExercisesForMerge([...exercisesForMerge]);
                                             }}
                                         >
-                                            <HighlightOffIcon style={{ color: '#28A745' }} />
+                                            <HighlightOffIcon className={styles.iconSecondaryColor} />
                                         </IconButton>
                                     </ListItemIcon>
                                     <ListItemText
@@ -1174,7 +1187,7 @@ function ExerciseListItem({
                                                     setSessionExercises([...sessionExercises]);
                                                 }}
                                             >
-                                                <ArrowDownwardIcon style={{ color: '#28A745' }} />
+                                                <ArrowDownwardIcon className={styles.iconSecondaryColor} />
                                             </IconButton>
                                         </ListItemIcon>
                                         <ListItemIcon className={styles.sort}>
@@ -1194,7 +1207,7 @@ function ExerciseListItem({
                                                     setSessionExercises([...sessionExercises]);
                                                 }}
                                             >
-                                                <ArrowUpwardIcon style={{ color: '#28A745' }} />
+                                                <ArrowUpwardIcon className={styles.iconSecondaryColor} />
                                             </IconButton>
                                         </ListItemIcon>
                                         <ListItemIcon className={styles.sort}>
@@ -1206,7 +1219,7 @@ function ExerciseListItem({
                                                     setSelectedSessionExercise(ex);
                                                 }}
                                             >
-                                                <ArrowForwardIosIcon style={{ color: '#28A745' }} />
+                                                <ArrowForwardIosIcon className={styles.iconSecondaryColor} />
                                             </IconButton>
                                         </ListItemIcon>
                                     </div>
@@ -1776,7 +1789,7 @@ const WorkoutBuilder = () => {
         })
 
         // console.log(sessionExercises)
-        console.log(tempSessionExercises)
+        // console.log(tempSessionExercises)
         // console.log(selectedWorkoutSessionObj);
         // console.log(selectedWorkoutJournalObj);
 
@@ -1887,16 +1900,16 @@ const WorkoutBuilder = () => {
             </>
             <div className={styles.pageContainer}>
                 <div className={styles.leftSideContainer}>
-                    <div className={styles.titleSection}>
-                        <UGBLabel variant='h5' type='title'>
+                    <div>
+                        <UGBLabel variant='h5'>
                             Workout Builder
                         </UGBLabel>
-                        <UGBLabel variant='subtitle1' type='title'>
+                        <UGBLabel variant='subtitle1'>
                             Click the "ADD" button to add a non existing journal or session
                         </UGBLabel>
                     </div>
                     <div className={styles.select}>
-                        <UGBLabel variant='subtitle2' type='title' minWidth='107px'>
+                        <UGBLabel variant='subtitle2'>
                             Workout Journal
                         </UGBLabel>
                         <div className={styles.selectAndEditContainer}>
@@ -1941,7 +1954,7 @@ const WorkoutBuilder = () => {
                         </div>
                     </div>
                     <div className={styles.select}>
-                        <UGBLabel variant='subtitle2' type='title' minWidth='107px'>
+                        <UGBLabel variant='subtitle2'>
                             Workout Session
                         </UGBLabel>
                         <div className={styles.selectAndEditContainer}>
@@ -1999,7 +2012,7 @@ const WorkoutBuilder = () => {
                         >
                             <div className={styles.toolbar}>
                                 <div className={styles.toolbarTitle}>
-                                    <UGBLabel variant='subtitle1' type='title' minWidth='107px'>
+                                    <UGBLabel variant='subtitle1'>
                                         Exercises for the following workout session:
                                     </UGBLabel>
                                 </div>
@@ -2053,7 +2066,7 @@ const WorkoutBuilder = () => {
                                 }
                             </List>
                             <div className={clsx(styles.select, styles.autocomplete)}>
-                                <UGBLabel variant='subtitle2' type='title' minWidth='53px'>
+                                <UGBLabel variant='subtitle2'>
                                     Exercises
                                 </UGBLabel>
                                 <ExercisesAutoComplete
@@ -2101,13 +2114,13 @@ const WorkoutBuilder = () => {
                                     }}>
                                     <ArrowBackIcon />
                                 </IconButton>
-                                <UGBLabel variant='h5' type='title'>
+                                <UGBLabel variant='h5'>
                                     {selectedSessionExercise.exercise}
                                     {hideExerciseContent ? <br /> : null}
                                     {showExerciseAddSet ? 'Add Sets' : ''}
                                     {showAddMarkers ? 'Add Markers' : ''}
                                 </UGBLabel>
-                                <div style={{ width: '48px' }} />
+                                <div className={styles.divFiller} />
                             </div>
                             <>
                                 {!hideExerciseContent ?
@@ -2122,7 +2135,7 @@ const WorkoutBuilder = () => {
                                         >
                                             <div className={styles.exercisesContent} >
                                                 <img src={lifting3} alt='lifting' className={styles.svg} />
-                                                <UGBLabel variant='h5' type='title'>
+                                                <UGBLabel variant='h5'>
                                                     Add Sets
                                                 </UGBLabel>
                                             </div>
@@ -2137,7 +2150,7 @@ const WorkoutBuilder = () => {
                                         >
                                             <div className={styles.exercisesContent}  >
                                                 <img src={addMarkersSvg} alt='Add Markers' className={styles.svg} />
-                                                <UGBLabel variant='h5' type='title'>
+                                                <UGBLabel variant='h5'>
                                                     Add Markers
                                                 </UGBLabel>
                                             </div>

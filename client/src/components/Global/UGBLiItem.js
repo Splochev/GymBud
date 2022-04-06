@@ -17,10 +17,10 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     shrinkUrl: {
-        width: '143px'
+        width: theme.spacing(17.875)
     },
     navUrls: {
-        fontSize: '20px',
+        fontSize: theme.spacing(2.5),
         color: 'white',
         borderBottom: '2px solid transparent',
         textDecoration: 'none',
@@ -38,16 +38,19 @@ const useStyles = makeStyles((theme) => ({
     },
     badge: {
         verticalAlign: 'text-top',
-        marginLeft: '7px',
-        marginTop: '4px',
+        marginLeft: theme.spacing(0.875),
+        marginTop: theme.spacing(0.5),
         color: 'white',
         '& .MuiBadge-badge': {
             background: '#DC3545'
         }
     },
+    iconColor: {
+        color: '#FFFFFF'
+    }
 }));
 
-const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, menuItems, customLabel, variant = 'li', shrinkUrl = true, setToggleNav, customShrinkUrl, children }) => {
+const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, menuItems, customLabel, shrinkUrl = true, setToggleNav, customShrinkUrl, children }) => {
     const styles = useStyles();
     const size = useWindowSize();
     const history = useHistory();
@@ -68,7 +71,7 @@ const LiItem = ({ path, active, badgeCount, type = 'link', anchor, setAnchor, me
                         onClick={(e) => setAnchor(e.currentTarget)}
                     >
                         {children}
-                        <ExpandMoreIcon style={{ color: '#FFFFFF' }} />
+                        <ExpandMoreIcon className={styles.iconColor} />
                     </div>
                 }
                 <Popover

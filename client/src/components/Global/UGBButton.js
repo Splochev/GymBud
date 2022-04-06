@@ -4,9 +4,9 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import clsx from "clsx";
 import { IconButton } from "@material-ui/core";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     root: {
-        borderRadius: '40px',
+        borderRadius: theme.spacing(5),
         border: '1px solid transparent',
         color: 'white',
         textTransform: 'capitalize',
@@ -79,11 +79,11 @@ const useStyles = makeStyles(() => ({
         },
     },
     icon: {
-        fontSize: '21px',
+        fontSize: theme.spacing(2.625),
         color: '#757575'
     },
     text: {
-        fontSize: '14px',
+        fontSize: theme.spacing(1.75),
         color: '#757575',
         textTransform: 'capitalize'
     },
@@ -91,20 +91,20 @@ const useStyles = makeStyles(() => ({
         color: 'white',
     },
     iconEnd: {
-        marginRight: '-11px',
+        marginRight: theme.spacing(-1.375),
         padding: 0,
-        paddingTop: '3px',
-        paddingBottom: '4px',
-        paddingLeft: '20px',
-        paddingRight: '20px',
+        paddingTop: theme.spacing(0.375),
+        paddingBottom: theme.spacing(0.5),
+        paddingLeft: theme.spacing(2.5),
+        paddingRight: theme.spacing(2.5),
     },
     IconStart: {
-        marginLeft: '-11px',
+        marginLeft: theme.spacing(-1.375),
         padding: 0,
-        paddingLeft: '13px',
-        paddingRight: '13px',
-        paddingTop: '6px',
-        paddingBottom: '6px',
+        paddingLeft: theme.spacing(1.625),
+        paddingRight: theme.spacing(1.625),
+        paddingTop: theme.spacing(0.75),
+        paddingBottom: theme.spacing(0.75),
     },
     iconButton: {
         background: '#28A745',
@@ -130,13 +130,13 @@ const useStyles = makeStyles(() => ({
         }
     },
     withRadius: {
-        borderRadius: '21px',
+        borderRadius: theme.spacing(2.625),
     },
     isListItem: {
-        paddingLeft: '20px',
-        paddingRight: '20px',
-        paddingTop: '6px',
-        paddingBottom: '6px',
+        paddingLeft: theme.spacing(2.5),
+        paddingRight: theme.spacing(2.5),
+        paddingTop: theme.spacing(0.75),
+        paddingBottom: theme.spacing(0.75),
     }
 }));
 
