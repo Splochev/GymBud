@@ -18,6 +18,8 @@ import Pagination from '@material-ui/lab/Pagination';
 import { createTheme } from "@material-ui/core";
 import { ThemeProvider } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 const theme = createTheme({
     palette: {
@@ -147,7 +149,7 @@ function stableSort(array, comparator) {
 
 const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, index, rowData, helperText }) => {
     const styles = useStyles();
-    const [shrink, setShrink] = React.useState(false);
+    const [shrink, setShrink] = useState(false);
 
     return (
         <TextField
@@ -219,12 +221,46 @@ function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
     );
 }
 
-export const WeightEntriesTable = ({ rows, headCells, page, setPage, setRows, limitDate, setChanges }) => {
+export const WeightEntriesTable = ({ rows, headCells, page, setPage, setRows, setChanges }) => {
     const styles = useStyles();
-    const [open, setOpen] = React.useState(false);
-    const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('');
-    const [message, setMessage] = React.useState('');
+    const [open, setOpen] = useState(false);
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('');
+    const [message, setMessage] = useState('');
+
+    const [offsetDateAsTime, setOffsetDateAsTime] = useState(getTime(new Date()));
+    const [limitDateAsTime, setLimitDateAsTime] = useState(getTime(new Date()));
+
+    useEffect(() => {
+        if (rows.length) {
+            const lastRow = rows[rows.length - 1];
+            const tempLimitDate = new Date(lastRow.endDate);
+
+            let counter = 0;
+            for (let i = 7; i >= 1; i--) {
+                if (lastRow[i]) {
+                    tempLimitDate.setDate(tempLimitDate.getDate() - counter);
+                    break;
+                }
+                counter++;
+            }
+            setLimitDateAsTime(getTime(tempLimitDate));
+
+            const firstRow = rows[0];
+            const tempOffsetDate = new Date(firstRow.startDate);
+
+            counter = 0;
+            for (let i = 1; i <= 7; i++) {
+                console.log(firstRow[i])
+                if (firstRow[i]) {
+                    tempOffsetDate.setDate(tempOffsetDate.getDate() + counter);
+                    break;
+                }
+                counter++;
+            }
+            setOffsetDateAsTime(getTime(tempOffsetDate));
+        }
+    }, [rows])
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -335,7 +371,7 @@ export const WeightEntriesTable = ({ rows, headCells, page, setPage, setRows, li
                                                 const date = new Date(row.startDate);
                                                 date.setDate(date.getDate() + headCell.id - 1);
                                                 const parsedDate = getTime(date);
-                                                helperText = parsedDate <= getTime(limitDate) ? date.toDateString().slice(0, -4) : '';
+                                                helperText = parsedDate >= offsetDateAsTime && parsedDate <= limitDateAsTime ? date.toDateString().slice(0, -4) : '';
                                             }
                                             const CellRender = headCell.CellRender;
 
@@ -347,25 +383,26 @@ export const WeightEntriesTable = ({ rows, headCells, page, setPage, setRows, li
                                                     data-toggle="tooltip"
                                                     title={helperText ? title : ''}
                                                 >
-                                                    {cellIndex >= 1 && cellIndex <= 7 ?
-                                                        !helperText ?
-                                                            ''
-                                                            :
-                                                            <TableTextField
-                                                                onBlur={handleOnBlur}
-                                                                onClickIconButton={onClickIconButton}
-                                                                row={row}
-                                                                cellIndex={cellIndex}
-                                                                headCell={headCell}
-                                                                index={index}
-                                                                rowData={row}
-                                                                helperText={helperText}
-                                                            />
-                                                        :
+                                                    {
                                                         CellRender ?
                                                             <CellRender key={`${row.startDate}-${row.endDate}-${headCell.id}-${index}-${cellIndex}`} cellData={row[headCell.id]} rowData={row} />
                                                             :
-                                                            row[headCell.id]
+                                                            cellIndex >= 1 && cellIndex <= 7 ?
+                                                                !helperText ?
+                                                                    ''
+                                                                    :
+                                                                    <TableTextField
+                                                                        onBlur={handleOnBlur}
+                                                                        onClickIconButton={onClickIconButton}
+                                                                        row={row}
+                                                                        cellIndex={cellIndex}
+                                                                        headCell={headCell}
+                                                                        index={index}
+                                                                        rowData={row}
+                                                                        helperText={helperText}
+                                                                    />
+                                                                :
+                                                                row[headCell.id]
                                                     }
                                                 </TableCell>
                                             );

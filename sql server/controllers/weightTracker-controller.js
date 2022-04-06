@@ -340,7 +340,7 @@ module.exports = class WeightTrackerController {
             const mappedWeightData = {};
 
             while (getTime(dateIterator) <= endDateAsTime) {
-                mappedWeightData[getTime(dateIterator)] = null;
+                mappedWeightData[getTime(dateIterator)] = 1;
                 dateIterator.setDate(dateIterator.getDate() + 1);
             }
 
