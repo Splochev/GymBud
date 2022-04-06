@@ -7,7 +7,6 @@ import { TableHead } from '@material-ui/core';
 import { TableRow } from '@material-ui/core';
 import { TableSortLabel } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
-import useStyles from './styles'
 import UGBAlert from '../Global/UGBAlert';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -18,6 +17,7 @@ import { parseDate, getTime } from '../utils/utilFunc'
 import Pagination from '@material-ui/lab/Pagination';
 import { createTheme } from "@material-ui/core";
 import { ThemeProvider } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core';
 
 const theme = createTheme({
     palette: {
@@ -34,6 +34,77 @@ const theme = createTheme({
         }
     }
 });
+
+const useStyles = makeStyles((theme) => ({
+    muiInputAdornmentRoot: {
+        "& .MuiButtonBase-root": {
+            '&:hover': {
+                background: 'none',
+                color: 'black'
+            }
+        }
+    },
+    unsortableHead: {
+        color: 'white'
+    },
+    container: {
+        "& .MuiTableContainer-root": {
+            minHeight: '577px',
+            borderRadius: '5px 5px 0 0',
+            boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+        },
+        "& .MuiTableHead-root": {
+            background: '#28A745',
+            "& .MuiButtonBase-root": {
+                color: 'white'
+            },
+            "& .MuiSvgIcon-root": {
+                color: 'white !important',
+                fontSize: '20px'
+            },
+            "& .MuiTableCell-root": {
+                borderBottom: '1px solid #1B1B1B',
+            }
+        },
+        "& .MuiTableBody-root": {
+            "& .MuiTableRow-root": {
+                '&:nth-child(even)': {
+                    background: '#DFF2E3',
+                },
+                "& .MuiTableCell-root": {
+                    borderBottom: '1px solid #1B1B1B',
+                    borderTop: '1px solid #1B1B1B',
+                },
+                '&:last-child': {
+                    borderBottom: '3px solid #28A745',
+                }
+            }
+        }
+    },
+    textField: {
+        "& .MuiFormControl-root": {
+            width: '92px',
+        },
+        "& .MuiFormLabel-root": {
+            color: "#868686"
+        },
+        "& .MuiInput-underline": {
+            '&::before': {
+                transition: 'none',
+                borderBottom: '1px solid #868686 !important'
+            },
+            '&::after': {
+                transition: 'none',
+                borderBottom: '1px solid black !important'
+            },
+        },
+    },
+    pagination: {
+        marginTop: 10,
+        display: 'flex',
+        justifyContent: 'center'
+    }
+}));
 
 function descendingComparator(a, b, orderBy) {
     if (orderBy === 'dateRange') {
@@ -74,7 +145,6 @@ function stableSort(array, comparator) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-
 const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, index, rowData, helperText }) => {
     const styles = useStyles();
     const [shrink, setShrink] = React.useState(false);
@@ -112,7 +182,6 @@ const TableTextField = ({ onBlur, onClickIconButton, row, cellIndex, headCell, i
     );
 }
 
-
 function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
     const styles = useStyles();
     const createSortHandler = (property) => (event) => {
@@ -123,17 +192,9 @@ function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
         <TableHead>
             <TableRow>
                 {headCells.map((headCell, index) => {
-                    let cellStyle = '';
-                    if (index === 0) {
-                        cellStyle = 'borderedCellRight'
-                    } else if (index === 8 || index === 9) {
-                        cellStyle = 'borderedCellLeft'
-                    }
-
                     return (
                         <TableCell
                             key={`${headCell.id}-${index}`}
-                            classes={{ root: styles[cellStyle] }}
                             align={'left'}
                             padding={'normal'}
                             sortDirection={orderBy === headCell.id ? order : false}
@@ -158,7 +219,7 @@ function EnhancedTableHead({ headCells, order, orderBy, onRequestSort }) {
     );
 }
 
-export default function DataTable({ rows, headCells, page, setPage, setRows, selectedLimitDate, changes, setChanges }) {
+export const WeightEntriesTable = ({ rows, headCells, page, setPage, setRows, limitDate, setChanges }) => {
     const styles = useStyles();
     const [open, setOpen] = React.useState(false);
     const [order, setOrder] = React.useState('asc');
@@ -273,21 +334,14 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, sel
                                                 title = "Edit cell";
                                                 const date = new Date(row.startDate);
                                                 date.setDate(date.getDate() + headCell.id - 1);
-                                                const parsedDate = getTime(new Date(parseDate(date)));
-                                                helperText = parsedDate <= selectedLimitDate ? date.toDateString().slice(0, -4) : '';
-                                            }
-
-                                            let cellStyle = '';
-                                            if (cellIndex === 0) {
-                                                cellStyle = 'borderedCellRight'
-                                            } else if (cellIndex === 8 || cellIndex === 9) {
-                                                cellStyle = 'borderedCellLeft'
+                                                const parsedDate = getTime(date);
+                                                helperText = parsedDate <= getTime(limitDate) ? date.toDateString().slice(0, -4) : '';
                                             }
                                             const CellRender = headCell.CellRender;
+
                                             return (
                                                 <TableCell
                                                     className={styles.textField}
-                                                    classes={{ root: styles[cellStyle] }}
                                                     key={`${row.startDate}-${row.endDate}-${headCell.id}-${index}-${cellIndex}`}
                                                     align="left"
                                                     data-toggle="tooltip"
@@ -322,7 +376,6 @@ export default function DataTable({ rows, headCells, page, setPage, setRows, sel
                     </TableBody>
                 </Table>
             </TableContainer>
-            <div className={styles.greenStripe}></div>
             <div className={styles.pagination}>
                 <ThemeProvider theme={theme}>
                     <Pagination

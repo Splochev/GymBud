@@ -19,6 +19,11 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     inputs: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing(1.25),
+    },
+    datePicker: {
         "& .MuiFormControl-root": {
             width: '100%'
         }
@@ -34,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
+const TrackWeight = ({ onClose }) => {
     const styles = useStyles();
     const [defaultSelectedDate] = useState(new Date());
     const [maxSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate())));
@@ -56,12 +61,9 @@ const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
             date: parsedDate,
             weight: Number(weight[0])
         }).then(data => {
-            weight[1]('')
-            if (window.location.pathname === '/progress') {
-                setRefreshTableData(true);
-            }
+            weight[1]('');
         }, error => {
-            console.log(error)
+            console.log(error);
         })
     }
 
@@ -76,20 +78,22 @@ const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
             </Typography>
             <hr className={styles.hr} />
             <div className={styles.inputs}>
-                <UGBDatePicker
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
-                    minDate={minSelectedDate}
-                    maxDate={maxSelectedDate}
+                <div className={styles.datePicker}>
+                    <UGBDatePicker
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
+                        minDate={minSelectedDate}
+                        maxDate={maxSelectedDate}
+                    />
+                </div>
+                <UGBInput
+                    type='number'
+                    $value={weight}
+                    label='Weight'
+                    min='1'
+                    iconStart='fas fa-balance-scale'
                 />
             </div>
-            <UGBInput
-                type='number'
-                $value={weight}
-                label='Weight'
-                min='1'
-                iconStart='fas fa-balance-scale'
-            />
             <div className={styles.actions}>
                 <UGBButton
                     btnType='secondary'
@@ -104,7 +108,7 @@ const TrackWeight = ({ refreshTableData, setRefreshTableData, onClose }) => {
                     Save
                 </UGBButton>
             </div>
-        </form>
+        </form >
     );
 }
 

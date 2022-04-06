@@ -119,7 +119,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
+const LoggedInHeader = () => {
     const styles = useStyles();
     const size = useWindowSize();
     const history = useHistory();
@@ -174,8 +174,6 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                     maxWidth='xs'
                 >
                     <TrackWeight
-                        refreshTableData={refreshTableData}
-                        setRefreshTableData={setRefreshTableData}
                         onClose={() => {
                             history.push(window.location.pathname);
                             setShowTrackWeight(false)
@@ -237,7 +235,7 @@ const LoggedInHeader = ({ refreshTableData, setRefreshTableData }) => {
                 {size.width >= 970 ?
                     <div className={styles.navItemsContainer}>
                         <div className={styles.navItems}>
-                            <NavItems setToggleNav={setToggleNav}/>
+                            <NavItems setToggleNav={setToggleNav} />
                         </div>
                         < UserAndMore setToggleNav={setToggleNav} />
 

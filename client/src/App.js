@@ -3,7 +3,6 @@ import LoggedOutHeader from "./components/header/LoggedOutHeader/LoggedOutHeader
 import LoggedInHeader from "./components/header/LoggedInHeader/LoggedInHeader";
 import HomePageArticles from "./components/HomePageArticles/HomePageArticles";
 import Footer from "./components/Footer/Footer";
-import ProgressTracker from './components/ProgressTracker/ProgressTracker'
 import { StoreContext, initialStoreState } from './components/store/Store';
 import { Route, Redirect } from 'react-router';
 import { Switch, BrowserRouter, useHistory } from 'react-router-dom';
@@ -12,6 +11,7 @@ import { useStoreContext } from './components/store/Store'
 import { makeStyles } from '@material-ui/core/styles';
 import WorkoutBuilder from './components/WorkoutBuilder/WorkoutBuilder';
 import clsx from 'clsx';
+import Progress from './components/Progress/ProgressLayout';
 require("dotenv").config();
 
 const AutoLoginComponent = ({ children }) => {
@@ -51,7 +51,6 @@ const App = () => {
     const styles = useStyles();
     const [storeState, setStoreState] = useState(initialStoreState);
     const [isFetchAttached, setIsFetchAttached] = useState(false);
-    const [refreshTableData, setRefreshTableData] = useState(false);
 
     useEffect(() => {
         const originalFetch = window.fetch;
@@ -117,14 +116,11 @@ const App = () => {
                     <AutoLoginComponent>
                         {storeState.user ?
                             <div className={styles.pageLayout}>
-                                <LoggedInHeader refreshTableData={refreshTableData} setRefreshTableData={setRefreshTableData} />
+                                <LoggedInHeader />
                                 <div className={clsx(styles.contentContainer, storeState.hasOverflow ? styles.hasOverflow : '')}>
                                     <Switch>
                                         <Route exact path="/home" component={HomePageArticles} />
-                                        <Route
-                                            exact path='/progress'
-                                            render={props => <ProgressTracker refreshTableData={refreshTableData} setRefreshTableData={setRefreshTableData} />}
-                                        />
+                                        <Route exact path="/progress" component={Progress} />
                                         <Route exact path="/workout-builder" component={WorkoutBuilder} />
                                         <Redirect from="*" to="/home" />
                                     </Switch>
