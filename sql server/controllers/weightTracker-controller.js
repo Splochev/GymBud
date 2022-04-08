@@ -75,9 +75,6 @@ module.exports = class WeightTrackerController {
         this.router.get('/get-weight-data', AuthHelpers.loggedIn, (req, res) => this.getWeightData(req, res));
         this.router.post('/submit-weight', AuthHelpers.loggedIn, (req, res) => this.submitWeight(req, res));
         this.router.put('/edit-weights', AuthHelpers.loggedIn, (req, res) => this.editWeights(req, res));
-
-
-        this.router.get('/get-weight-data2', AuthHelpers.loggedIn, (req, res) => this.getWeightData2(req, res));
     }
 
     async getWeightChartDataByYear(req, res) {
@@ -240,13 +237,41 @@ module.exports = class WeightTrackerController {
     };
 
     async getWeightChartDataByWeek(req, res) {
-        try {
-            const user = req.user;
+        const user = req.user;
+        // const offsetDate = req.query.offsetDate;
+        // const limitDate = req.query.limitDate;
+        // const parsedOffsetDate = new Date(offsetDate);
+        // const parsedLimitDate = new Date(limitDate);
 
-            if (!user) {
-                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid user`));
-                return;
-            }
+        if (!user) {
+            res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid user`));
+            return;
+        }
+        // if (!offsetDate || isNaN(parsedOffsetDate.getTime())) {
+        //     res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, 'Start date for date range required'));
+        //     return;
+        // }
+        // if (!limitDate || isNaN(parsedLimitDate.getTime())) {
+        //     res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, 'End date for date range required'));
+        //     return;
+        // }
+
+        try {
+            const experimental = await MysqlAdapter.query(`
+                SELECT 
+                    WEEK(\`date\`,5) AS \`week\`,
+                    YEAR(\`date\`) AS \`year\`, 
+                    AVG(weight) AS avgWeight 
+                FROM 
+                    weight_tracker
+                WHERE 
+                    user_id = ${escape(user.id)}
+                    AND date BETWEEN CAST(${escape(offsetDate)} AS DATE) AND CAST(${escape(limitDate)} AS DATE)
+                GROUP BY
+                    \`year\`, \`week\`
+                ORDER BY
+                    \`date\`
+            `);
 
             const weightDataByWeek = await MysqlAdapter.query(`
                 SELECT 
@@ -397,124 +422,6 @@ module.exports = class WeightTrackerController {
             }
 
             res.json({ data: responseWeightData });
-        } catch (error) {
-            console.log(error);
-            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
-        }
-    };
-
-    async getWeightData2(req, res) {
-        try {
-            const user = req.user;
-            const limit = req.query.limitDate;
-            let offsetDate = req.query.offsetDate;
-            const minSelectedOffsetDateIsSet = req.query.getMinOffsetDate;
-
-            if (!offsetDate || isNaN(new Date(offsetDate).getTime())) {
-                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Start date for date range required`));
-                return;
-            }
-            if (!limit || isNaN(new Date(limit).getTime())) {
-                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `End date for date range required`));
-                return;
-            }
-
-            const weightData = await MysqlAdapter.query(`
-                SELECT date, weight FROM 
-                    weight_tracker
-                WHERE
-                    user_id = ${escape(user.id)}
-                    AND date BETWEEN CAST(${escape(offsetDate)} AS DATE) AND CAST(${escape(limit)} AS DATE)
-                ORDER BY 
-                    date ASC
-            `);
-
-            if (!weightData.length) {
-                res.json({ data: [], minOffsetDate: new Date() });
-                return;
-            }
-
-            let minOffsetDate = await MysqlAdapter.query(`
-                SELECT date FROM 
-                    weight_tracker
-                WHERE
-                    user_id = ${escape(user.id)}
-                ORDER BY 
-                    date ASC
-                limit 1; 
-            `)
-            minOffsetDate = minOffsetDate[0].date;
-            const parsedOffsetDate = new Date(offsetDate)
-            const parsedLimit = new Date(limit);
-            const parsedFirstEntry = new Date(weightData[0].date);
-
-            const minOffsetDateToTime = getTime(minOffsetDate);
-            const parsedLimitToTime = getTime(parsedLimit);
-            const parsedOffsetDateToTime = getTime(parsedOffsetDate);
-            const mappedWeightData = {};
-            let startDateOfWeek = !minSelectedOffsetDateIsSet && minOffsetDateToTime < parsedOffsetDateToTime ?
-                new Date(parsedOffsetDate)
-                :
-                new Date(parsedFirstEntry);
-
-            while (getTime(startDateOfWeek) <= parsedLimitToTime) {
-                mappedWeightData[getTime(startDateOfWeek)] = null;
-                startDateOfWeek.setDate(startDateOfWeek.getDate() + 1);
-            }
-
-            for (const weightEntry of weightData) {
-                const weightEntryDate = weightEntry.date;
-                mappedWeightData[getTime(weightEntryDate)] = { ...weightEntry };
-            }
-
-            const weeksAmount = Math.ceil(Object.keys(mappedWeightData).length / 7);
-            startDateOfWeek = !minSelectedOffsetDateIsSet && minOffsetDateToTime < parsedOffsetDateToTime ?
-                new Date(parsedOffsetDate)
-                :
-                new Date(parsedFirstEntry);
-            const endDateOfWeek = new Date(startDateOfWeek);
-            endDateOfWeek.setDate(endDateOfWeek.getDate() + 6);
-            const responseWeightData = [];
-
-            for (let i = 0; i < weeksAmount; i++) {
-                responseWeightData.push({ startDate: parseDate(startDateOfWeek), endDate: parseDate(endDateOfWeek) });
-                let weightSum = 0;
-                let avgWeightCounter = 0;
-                let dateCounter = 1;
-
-                while (getTime(startDateOfWeek) <= getTime(endDateOfWeek)) {
-                    const startDateOfWeekAsTime = getTime(startDateOfWeek);
-                    if (mappedWeightData[startDateOfWeekAsTime]) {
-                        responseWeightData[i][dateCounter] = mappedWeightData[startDateOfWeekAsTime].weight;
-                        weightSum += mappedWeightData[startDateOfWeekAsTime].weight;
-                        avgWeightCounter++;
-                    }
-                    dateCounter++;
-                    startDateOfWeek.setDate(startDateOfWeek.getDate() + 1);
-                }
-
-                responseWeightData[i].avgWeight = (weightSum / avgWeightCounter).toFixed(2);
-                if (isNaN(responseWeightData[i].avgWeight)) {
-                    responseWeightData[i].avgWeight = 0;
-                }
-
-                if (i === 0) {
-                    responseWeightData[i].weightChange = 0;
-                } else {
-                    if (responseWeightData[i].avgWeight) {
-                        let result = Math.round(((responseWeightData[i].avgWeight - responseWeightData[i - 1].avgWeight) / responseWeightData[i - 1].avgWeight * 100) * 100) / 100;
-                        if (isNaN(result) || result == 'Infinity' || result == '-Infinity') {
-                            result = 0;
-                        }
-                        responseWeightData[i].weightChange = result;
-                    } else {
-                        responseWeightData[i].weightChange = 0
-                    }
-                }
-                endDateOfWeek.setDate(endDateOfWeek.getDate() + 7);
-            }
-
-            res.json({ data: responseWeightData, minOffsetDate: minOffsetDate });
         } catch (error) {
             console.log(error);
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
