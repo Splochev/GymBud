@@ -1,6 +1,6 @@
 import { makeStyles, Typography } from '@material-ui/core';
 import { useEffect } from 'react';
-import charts from '../assets/charts.svg'
+import charts2 from '../assets/charts2.svg'
 import food from '../assets/food.svg'
 import lifting from '../assets/lifting.svg'
 import useWindowSize from '../utils/useWindowSize';
@@ -88,7 +88,7 @@ const HomePageArticles = () => {
                 </Typography>
                 <div className={styles.svgs}>
                     <div>
-                        <img src={charts} alt='charts' className={styles.svg} />
+                        <img src={charts2} alt='charts' className={styles.svg} />
                         <Typography variant='h1' component='div' className={styles.cardTitle} >
                             Track body &amp;{size.width <= 403 ? <br /> : ' '}workout progress.
                         </Typography>
