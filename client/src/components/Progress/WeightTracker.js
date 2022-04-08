@@ -15,6 +15,9 @@ import { useQuery } from '../utils/RouteUtils';
 import { WeightEntriesTable } from './WeightEntriesTable';
 import { useStoreContext } from '../store/Store';
 import activityTracker from '../assets/activityTracker.svg';
+import change from '../assets/change.svg';
+import charts from '../assets/charts.svg';
+import useWindowSize from '../utils/useWindowSize';
 
 const useStyles = makeStyles((theme) => ({
     datesContainer: {
@@ -119,16 +122,38 @@ const useStyles = makeStyles((theme) => ({
     svg: {
         width: 'auto',
         height: theme.spacing(45),
-        '@media (max-width: 1000px)': {
+        '@media (max-width: 1330px)': {
             display: 'none'
+        }
+    },
+    cardSvg: {
+        width: 'auto',
+        height: theme.spacing(27),
+        '@media (max-width: 350px)': {
+            height: theme.spacing(20),
         }
     },
     bottomContainer: {
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        '@media (max-width: 970px)': {
+            justifyContent: 'space-around',
+        },
+        '@media (max-width: 670px)': {
+            flexDirection: 'column',
+            gap: 60
+        }
     },
+    lastCard: {
+        display: 'none',
+        '@media (max-width: 970px)': {
+            display: 'flex',
+            justifyContent: 'center',
+            width: '100%'
+        }
+    }
 }));
 
 const customStyles = {
@@ -138,6 +163,9 @@ const customStyles = {
     },
     chartLabel: {
         marginBottom: 16
+    },
+    cardLabel: {
+        textAlign: 'center',
     }
 }
 
@@ -356,6 +384,7 @@ const WeightTracker = ({ groupBy }) => {
     const store = useStoreContext();
     const history = useHistory();
     const { tab } = useQuery();
+    const size = useWindowSize();
     const [weightEntries, setWeightEntries] = useState([]);
     const [barChartLabels, setBarChartLabels] = useState([]);
     const [lineChartLabels, setLineChartLabels] = useState([]);
@@ -366,10 +395,14 @@ const WeightTracker = ({ groupBy }) => {
     const [barChartHasBars, setBarChartHasBars] = useState(false);
     const [showWeightEntriesTable, setShowWeightEntriesTable] = useState(false);
     const [refreshCharts, setRefreshCharts] = useState({});
-    
-    const [currentWeight, setCurrentWeight] = useState(50);
+
+    //TODO
+    const [currentWeight, setCurrentWeight] = useState(70.55);
     const [goalValue, setGoalValue] = useState(75);
-    const [startWeight, setStartWeight] = useState(65);
+    const [startWeight, setStartWeight] = useState(68.83);
+
+    const [weightChangeForTheLast7Days, setWeightChangeForTheLast7Days] = useState(-0.31);
+    const [avgWeightForTheLast7Days, setAvgWeightForTheLast7Days] = useState(70.55);
 
     const [alert, setAlert] = useState('');
 
@@ -506,11 +539,44 @@ const WeightTracker = ({ groupBy }) => {
             <div className={styles.bottomContainer}>
                 <div>
                     <UGBLabel variant='h6' style={customStyles.progressLabel}>
-                        Weight Goal Progress:
+                        Goal Progress:
                     </UGBLabel>
-                    <CircularChart startValue={startWeight} currentValue={currentWeight} goalValue={goalValue} abbreviation='kg'/>
+                    <CircularChart startValue={startWeight} currentValue={currentWeight} goalValue={goalValue} abbreviation=' kg' />
                 </div>
+                <div>
+                    <img className={styles.cardSvg} src={charts} alt='' />
+                    <UGBLabel variant='h6' style={customStyles.cardLabel}>
+                        Average weight for last 7 days
+                    </UGBLabel>
+                    <UGBLabel variant='h4' style={customStyles.cardLabel}>
+                        {avgWeightForTheLast7Days} kg
+                    </UGBLabel>
+                </div>
+                {size.width <= 970 ?
+                    null
+                    :
+                    <div>
+                        <img className={styles.cardSvg} src={change} alt='' />
+                        <UGBLabel variant='h6' style={customStyles.cardLabel}>
+                            Weight Change for last 7 days
+                        </UGBLabel>
+                        <UGBLabel variant='h4' style={customStyles.cardLabel}>
+                            {weightChangeForTheLast7Days}%
+                        </UGBLabel>
+                    </div>
+                }
                 <img className={styles.svg} src={activityTracker} alt='' />
+            </div>
+            <div className={styles.lastCard}>
+                <div>
+                    <img className={styles.cardSvg} src={change} alt='' />
+                    <UGBLabel variant='h6' style={customStyles.cardLabel}>
+                        Weight Change for last 7 days
+                    </UGBLabel>
+                    <UGBLabel variant='h4' style={customStyles.cardLabel}>
+                        {weightChangeForTheLast7Days}%
+                    </UGBLabel>
+                </div>
             </div>
         </>
     );

@@ -220,9 +220,9 @@ const useCircularProgressWithLabelStyles = makeStyles((theme) => ({
     },
     innerBoxLeft: {
         top: 0,
-        bottom: -10,
+        bottom: -13,
         right: 0,
-        left: 10,
+        left: 5,
         zIndex: 2,
         position: "absolute",
         display: "flex",
@@ -231,8 +231,8 @@ const useCircularProgressWithLabelStyles = makeStyles((theme) => ({
     },
     innerBoxRight: {
         top: 0,
-        bottom: -10,
-        right: 10,
+        bottom: -13,
+        right: 5,
         left: 0,
         zIndex: 2,
         position: "absolute",
@@ -242,7 +242,7 @@ const useCircularProgressWithLabelStyles = makeStyles((theme) => ({
     },
     innerBoxCenter: {
         top: 0,
-        bottom: -35,
+        bottom: -50,
         right: 0,
         left: 0,
         zIndex: 2,
@@ -383,7 +383,7 @@ function CircularProgressWithLabel({ progress, goalReached, currentValue, startV
                     thickness={7.3}
                 />
                 <div className={styles.innerBox}>
-                    <UGBLabel variant="h5">
+                    <UGBLabel variant="h6">
                         {currentValue}
                     </UGBLabel>
                 </div>
