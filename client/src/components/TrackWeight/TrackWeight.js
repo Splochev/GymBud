@@ -7,6 +7,8 @@ import { parseDate } from '../utils/utilFunc';
 import { UGBButton } from '../Global/UGBButton';
 import UGBLabel from '../Global/UGBLabel';
 import UGBHr from '../Global/UGBHr';
+import { useStoreContext } from '../store/Store';
+import { useEffect } from 'react';
 
 const useStyles = makeStyles((theme) => ({
     actions: {
@@ -41,10 +43,9 @@ const customStyles = {
 
 const TrackWeight = ({ onClose }) => {
     const styles = useStyles();
-    const [defaultSelectedDate] = useState(new Date());
-    const [maxSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate())));
-    const [selectedDate, setSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate())));
-    const [minSelectedDate] = useState(new Date(defaultSelectedDate.setDate(defaultSelectedDate.getDate() - 30)));
+    const store = useStoreContext();
+    const [maxSelectedDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(new Date(maxSelectedDate));
     const weight = useState('')
 
     function onSubmitWeight(e) {
@@ -62,10 +63,15 @@ const TrackWeight = ({ onClose }) => {
             weight: Number(weight[0])
         }).then(data => {
             weight[1]('');
+            store[1](state => (state.refreshCharts = {}, { ...state }))
         }, error => {
             console.log(error);
         })
     }
+
+    useEffect(() => {
+        return () => { store[1](state => (state.refreshCharts = {}, { ...state })) }
+    }, [])
 
     return (
         <form onSubmit={onSubmitWeight}>
@@ -78,7 +84,6 @@ const TrackWeight = ({ onClose }) => {
                     <UGBDatePicker
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
-                        minDate={minSelectedDate}
                         maxDate={maxSelectedDate}
                     />
                 </div>

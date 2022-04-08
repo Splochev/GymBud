@@ -2,7 +2,8 @@ import React, { createContext } from 'react';
 
 export const initialStoreState = {
     user: undefined,
-    hasOverflow: true
+    refreshCharts: undefined,
+    hasOverflow: true,
 };
 
 

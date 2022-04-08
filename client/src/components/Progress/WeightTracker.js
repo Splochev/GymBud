@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { UGBDatePicker } from '../Global/UGBDatePicker';
 import UGBLabel from '../Global/UGBLabel';
 import { useHistory } from 'react-router-dom';
-import { UGBVerticalBarsChart } from '../Global/UGBCharts';
+import { CircularChart, UGBVerticalBarsChart } from '../Global/UGBCharts';
 import { getData, putData } from '../utils/FetchUtils';
 import { parseDate } from '../utils/utilFunc'
 import clsx from 'clsx';
@@ -13,6 +13,8 @@ import UGBModal from '../Global/UGBModal';
 import { UGBButton } from '../Global/UGBButton';
 import { useQuery } from '../utils/RouteUtils';
 import { WeightEntriesTable } from './WeightEntriesTable';
+import { useStoreContext } from '../store/Store';
+import activityTracker from '../assets/activityTracker.svg';
 
 const useStyles = makeStyles((theme) => ({
     datesContainer: {
@@ -54,9 +56,6 @@ const useStyles = makeStyles((theme) => ({
         overflowX: 'auto',
         overflowY: 'hidden',
         position: 'relative'
-    },
-    chartLabel: {
-        marginBottom: theme.spacing(2)
     },
     chartLine: {
         border: 'none',
@@ -116,8 +115,31 @@ const useStyles = makeStyles((theme) => ({
         "& button:first-child": {
             marginRight: theme.spacing(2),
         },
-    }
+    },
+    svg: {
+        width: 'auto',
+        height: theme.spacing(45),
+        '@media (max-width: 1000px)': {
+            display: 'none'
+        }
+    },
+    bottomContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
 }));
+
+const customStyles = {
+    progressLabel: {
+        textAlign: 'center',
+        marginBottom: 16
+    },
+    chartLabel: {
+        marginBottom: 16
+    }
+}
 
 function getBarChartWidth(barsCount) {
     if (barsCount === 1) {
@@ -128,7 +150,7 @@ function getBarChartWidth(barsCount) {
     return `${180 + ((barsCount * (barsCount - 1)) / 2) + (100 * (barsCount - 1))}px`
 };
 
-const EditWeightEntries = () => {
+const EditWeightEntries = ({ setRefreshCharts }) => {
     const styles = useStyles();
     const history = useHistory();
     const [limitDate, setLimitDate] = useState(new Date());
@@ -265,6 +287,7 @@ const EditWeightEntries = () => {
             .then(data => {
                 fetchTableData();
                 setChanges({});
+                setRefreshCharts({});
             }, err => {
                 setAlert(err.message);
             })
@@ -330,6 +353,7 @@ const EditWeightEntries = () => {
 
 const WeightTracker = ({ groupBy }) => {
     const styles = useStyles();
+    const store = useStoreContext();
     const history = useHistory();
     const { tab } = useQuery();
     const [weightEntries, setWeightEntries] = useState([]);
@@ -341,6 +365,12 @@ const WeightTracker = ({ groupBy }) => {
     const [chartWidth, setChartWidth] = useState('100%');
     const [barChartHasBars, setBarChartHasBars] = useState(false);
     const [showWeightEntriesTable, setShowWeightEntriesTable] = useState(false);
+    const [refreshCharts, setRefreshCharts] = useState({});
+    
+    const [currentWeight, setCurrentWeight] = useState(50);
+    const [goalValue, setGoalValue] = useState(75);
+    const [startWeight, setStartWeight] = useState(65);
+
     const [alert, setAlert] = useState('');
 
     useEffect(() => {
@@ -357,7 +387,7 @@ const WeightTracker = ({ groupBy }) => {
             .catch(err => {
                 setAlert(err.message);
             })
-    }, [groupBy]);
+    }, [groupBy, refreshCharts]);
 
     useEffect(() => {
         setAvgWeightIncrementor(weightEntries[0] ? weightEntries[0].avgWeight : 0);
@@ -402,6 +432,12 @@ const WeightTracker = ({ groupBy }) => {
         }
     }, [tab])
 
+    useEffect(() => {
+        if (store[0].refreshCharts) {
+            setRefreshCharts({});
+        }
+    }, [store[0].refreshCharts])
+
     return (
         <>
             <>
@@ -414,16 +450,14 @@ const WeightTracker = ({ groupBy }) => {
                     maxWidth='xl'
                     hasPadding={true}
                 >
-                    <EditWeightEntries />
+                    <EditWeightEntries setRefreshCharts={setRefreshCharts} />
                 </UGBModal>
             </>
             <div className={styles.charts}>
                 <div className={styles.barChart}>
-                    <div className={styles.chartLabel}>
-                        <UGBLabel variant='h6'>
-                            Weight Change(%) Tracker:
-                        </UGBLabel>
-                    </div>
+                    <UGBLabel variant='h6' style={customStyles.chartLabel}>
+                        Weight Change(%) Tracker:
+                    </UGBLabel>
                     <div style={{ width: chartWidth }}>
                         <UGBVerticalBarsChart
                             tooltipLabel='Weight Change'
@@ -453,11 +487,9 @@ const WeightTracker = ({ groupBy }) => {
                     />
                 </div>
                 <div className={styles.lineChart}>
-                    <div className={styles.chartLabel}>
-                        <UGBLabel variant='h6'>
-                            Average Weight Tracker:
-                        </UGBLabel>
-                    </div>
+                    <UGBLabel variant='h6' style={customStyles.chartLabel}>
+                        Average Weight Tracker:
+                    </UGBLabel>
                     <UGBVerticalBarsChart
                         tooltipLabel='Average Weight'
                         hoverTooltipLabel=' kg'
@@ -471,8 +503,19 @@ const WeightTracker = ({ groupBy }) => {
                     />
                 </div>
             </div>
+            <div className={styles.bottomContainer}>
+                <div>
+                    <UGBLabel variant='h6' style={customStyles.progressLabel}>
+                        Weight Goal Progress:
+                    </UGBLabel>
+                    <CircularChart startValue={startWeight} currentValue={currentWeight} goalValue={goalValue} abbreviation='kg'/>
+                </div>
+                <img className={styles.svg} src={activityTracker} alt='' />
+            </div>
         </>
     );
 };
+
+
 
 export default WeightTracker;

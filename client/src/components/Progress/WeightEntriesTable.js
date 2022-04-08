@@ -251,7 +251,6 @@ export const WeightEntriesTable = ({ rows, headCells, page, setPage, setRows, se
 
             counter = 0;
             for (let i = 1; i <= 7; i++) {
-                console.log(firstRow[i])
                 if (firstRow[i]) {
                     tempOffsetDate.setDate(tempOffsetDate.getDate() + counter);
                     break;

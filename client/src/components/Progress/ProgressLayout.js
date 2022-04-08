@@ -3,7 +3,6 @@ import UGBLabel from "../Global/UGBLabel";
 import { UGBMenuItem, UGBSelect } from "../Global/UGBSelect";
 import WeightTracker from "./WeightTracker";
 import { makeStyles } from '@material-ui/core';
-import activityTracker from '../assets/activityTracker.svg'
 import { UGBButton } from "../Global/UGBButton";
 import { useHistory } from 'react-router-dom';
 import TuneIcon from '@material-ui/icons/Tune';
@@ -21,15 +20,14 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         paddingLeft: theme.spacing(3.75),
         paddingRight: theme.spacing(3.75),
-        '@media (max-width: 330px)': {
-            paddingLeft: theme.spacing(3),
-            paddingRight: theme.spacing(3),
+        '@media (max-width: 400px)': {
+            paddingLeft: theme.spacing(1),
+            paddingRight: theme.spacing(1),
         }
     },
     title: {
         display: 'flex',
-        marginBottom: theme.spacing(1),
-        '@media (max-width: 675px)': {
+        '@media (max-width: 735px)': {
             justifyContent: 'center',
         }
     },
@@ -37,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
-        '@media (max-width: 675px)': {
+        '@media (max-width: 735px)': {
             flexDirection: 'column',
             gap: theme.spacing(1),
             justifyContent: 'center',
@@ -47,12 +45,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         gap: theme.spacing(1),
         '& .MuiButton-root': {
-            width: theme.spacing(16.25)
+            width: theme.spacing(17)
         },
-        '@media (max-width: 675px)': {
+        '@media (max-width: 735px)': {
             width: '100%',
             justifyContent: 'center',
-        }
+        },
     },
     select: {
         width: '100%',
@@ -62,20 +60,11 @@ const useStyles = makeStyles((theme) => ({
         '& .MuiInputBase-root': {
             maxWidth: theme.spacing(31),
         },
-        '@media (max-width: 675px)': {
+        '& .MuiTypography-root': {
+            minWidth: theme.spacing(10.125)
+        },
+        '@media (max-width: 735px)': {
             justifyContent: 'center',
-        }
-    },
-    svg: {
-        width: 'auto',
-        height: theme.spacing(43),
-    },
-    bottomBackgroundImage: {
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'right',
-        '@media (max-width: 1000px)': {
-            display: 'none'
         }
     },
     groupBy: {
@@ -138,7 +127,7 @@ const Progress = () => {
                                 history.push("?tab=track-weight");
                             }}
                         >
-                            Add Weight
+                            Track Weight
                         </UGBButton>
                         <IconButton
                             className={styles.groupBy}
@@ -189,9 +178,6 @@ const Progress = () => {
                 }
             </div>
             {selectedProgressType[0] === 1 ? <WeightTracker groupBy={groupBy} /> : null}
-            <div className={styles.bottomBackgroundImage}>
-                <img className={styles.svg} src={activityTracker} alt='' />
-            </div>
         </div >
     );
 }
