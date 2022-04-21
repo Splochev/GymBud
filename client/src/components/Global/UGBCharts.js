@@ -170,6 +170,7 @@ const useCircularProgressWithLabelStyles = makeStyles((theme) => ({
         width: '200px !important',
         height: '200px !important',
         color: '#DFF2E3',
+        transform: 'rotate(126deg) !important',
     },
     innerCircle: {
         width: '200px !important',
@@ -185,21 +186,6 @@ const useCircularProgressWithLabelStyles = makeStyles((theme) => ({
         justifyContent: "center",
         zIndex: 1,
         color: '#28A745'
-    },
-    emptyCircle: {
-        width: '201px !important',
-        height: '201px !important',
-        transform: 'rotate(54.4deg) !important',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        position: "absolute",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1,
-        color: 'white'
     },
     arrowContainer: {
         top: 0,
@@ -241,8 +227,8 @@ const useCircularProgressWithLabelStyles = makeStyles((theme) => ({
         justifyContent: "right",
     },
     innerBoxCenter: {
-        top: 0,
-        bottom: -50,
+        top: 40,
+        bottom: 0,
         right: 0,
         left: 0,
         zIndex: 2,
@@ -250,7 +236,7 @@ const useCircularProgressWithLabelStyles = makeStyles((theme) => ({
         display: "flex",
         flexDirection: 'column',
         alignItems: "center",
-        justifyContent: "end",
+        justifyContent: "start",
 
     }
 }));
@@ -373,14 +359,8 @@ function CircularProgressWithLabel({ progress, goalReached, currentValue, startV
                 <CircularProgress
                     variant="determinate"
                     classes={{ root: styles.fillCircle }}
-                    value={100}
+                    value={80}
                     thickness={7}
-                />
-                <CircularProgress
-                    variant="determinate"
-                    classes={{ root: styles.emptyCircle }}
-                    value={20}
-                    thickness={7.3}
                 />
                 <div className={styles.innerBox}>
                     <UGBLabel variant="h6">

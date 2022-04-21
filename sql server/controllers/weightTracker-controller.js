@@ -73,6 +73,7 @@ module.exports = class WeightTrackerController {
         this.router.get('/get-weight-chart-data-by-month', AuthHelpers.loggedIn, (req, res) => this.getWeightChartDataByMonth(req, res));
         this.router.get('/get-weight-chart-data-by-week', AuthHelpers.loggedIn, (req, res) => this.getWeightChartDataByWeek(req, res));
         this.router.get('/get-weight-data', AuthHelpers.loggedIn, (req, res) => this.getWeightData(req, res));
+        this.router.get('/get-avg-weight-for-last-7-days', AuthHelpers.loggedIn, (req, res) => this.getWeightDataForLast7Days(req, res));
         this.router.post('/submit-weight', AuthHelpers.loggedIn, (req, res) => this.submitWeight(req, res));
         this.router.put('/edit-weights', AuthHelpers.loggedIn, (req, res) => this.editWeights(req, res));
     }
@@ -257,21 +258,21 @@ module.exports = class WeightTrackerController {
         // }
 
         try {
-            const experimental = await MysqlAdapter.query(`
-                SELECT 
-                    WEEK(\`date\`,5) AS \`week\`,
-                    YEAR(\`date\`) AS \`year\`, 
-                    AVG(weight) AS avgWeight 
-                FROM 
-                    weight_tracker
-                WHERE 
-                    user_id = ${escape(user.id)}
-                    AND date BETWEEN CAST(${escape(offsetDate)} AS DATE) AND CAST(${escape(limitDate)} AS DATE)
-                GROUP BY
-                    \`year\`, \`week\`
-                ORDER BY
-                    \`date\`
-            `);
+            // const experimental = await MysqlAdapter.query(`
+            //     SELECT 
+            //         WEEK(\`date\`,5) AS \`week\`,
+            //         YEAR(\`date\`) AS \`year\`, 
+            //         AVG(weight) AS avgWeight 
+            //     FROM 
+            //         weight_tracker
+            //     WHERE 
+            //         user_id = ${escape(user.id)}
+            //         AND date BETWEEN CAST(${escape(offsetDate)} AS DATE) AND CAST(${escape(limitDate)} AS DATE)
+            //     GROUP BY
+            //         \`year\`, \`week\`
+            //     ORDER BY
+            //         \`date\`
+            // `);
 
             const weightDataByWeek = await MysqlAdapter.query(`
                 SELECT 
@@ -365,7 +366,7 @@ module.exports = class WeightTrackerController {
             const mappedWeightData = {};
 
             while (getTime(dateIterator) <= endDateAsTime) {
-                mappedWeightData[getTime(dateIterator)] = 1;
+                mappedWeightData[getTime(dateIterator)] = true;
                 dateIterator.setDate(dateIterator.getDate() + 1);
             }
 
@@ -390,11 +391,14 @@ module.exports = class WeightTrackerController {
                 while (getTime(dateIterator) <= getTime(endDateOfWeek) && getTime(dateIterator) <= parsedLimitDateAsTime) {
                     const dateIteratorAsTime = getTime(dateIterator);
                     if (mappedWeightData[dateIteratorAsTime]) {
-                        responseWeightData[i][dateCounter] = mappedWeightData[dateIteratorAsTime].weight;
-                        weightSum += mappedWeightData[dateIteratorAsTime].weight;
-                        avgWeightCounter++;
-                    } else {
-                        responseWeightData[i][dateCounter] = null
+                        const weight = mappedWeightData[dateIteratorAsTime].weight;
+                        responseWeightData[i][dateCounter] = weight;
+                        if (!isNaN(Number(weight))) {
+                            weightSum += weight;
+                            avgWeightCounter++;
+                        } else {
+                            responseWeightData[i][dateCounter] = null
+                        }
                     }
                     dateCounter++;
                     dateIterator.setDate(dateIterator.getDate() + 1);
@@ -421,7 +425,90 @@ module.exports = class WeightTrackerController {
                 endDateOfWeek.setDate(endDateOfWeek.getDate() + 7);
             }
 
+            for (let i = 1; i <= 7; i++) {
+                if (responseWeightData[0][i]) {
+                    break;
+                }
+                delete responseWeightData[0][i];
+            }
+
             res.json({ data: responseWeightData });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+    async getWeightDataForLast7Days(req, res) {
+        try {
+            const user = req.user;
+
+            if (!user) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid user`));
+                return;
+            }
+
+            const recent7DaysLimit = new Date();
+            const recent7DaysOffset = new Date();
+            recent7DaysOffset.setDate(recent7DaysOffset.getDate() - 6);
+            const preRecent7DaysLimit = new Date();
+            preRecent7DaysLimit.setDate(preRecent7DaysLimit.getDate() - 7);
+            const preRecent7DaysOffset = new Date();
+            preRecent7DaysOffset.setDate(preRecent7DaysOffset.getDate() - 13);
+
+            const recent7DaysData = await MysqlAdapter.query(`
+                SELECT 
+                    AVG(weight) AS avgWeight 
+                FROM 
+                    weight_tracker
+                WHERE 
+                    user_id = ${escape(user.id)}
+                    AND \`date\` BETWEEN
+                        CAST(${escape(parseDate(recent7DaysOffset))} AS DATE)
+                        AND
+                        CAST(${escape(parseDate(recent7DaysLimit))} AS DATE)
+            `);
+
+            const preRecent7DaysData = await MysqlAdapter.query(`
+                SELECT 
+                    AVG(weight) AS avgWeight 
+                FROM 
+                    weight_tracker
+                WHERE 
+                    user_id = ${escape(user.id)}
+                    AND \`date\` BETWEEN
+                        CAST(${escape(parseDate(preRecent7DaysLimit))} AS DATE)
+                        AND
+                        CAST(${escape(parseDate(preRecent7DaysLimit))} AS DATE)
+            `);
+
+            const sevenDaysData = [preRecent7DaysData[0], recent7DaysData[0]];
+
+            for (let i = 0; i < sevenDaysData.length; i++) {
+                if (i === 0) {
+                    sevenDaysData[i].weightChange = 0;
+                } else {
+                    if (sevenDaysData[i].avgWeight) {
+                        let result = Math.round(((sevenDaysData[i].avgWeight - sevenDaysData[i - 1].avgWeight) / sevenDaysData[i - 1].avgWeight * 100) * 100) / 100;
+                        if (isNaN(result) || result == 'Infinity' || result == '-Infinity') {
+                            result = 0;
+                        }
+                        sevenDaysData[i].weightChange = result;
+                    } else {
+                        sevenDaysData[i].weightChange = 0;
+                    }
+                }
+            }
+
+            if (!sevenDaysData[1].avgWeight) {
+                sevenDaysData[1].avgWeight = 0;
+            }
+
+            if (!sevenDaysData[1].weightChange) {
+                sevenDaysData[1].weightChange = 0;
+            }
+
+            res.json(sevenDaysData[1]);
         } catch (error) {
             console.log(error);
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
@@ -497,4 +584,6 @@ module.exports = class WeightTrackerController {
 
 
     };
+
+
 }

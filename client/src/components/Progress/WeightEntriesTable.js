@@ -245,6 +245,7 @@ export const WeightEntriesTable = ({ rows, headCells, page, setPage, setRows, se
                 counter++;
             }
             setLimitDateAsTime(getTime(tempLimitDate));
+            // console.log(getTime(tempLimitDate), tempLimitDate);
 
             const firstRow = rows[0];
             const tempOffsetDate = new Date(firstRow.startDate);
@@ -258,6 +259,7 @@ export const WeightEntriesTable = ({ rows, headCells, page, setPage, setRows, se
                 counter++;
             }
             setOffsetDateAsTime(getTime(tempOffsetDate));
+            // console.log(getTime(tempOffsetDate), tempOffsetDate);
         }
     }, [rows])
 
@@ -362,18 +364,19 @@ export const WeightEntriesTable = ({ rows, headCells, page, setPage, setRows, se
                                 return (
                                     <TableRow key={`${row.startDate}-${row.endDate}-${index}`}>
                                         {headCells.map((headCell, cellIndex) => {
+                                            const CellRender = headCell.CellRender;
                                             let title = headCell.label;
                                             let helperText = '';
+                                            let displayCell = true;
 
                                             if (headCell && headCell.id >= 1 && headCell.id <= 7) {
                                                 title = "Edit cell";
                                                 const date = new Date(row.startDate);
                                                 date.setDate(date.getDate() + headCell.id - 1);
+                                                helperText = date.toDateString().slice(0, -4);
                                                 const parsedDate = getTime(date);
-                                                helperText = parsedDate >= offsetDateAsTime && parsedDate <= limitDateAsTime ? date.toDateString().slice(0, -4) : '';
+                                                displayCell = row[headCell.id] || row[headCell.id] === null ? true : false;
                                             }
-                                            const CellRender = headCell.CellRender;
-
                                             return (
                                                 <TableCell
                                                     className={styles.textField}
@@ -387,7 +390,7 @@ export const WeightEntriesTable = ({ rows, headCells, page, setPage, setRows, se
                                                             <CellRender key={`${row.startDate}-${row.endDate}-${headCell.id}-${index}-${cellIndex}`} cellData={row[headCell.id]} rowData={row} />
                                                             :
                                                             cellIndex >= 1 && cellIndex <= 7 ?
-                                                                !helperText ?
+                                                                !displayCell ?
                                                                     ''
                                                                     :
                                                                     <TableTextField

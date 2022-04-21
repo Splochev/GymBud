@@ -6,7 +6,7 @@ import UGBLabel from '../Global/UGBLabel';
 import { useHistory } from 'react-router-dom';
 import { CircularChart, UGBVerticalBarsChart } from '../Global/UGBCharts';
 import { getData, putData } from '../utils/FetchUtils';
-import { parseDate } from '../utils/utilFunc'
+import { getDateOfISOWeek, getWeekNumber, parseDate, getTime } from '../utils/utilFunc'
 import clsx from 'clsx';
 import { BrandAlert } from '../Global/BrandAlert';
 import UGBModal from '../Global/UGBModal';
@@ -122,7 +122,7 @@ const useStyles = makeStyles((theme) => ({
     svg: {
         width: 'auto',
         height: theme.spacing(45),
-        '@media (max-width: 1330px)': {
+        '@media (max-width: 1390px)': {
             display: 'none'
         }
     },
@@ -153,6 +153,18 @@ const useStyles = makeStyles((theme) => ({
             justifyContent: 'center',
             width: '100%'
         }
+    },
+    goalProgress: {
+        height: theme.spacing(33.125),
+        paddingLeft: theme.spacing(1.25),
+        paddingRight: theme.spacing(1.25),
+        boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
+        borderRadius: theme.spacing(3.75),
+        display: 'flex',
+        justifyContent: 'center',
+        '&:hover': {
+            cursor: 'pointer'
+        },
     }
 }));
 
@@ -302,6 +314,43 @@ const EditWeightEntries = ({ setRefreshCharts }) => {
         getData(process.env.REACT_APP_HOST + `/api/weight-tracker/get-weight-data?offsetDate=${parsedOffsetDate}&limitDate=${parsedLimitDate}`)
             .then(data => {
                 setAlert('');
+                // let today = new Date();
+                // if (getTime(limitDate) === getTime(today)) {
+                //     let day = today.getDay();
+                //     if (day === 0) {
+                //         day = 7;
+                //     }
+
+                //     let thisWeek = getWeekNumber(today);
+                //     let startWeekDay = getDateOfISOWeek(thisWeek[1], thisWeek[0]);
+                //     let endWeekDay = new Date(startWeekDay);
+                //     endWeekDay.setDate(endWeekDay.getDate() + 6);
+
+                //     if (data.data.length >= 1) {
+                //         const lastRow = data.data[data.data.length - 1];
+
+                //         if (lastRow && lastRow.startDate === parseDate(startWeekDay) && !lastRow[day]) {
+                //             lastRow[day] = null;
+                //         } else if (lastRow && getTime(new Date(lastRow.startDate)) < getTime(startWeekDay)) {
+                //             data.data.push({
+                //                 [day]: null,
+                //                 startDate: parseDate(startWeekDay),
+                //                 endDate: parseDate(endWeekDay),
+                //                 avgWeight: "0",
+                //                 weightChange: 0,
+                //             })
+                //         }
+
+                //     } else {
+                //         data.data.push({
+                //             startDate: parseDate(startWeekDay),
+                //             endDate: parseDate(endWeekDay),
+                //             [day]: null,
+                //             avgWeight: "0",
+                //             weightChange: 0,
+                //         })
+                //     }
+                // }
                 setPage(Math.ceil(data.data.length / 5));
                 setWeightEntries(data.data);
             })
@@ -313,7 +362,6 @@ const EditWeightEntries = ({ setRefreshCharts }) => {
     function saveChanges() {
         putData(process.env.REACT_APP_HOST + `/api/weight-tracker/edit-weights`, changes)
             .then(data => {
-                fetchTableData();
                 setChanges({});
                 setRefreshCharts({});
             }, err => {
@@ -395,16 +443,29 @@ const WeightTracker = ({ groupBy }) => {
     const [barChartHasBars, setBarChartHasBars] = useState(false);
     const [showWeightEntriesTable, setShowWeightEntriesTable] = useState(false);
     const [refreshCharts, setRefreshCharts] = useState({});
-
-    //TODO
-    const [currentWeight, setCurrentWeight] = useState(70.55);
-    const [goalValue, setGoalValue] = useState(75);
-    const [startWeight, setStartWeight] = useState(68.83);
-
     const [weightChangeForTheLast7Days, setWeightChangeForTheLast7Days] = useState(-0.31);
     const [avgWeightForTheLast7Days, setAvgWeightForTheLast7Days] = useState(70.55);
+    const [currentWeight, setCurrentWeight] = useState(0);
+
+    //TODO
+    const [goalValue, setGoalValue] = useState(75); //75
+    const [startWeight, setStartWeight] = useState(68.83); //68.83
 
     const [alert, setAlert] = useState('');
+
+    useEffect(() => {
+        getData(process.env.REACT_APP_HOST + '/api/weight-tracker/get-avg-weight-for-last-7-days')
+            .then(data => {
+                setAlert('');
+                const avgWeight = data.avgWeight ? data.avgWeight.toFixed(2) : 0;
+                setWeightChangeForTheLast7Days(data.weightChange);
+                setAvgWeightForTheLast7Days(avgWeight);
+                setCurrentWeight(avgWeight);
+            })
+            .catch(err => {
+                setAlert(err.message);
+            })
+    }, [refreshCharts]);
 
     useEffect(() => {
         getData(process.env.REACT_APP_HOST + `/api/weight-tracker/get-weight-chart-data-by-${groupBy}`)
@@ -537,11 +598,13 @@ const WeightTracker = ({ groupBy }) => {
                 </div>
             </div>
             <div className={styles.bottomContainer}>
-                <div>
-                    <UGBLabel variant='h6' style={customStyles.progressLabel}>
-                        Goal Progress:
-                    </UGBLabel>
-                    <CircularChart startValue={startWeight} currentValue={currentWeight} goalValue={goalValue} abbreviation=' kg' />
+                <div className={styles.goalProgress}>
+                    <div>
+                        <UGBLabel variant='h6' style={customStyles.progressLabel}>
+                            Goal Progress:
+                        </UGBLabel>
+                        <CircularChart startValue={startWeight} currentValue={currentWeight} goalValue={goalValue} abbreviation=' kg' />
+                    </div>
                 </div>
                 <div>
                     <img className={styles.cardSvg} src={charts} alt='' />
