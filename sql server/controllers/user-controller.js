@@ -1,11 +1,11 @@
 const express = require('express');
 const ErrorHandler = require('../utils/error-handler');
 const MysqlAdapter = require('../utils/mysql-adapter');
-const Nodemailer = require("../utils/email-service");
 const AuthHelpers = require('../utils/auth-helpers');
 const { escape } = require('mysql');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
+var nodeOutlook = require('nodejs-nodemailer-outlook')
 
 module.exports = class UserController {
     constructor() {
@@ -127,11 +127,17 @@ module.exports = class UserController {
                     return;
                 }
 
-                await Nodemailer.sendMail({
-                    from: process.env.NM_USERNAME,
+                nodeOutlook.sendEmail({
+                    auth: {
+                        user: process.env.OUTLOOK_NM_USERNAME,
+                        pass: process.env.OUTLOOK_NM_PASSWORD,
+                    },
+                    from: 'Stanislav.D.Plochev@outlook.com',
                     to: body.email,
                     subject: 'Verify account',
-                    html: `<p>Click <a href="http://localhost:3000/verify?token=${userData[0].token}">here</a> to verify Ur Gym Bud account registration</p>`
+                    html: `<p>Click <a href="http://localhost:3000/verify?token=${userData[0].token}">here</a> to verify Ur Gym Bud account registration</p>`,
+                    onError: (e) => console.log(e),
+                    onSuccess: (i) => console.log(i)
                 });
 
                 res.json({ success: true });
@@ -198,11 +204,17 @@ module.exports = class UserController {
                         email=${email}
                 `);
 
-            await Nodemailer.sendMail({
-                from: process.env.NM_USERNAME,
+            nodeOutlook.sendEmail({
+                auth: {
+                    user: process.env.OUTLOOK_NM_USERNAME,
+                    pass: process.env.OUTLOOK_NM_PASSWORD,
+                },
+                from: 'Stanislav.D.Plochev@outlook.com',
                 to: req.body.email,
                 subject: 'Password Reset',
-                html: `<p>Click <a href="http://localhost:3000/change-password?token=${token[0].token}" target="_blank">here</a> to reset password</p>`
+                html: `<p>Click <a href="http://localhost:3000/change-password?token=${token[0].token}" target="_blank">here</a> to reset password</p>`,
+                onError: (e) => console.log(e),
+                onSuccess: (i) => console.log(i)
             });
             res.json({ success: true });
         }
@@ -249,11 +261,17 @@ module.exports = class UserController {
                 return;
             }
 
-            await Nodemailer.sendMail({
-                from: process.env.NM_USERNAME,
+            nodeOutlook.sendEmail({
+                auth: {
+                    user: process.env.OUTLOOK_NM_USERNAME,
+                    pass: process.env.OUTLOOK_NM_PASSWORD,
+                },
+                from: 'Stanislav.D.Plochev@outlook.com',
                 to: email[0].email,
                 subject: 'Reset Password successfully',
-                html: `<p>Your password was reset successfully.</p>`
+                html: `<p>Your password was reset successfully.</p>`,
+                onError: (e) => console.log(e),
+                onSuccess: (i) => console.log(i)
             });
             res.json({ success: true });
         }
