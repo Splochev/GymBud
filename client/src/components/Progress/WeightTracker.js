@@ -603,7 +603,12 @@ const WeightTracker = ({ groupBy }) => {
                         <UGBLabel variant='h6' style={customStyles.progressLabel}>
                             Goal Progress:
                         </UGBLabel>
-                        <CircularChart startValue={startWeight} currentValue={currentWeight} goalValue={goalValue} abbreviation=' kg' />
+                        <CircularChart
+                            startValue={startWeight}
+                            currentValue={currentWeight}
+                            goalValue={goalValue}
+                            abbreviation=' kg'
+                        />
                     </div>
                 </div>
                 <div>

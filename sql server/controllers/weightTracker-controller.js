@@ -76,6 +76,7 @@ module.exports = class WeightTrackerController {
         this.router.get('/get-avg-weight-for-last-7-days', AuthHelpers.loggedIn, (req, res) => this.getWeightDataForLast7Days(req, res));
         this.router.post('/submit-weight', AuthHelpers.loggedIn, (req, res) => this.submitWeight(req, res));
         this.router.put('/edit-weights', AuthHelpers.loggedIn, (req, res) => this.editWeights(req, res));
+        this.router.delete('/delete-weight-entries', AuthHelpers.loggedIn, (req, res) => this.deleteWeightEntries(req, res));
     }
 
     async getWeightChartDataByYear(req, res) {
@@ -585,5 +586,21 @@ module.exports = class WeightTrackerController {
 
     };
 
+    async deleteWeightEntries(req, res) {
+        try {
+            const user = req.user;
+            const deletedWeightData = await MysqlAdapter.query(`
+                DELETE FROM 
+                    weight_tracker
+                WHERE
+                    user_id=${escape(user.id)}
+            `);
+
+            res.json({deletedWeightData: deletedWeightData});
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
 
 }

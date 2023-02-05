@@ -11,6 +11,11 @@ import { Popover } from "@material-ui/core";
 import { MenuList } from "@material-ui/core";
 import { MenuItem } from "@material-ui/core";
 import clsx from "clsx";
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import UGBModal from "../Global/UGBModal";
+import { deleteData } from '../utils/FetchUtils.js';
+import { useStoreContext } from "../store/Store";
+
 
 const useStyles = makeStyles((theme) => ({
     pageLayout: {
@@ -78,8 +83,61 @@ const useStyles = makeStyles((theme) => ({
     active: {
         color: '#28A745',
         background: '#F5F5F5'
-    }
+    },
+    resetWeightEntriesModalActions: {
+        display: 'flex',
+        justifyContent: "flex-end",
+        marginTop: theme.spacing(2),
+        "& button:first-child": {
+            marginRight: theme.spacing(2),
+        },
+        "& button": {
+            width: theme.spacing(11.625)
+        }
+    },
 }));
+
+const ResetWeightEntriesModal = ({onClose}) => {
+    const styles = useStyles();
+    const store = useStoreContext();
+
+    async function resetWeightEntries(e) {
+        e.preventDefault();
+        await deleteData(process.env.REACT_APP_HOST + '/api/weight-tracker/delete-weight-entries')
+            .then(() => {
+                store[1](state => (state.refreshCharts = {}, { ...state }))
+                onClose();
+            }, error => {
+                console.log('DELETE ALL ENTRIES ERROR--->', error)
+                onClose();
+            })
+    };
+
+    return (
+        <>
+            <div className={styles.titleSection}>
+                <UGBLabel variant='h5'>
+                    Are you sure you want to delete all weight entries?
+                </UGBLabel>
+            </div>
+            <div className={styles.resetWeightEntriesModalActions}>
+                <UGBButton
+                    btnType='secondary'
+                    onClick={() => onClose()}
+                >
+                    Cancel
+                </UGBButton>
+                <UGBButton
+                    type='submit'
+                    btnType='outlinedSecondary'
+                    onClick={resetWeightEntries}
+                >
+                    Delete
+                </UGBButton>
+            </div>
+        </>
+    );
+};
 
 const Progress = () => {
     const styles = useStyles();
@@ -89,9 +147,17 @@ const Progress = () => {
     const selectedProgressType = useState(1);
     const [anchorEl, setAnchorEl] = useState(null);
     const [groupBy, setGroupBy] = useState('week');
+    const [showResetWeightEntriesModal, setShowResetWeightEntriesModal] = useState(false);
 
     return (
         <div className={styles.pageLayout}>
+            <UGBModal
+                open={showResetWeightEntriesModal}
+                onClose={() => setShowResetWeightEntriesModal(false)}
+                maxWidth='xs'
+            >
+                <ResetWeightEntriesModal onClose={() => setShowResetWeightEntriesModal(false)}/>
+            </UGBModal>
             <div className={styles.title}>
                 <UGBLabel variant='h5'>
                     Track Progress
@@ -172,6 +238,12 @@ const Progress = () => {
                                 })}
                             </MenuList>
                         </Popover>
+                        <IconButton
+                            className={styles.groupBy}
+                            onClick={(e) => setShowResetWeightEntriesModal(true)}
+                        >
+                            <RotateLeftIcon />
+                        </IconButton>
                     </div>
                     :
                     null
