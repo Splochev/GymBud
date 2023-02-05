@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { UGBButton } from '../../Global/UGBButton';
 import UGBHr from '../../Global/UGBHr';
 import UGBLabel from '../../Global/UGBLabel';
+import { putData } from '../../utils/FetchUtils'
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -37,8 +38,21 @@ const ForgotPassword = () => {
     const history = useHistory();
     const email = useState('')
 
+    async function onSubmitForgottenPasswordRequest(e) {
+        e.preventDefault();
+        try {
+            const data = await putData(process.env.REACT_APP_HOST + '/api/user/forgotten-password', { email: email[0]});
+            if (!data) {
+                throw Error('Incorrect email!')
+            }
+            history.push('/');
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+
     return (
-        <form className={styles.form}>
+        <form onSubmit={onSubmitForgottenPasswordRequest} className={styles.form}>
             <UGBLabel
                 variant='h5'
             >
