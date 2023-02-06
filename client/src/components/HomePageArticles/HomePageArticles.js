@@ -106,7 +106,7 @@ const HomePageArticles = () => {
                             Build food menus.
                         </Typography>
                         <Typography variant='h6' component='div' className={styles.cardSubTitle} >
-                            Find the calories &amp; micronutrients
+                            Find the calories &amp; macronutrients
                             {size.width >= 339 ? <br /> : ' '}
                             of your
                             {size.width < 339 ? <br /> : ' '}

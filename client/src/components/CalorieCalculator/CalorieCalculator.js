@@ -108,7 +108,7 @@ const CalorieCalculator = () => {
                         variant='h5'
                         style={customStyles.title}
                     >
-                        BMR Calculator
+                        TDEE Calculator
                     </UGBLabel>
                     <UGBSelect label='Activity Index' $value={selectedActivityIndex}>
                         {activityIndexes.map(x => {
