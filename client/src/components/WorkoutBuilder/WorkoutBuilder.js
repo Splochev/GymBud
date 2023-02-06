@@ -42,12 +42,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         padding: theme.spacing(2),
-        minWidth: theme.spacing(65),
+        width: theme.spacing(65),
         '@media (max-width: 1350px)': {
-            minWidth: theme.spacing(56.25),
+            width: theme.spacing(56.25),
         },
         '@media (max-width: 1150px)': {
-            minWidth: theme.spacing(50),
+            width: theme.spacing(50),
         },
         '@media (max-width: 1000px)': {
             width: '100%',
