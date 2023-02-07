@@ -1,3 +1,5 @@
+import * as React from 'react';
+import { List as ReactMovableList, arrayMove } from 'react-movable';
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { List, IconButton, ListItemIcon, ListItem, InputAdornment, makeStyles, ListItemText, Collapse, Tooltip, Popover, MenuList, MenuItem } from '@material-ui/core';
@@ -17,8 +19,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
+import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import TimerIcon from '@material-ui/icons/Timer';
@@ -143,10 +144,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignContent: 'center',
-        '@media (max-width: 600px)': {
-            flexDirection: 'column',
-        }
+        alignContent: 'center'
     },
     toolbarTitle: {
         display: 'flex',
@@ -360,8 +358,15 @@ const useStyles = makeStyles((theme) => ({
     iconPrimaryColor: {
         color: '#757575'
     },
-    iconSecondaryColor: {
-
+    arrowExpandMore: {
+        transform: 'rotate(90deg)'
+    },
+    arrowExpandLess: {
+        transform: 'rotate(-90deg)'
+    },
+    dragIndicatorIcon: {
+        color: '#757575',
+        marginLeft: '-6px' 
     }
 }));
 
@@ -997,6 +1002,7 @@ function ExerciseListItem({
     sessionExercises,
     setToggleExerciseContent,
     setSelectedSessionExercise,
+    props 
 }) {
     const styles = useStyles();
     const [open, setOpen] = useState(false);
@@ -1005,9 +1011,10 @@ function ExerciseListItem({
         <>
             <ListItem
                 key={exType === 'superset' ? 'superset-list-item' : supersetItems.id}
-                button={exType === 'superset'}
-                onClick={exType === 'superset' ? () => setOpen(!open) : null}
+                button={false}
+                {...props}
             >
+                <DragIndicatorIcon className={styles.dragIndicatorIcon} />
                 <ListItemIcon className={styles.clearBtn}>
                     <IconButton
                         className={styles.changePadding}
@@ -1053,48 +1060,6 @@ function ExerciseListItem({
                     :
                     styles.rightSideListIem
                 }>
-                    <div className={styles.sorts}>
-                        <ListItemIcon className={styles.sort}>
-                            <IconButton
-                                className={styles.changePadding}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    const tempSessionExercises = sessionExercises.slice();
-                                    const current = tempSessionExercises.indexOf(supersetItems);
-                                    const next = current + 1;
-                                    if (next >= tempSessionExercises.length) {
-                                        return;
-                                    }
-                                    const temp = tempSessionExercises[next];
-                                    tempSessionExercises[next] = tempSessionExercises[current];
-                                    tempSessionExercises[current] = temp;
-                                    setSessionExercises(tempSessionExercises);
-                                }}
-                            >
-                                <ArrowDownwardIcon />
-                            </IconButton>
-                        </ListItemIcon>
-                        <ListItemIcon className={styles.sort}>
-                            <IconButton
-                                className={styles.changePadding}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    const tempSessionExercises = sessionExercises.slice();
-                                    const current = tempSessionExercises.indexOf(supersetItems);
-                                    const next = current - 1;
-                                    if (next < 0) {
-                                        return;
-                                    }
-                                    const temp = tempSessionExercises[next];
-                                    tempSessionExercises[next] = tempSessionExercises[current];
-                                    tempSessionExercises[current] = temp;
-                                    setSessionExercises(tempSessionExercises);
-                                }}
-                            >
-                                <ArrowUpwardIcon />
-                            </IconButton>
-                        </ListItemIcon>
-                    </div>
                     <div className={styles.checkboxAndExpand}>
                         <ListItemIcon className={styles.checkbox}>
                             <UGBCheckbox
@@ -1114,10 +1079,21 @@ function ExerciseListItem({
                             />
                         </ListItemIcon>
                         {exType === 'superset' ?
-                            open ?
-                                <ExpandLess className={styles.iconPrimaryColor} />
-                                :
-                                <ExpandMore className={styles.iconPrimaryColor} />
+                            <ListItemIcon className={styles.sort}>
+                                <IconButton
+                                    className={styles.changePadding}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setOpen(!open)
+                                    }}
+                                >
+                                {open ?
+                                    <ArrowForwardIosIcon className={styles.arrowExpandLess}/>
+                                        :
+                                    <ArrowForwardIosIcon className={styles.arrowExpandMore}/>
+                                }
+                                </IconButton>
+                            </ListItemIcon>
                             :
                             <ListItemIcon className={styles.sort}>
                                 <IconButton
@@ -1158,7 +1134,7 @@ function ExerciseListItem({
                                                 setExercisesForMerge([...exercisesForMerge]);
                                             }}
                                         >
-                                            <HighlightOffIcon className={styles.iconSecondaryColor} />
+                                            <HighlightOffIcon/>
                                         </IconButton>
                                     </ListItemIcon>
                                     <ListItemText
@@ -1187,7 +1163,7 @@ function ExerciseListItem({
                                                     setSessionExercises([...sessionExercises]);
                                                 }}
                                             >
-                                                <ArrowDownwardIcon className={styles.iconSecondaryColor} />
+                                                <ArrowDownwardIcon/>
                                             </IconButton>
                                         </ListItemIcon>
                                         <ListItemIcon className={styles.sort}>
@@ -1207,7 +1183,7 @@ function ExerciseListItem({
                                                     setSessionExercises([...sessionExercises]);
                                                 }}
                                             >
-                                                <ArrowUpwardIcon className={styles.iconSecondaryColor} />
+                                                <ArrowUpwardIcon/>
                                             </IconButton>
                                         </ListItemIcon>
                                         <ListItemIcon className={styles.sort}>
@@ -1219,7 +1195,7 @@ function ExerciseListItem({
                                                     setSelectedSessionExercise(ex);
                                                 }}
                                             >
-                                                <ArrowForwardIosIcon className={styles.iconSecondaryColor} />
+                                                <ArrowForwardIosIcon/>
                                             </IconButton>
                                         </ListItemIcon>
                                     </div>
@@ -2013,31 +1989,31 @@ const WorkoutBuilder = () => {
                             <div className={styles.toolbar}>
                                 <div className={styles.toolbarTitle}>
                                     <UGBLabel variant='subtitle1'>
-                                        Exercises for the following workout session:
+                                        Exercises:
                                     </UGBLabel>
                                 </div>
                                 <div className={styles.mergeBtn}>
-                                    {!exercisesForMergeDisabled ?
-                                        <UGBButton
-                                            disabled={exercisesForMergeDisabled}
-                                            btnType='primary'
-                                            onClick={onClickMerge}>
-                                            Merge Into Superset
-                                        </UGBButton>
-                                        :
-                                        null
-                                    }
+                                    <UGBButton
+                                        disabled={exercisesForMergeDisabled}
+                                        btnType='primary'
+                                        onClick={onClickMerge}>
+                                        Merge Into Superset
+                                    </UGBButton>
                                 </div>
                             </div>
-                            <List className={clsx(styles.exercisesList, 'exercises-list')}>
-                                {sessionExercises.map(ex => {
-                                    if (ex.superset) {
+                            <ReactMovableList
+                                values={sessionExercises}
+                                onChange={({ oldIndex, newIndex }) => setSessionExercises(arrayMove(sessionExercises, oldIndex, newIndex))}
+                                renderList={({ children, props }) => <List className={clsx(styles.exercisesList, 'exercises-list')} {...props}>{children}</List>}
+                                renderItem={({ value, props }) => {
+                   
+                                    if (value.superset) {
                                         return (
-                                            <List key={`superset-${ex.superset[0].id}-${ex.superset[1].id}`}>
+                                            <List key={`superset-${value.superset[0].id}-${value.superset[1].id}`} {...props}>
                                                 <ExerciseListItem
-                                                    key={`superset-exerciseListItem-${ex.superset[0].id}-${ex.superset[1].id}`}
+                                                    key={`superset-exerciseListItem-${value.superset[0].id}-${value.superset[1].id}`}
                                                     exType='superset'
-                                                    supersetItems={ex}
+                                                    supersetItems={value}
                                                     setExercisesForMerge={setExercisesForMerge}
                                                     exercisesForMerge={exercisesForMerge}
                                                     setSessionExercises={setSessionExercises}
@@ -2050,24 +2026,24 @@ const WorkoutBuilder = () => {
                                     } else {
                                         return (
                                             <ExerciseListItem
-                                                key={ex.id}
+                                                key={value.id}
                                                 exType='single-exercise'
-                                                supersetItems={ex}
+                                                supersetItems={value}
                                                 setExercisesForMerge={setExercisesForMerge}
                                                 exercisesForMerge={exercisesForMerge}
                                                 setSessionExercises={setSessionExercises}
                                                 sessionExercises={sessionExercises}
                                                 setToggleExerciseContent={setToggleExerciseContent}
                                                 setSelectedSessionExercise={setSelectedSessionExercise}
+                                                props={props}
                                             />
                                         );
                                     }
-                                })
-                                }
-                            </List>
+                                }}
+                            />
                             <div className={clsx(styles.select, styles.autocomplete)}>
                                 <UGBLabel variant='subtitle2'>
-                                    Exercises
+                                    Find Exercise
                                 </UGBLabel>
                                 <ExercisesAutoComplete
                                     disabled={!selectedWorkoutSession[0]}
