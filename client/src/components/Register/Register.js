@@ -89,6 +89,7 @@ const Register = () => {
     const history = useHistory();
     const styles = useStyles();
     const email = useState('');
+    const secretUgbPassword = useState('');
     const password = useState('');
     const repeatPassword = useState('');
     const firstName = useState('');
@@ -169,6 +170,7 @@ const Register = () => {
             firstName: firstName[0],
             lastName: lastName[0],
             sex: sex[0],
+            secretUgbPassword: secretUgbPassword[0],
             birthDate: birthDate,
         }).then(data => {
             console.log(data);
@@ -209,6 +211,12 @@ const Register = () => {
                 required
                 label='Email'
                 startIcon='fas fa-envelope'
+            />
+            <UGBPasswordInput
+                $value={secretUgbPassword}
+                required
+                label='Secret UGB password'
+                startIcon='fas fa-lock'
             />
             <div className={styles.inputs}>
                 <UGBPasswordInput

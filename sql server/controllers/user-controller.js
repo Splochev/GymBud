@@ -76,7 +76,7 @@ module.exports = class UserController {
         try {
             const body = req.body;
 
-            if (!body.email || !body.password || !body.firstName || !body.lastName || !body.sex || !body.birthDate) {
+            if (!body.email || !body.password || !body.firstName || !body.lastName || !body.sex || !body.birthDate || !body.secretUgbPassword) {
                 if (!body.email) {
                     res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'Email is required!'));
                     return;
@@ -92,14 +92,19 @@ module.exports = class UserController {
                 } else if (!body.sex) {
                     res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'Sex is required!'));
                     return;
-                } else if (!body.userType) {
-                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'User Type is required!'));
-                    return;
                 } else if (!body.birthDate) {
                     res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'Birth Date is required!'));
                     return;
+                } else if (!body.secretUgbPassword) {
+                    res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.bad_param, 'Secret UGB password is required!'));
+                    return;
                 }
             } else {
+                if (body.secretUgbPassword !== process.env.SECRET_UGB_PASSWORD) {
+                    res.status(403).json(ErrorHandler.GenerateError(403, ErrorHandler.ErrorTypes.authentication, 'Access denied, secret UGB password is required!'));
+                    return;
+                }
+
                 const password = bcrypt.hashSync(body.password, 10);
                 let dateObj = new Date();
                 let date = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
