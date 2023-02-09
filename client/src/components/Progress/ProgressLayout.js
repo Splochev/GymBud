@@ -15,6 +15,7 @@ import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import UGBModal from "../Global/UGBModal";
 import { deleteData } from '../utils/FetchUtils.js';
 import { useStoreContext } from "../store/Store";
+import useWindowSize from '../utils/useWindowSize';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         display: 'flex',
-        '@media (max-width: 735px)': {
+        '@media (max-width: 800px)': {
             justifyContent: 'center',
         }
     },
@@ -40,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
-        '@media (max-width: 735px)': {
+        '@media (max-width: 800px)': {
             flexDirection: 'column',
             gap: theme.spacing(1),
             justifyContent: 'center',
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
         '& .MuiButton-root': {
             width: theme.spacing(17)
         },
-        '@media (max-width: 735px)': {
+        '@media (max-width: 800px)': {
             width: '100%',
             justifyContent: 'center',
         },
@@ -68,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
         '& .MuiTypography-root': {
             minWidth: theme.spacing(10.125)
         },
-        '@media (max-width: 735px)': {
+        '@media (max-width: 800px)': {
             justifyContent: 'center',
         }
     },
@@ -95,9 +96,15 @@ const useStyles = makeStyles((theme) => ({
             width: theme.spacing(11.625)
         }
     },
+    groupByAndResetButtons: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: theme.spacing(1),
+    }
 }));
 
-const ResetWeightEntriesModal = ({onClose}) => {
+const ResetWeightEntriesModal = ({ onClose }) => {
     const styles = useStyles();
     const store = useStoreContext();
 
@@ -142,6 +149,7 @@ const ResetWeightEntriesModal = ({onClose}) => {
 const Progress = () => {
     const styles = useStyles();
     const history = useHistory();
+    const size = useWindowSize();
     const [progressTypes] = useState([{ id: 1, label: 'Weight' }, { id: 2, label: 'Strength' }]);
     const [groupByTypes] = useState(['week', 'month', 'quarter', 'year']);
     const selectedProgressType = useState(1);
@@ -156,13 +164,70 @@ const Progress = () => {
                 onClose={() => setShowResetWeightEntriesModal(false)}
                 maxWidth='xs'
             >
-                <ResetWeightEntriesModal onClose={() => setShowResetWeightEntriesModal(false)}/>
+                <ResetWeightEntriesModal onClose={() => setShowResetWeightEntriesModal(false)} />
             </UGBModal>
-            <div className={styles.title}>
-                <UGBLabel variant='h5'>
-                    Track Progress
-                </UGBLabel>
-            </div>
+            {size.width <= 450 ?
+                <div className={styles.groupByAndResetButtons}>
+                    <UGBLabel variant='h5'>
+                        Track Progress
+                    </UGBLabel>
+                    <IconButton
+                        className={styles.groupBy}
+                        onClick={(e) => setAnchorEl(e.currentTarget)}
+                    >
+                        <TuneIcon />
+                    </IconButton>
+                    <Popover
+                        anchorEl={anchorEl}
+                        keepMounted
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'center',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'center',
+                        }}
+                        open={Boolean(anchorEl)}
+                        onClose={() => setAnchorEl(null)}
+                    >
+                        <MenuList>
+                            {groupByTypes.map((tempGroupBy, j) => {
+                                return (
+                                    <MenuItem
+                                        className={clsx(
+                                            styles.menuItem,
+                                            groupBy === tempGroupBy ?
+                                                styles.active
+                                                :
+                                                null
+                                        )}
+                                        key={j}
+                                        onClick={(e) => {
+                                            setGroupBy(tempGroupBy);
+                                            setAnchorEl(null);
+                                        }}
+                                    >
+                                        {tempGroupBy}
+                                    </MenuItem>
+                                );
+                            })}
+                        </MenuList>
+                    </Popover>
+                    <IconButton
+                        className={styles.groupBy}
+                        onClick={(e) => setShowResetWeightEntriesModal(true)}
+                    >
+                        <RotateLeftIcon />
+                    </IconButton>
+                </div>
+                :
+                <div className={styles.title}>
+                    <UGBLabel variant='h5'>
+                        Track Progress
+                    </UGBLabel>
+                </div>
+            }
             <div className={styles.toolbar}>
                 <div className={styles.select}>
                     <UGBLabel variant='subtitle2'>
@@ -179,72 +244,80 @@ const Progress = () => {
                     </UGBSelect>
                 </div>
                 {selectedProgressType[0] === 1 ?
-                    <div className={styles.actions}>
-                        <UGBButton btnType='primary'
-                            onClick={() => {
-                                history.push("?tab=edit-weight-entries");
-                            }}
-                        >
-                            Edit Weight
-                        </UGBButton>
-                        <UGBButton
-                            btnType='primary'
-                            onClick={() => {
-                                history.push("?tab=track-weight");
-                            }}
-                        >
-                            Track Weight
-                        </UGBButton>
-                        <IconButton
-                            className={styles.groupBy}
-                            onClick={(e) => setAnchorEl(e.currentTarget)}
-                        >
-                            <TuneIcon />
-                        </IconButton>
-                        <Popover
-                            anchorEl={anchorEl}
-                            keepMounted
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'center',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'center',
-                            }}
-                            open={Boolean(anchorEl)}
-                            onClose={() => setAnchorEl(null)}
-                        >
-                            <MenuList>
-                                {groupByTypes.map((tempGroupBy, j) => {
-                                    return (
-                                        <MenuItem
-                                            className={clsx(
-                                                styles.menuItem,
-                                                groupBy === tempGroupBy ?
-                                                    styles.active
-                                                    :
-                                                    null
-                                            )}
-                                            key={j}
-                                            onClick={(e) => {
-                                                setGroupBy(tempGroupBy);
-                                                setAnchorEl(null);
-                                            }}
-                                        >
-                                            {tempGroupBy}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </MenuList>
-                        </Popover>
-                        <IconButton
-                            className={styles.groupBy}
-                            onClick={(e) => setShowResetWeightEntriesModal(true)}
-                        >
-                            <RotateLeftIcon />
-                        </IconButton>
-                    </div>
+                    <>
+                        <div className={styles.actions}>
+                            <UGBButton btnType='primary'
+                                onClick={() => {
+                                    history.push("?tab=edit-weight-entries");
+                                }}
+                            >
+                                Edit Weight
+                            </UGBButton>
+                            <UGBButton
+                                btnType='primary'
+                                onClick={() => {
+                                    history.push("?tab=track-weight");
+                                }}
+                            >
+                                Track Weight
+                            </UGBButton>
+                            {size.width > 450 ?
+                                <>
+                                    <IconButton
+                                        className={styles.groupBy}
+                                        onClick={(e) => setAnchorEl(e.currentTarget)}
+                                    >
+                                        <TuneIcon />
+                                    </IconButton>
+                                    <Popover
+                                        anchorEl={anchorEl}
+                                        keepMounted
+                                        anchorOrigin={{
+                                            vertical: 'bottom',
+                                            horizontal: 'center',
+                                        }}
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'center',
+                                        }}
+                                        open={Boolean(anchorEl)}
+                                        onClose={() => setAnchorEl(null)}
+                                    >
+                                        <MenuList>
+                                            {groupByTypes.map((tempGroupBy, j) => {
+                                                return (
+                                                    <MenuItem
+                                                        className={clsx(
+                                                            styles.menuItem,
+                                                            groupBy === tempGroupBy ?
+                                                                styles.active
+                                                                :
+                                                                null
+                                                        )}
+                                                        key={j}
+                                                        onClick={(e) => {
+                                                            setGroupBy(tempGroupBy);
+                                                            setAnchorEl(null);
+                                                        }}
+                                                    >
+                                                        {tempGroupBy}
+                                                    </MenuItem>
+                                                );
+                                            })}
+                                        </MenuList>
+                                    </Popover>
+                                    <IconButton
+                                        className={styles.groupBy}
+                                        onClick={(e) => setShowResetWeightEntriesModal(true)}
+                                    >
+                                        <RotateLeftIcon />
+                                    </IconButton>
+                                </>
+                                :
+                                null
+                            }
+                        </div>
+                    </>
                     :
                     null
                 }
