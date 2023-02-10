@@ -81,7 +81,7 @@ const HomePageArticles = () => {
         <div className={styles.homePageContainer}>
             <div>
                 <Typography variant='h1' component='div' className={styles.title} >
-                    UrGymBud{size.width <= 540 ? <br /> : ' '}Spots You!
+                    GymBud{size.width <= 540 ? <br /> : ' '}Spots You!
                 </Typography>
                 <Typography variant='h6' component='div' className={styles.subTitle} >
                     Keep the motivation going,{size.width <= 540 ? <br /> : ' '}we'll take care of the rest.

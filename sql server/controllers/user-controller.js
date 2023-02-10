@@ -140,7 +140,7 @@ module.exports = class UserController {
                     from: process.env.OUTLOOK_NM_USERNAME,
                     to: body.email,
                     subject: 'Verify account',
-                    html: `<p>Click <a href="http://localhost:3000/verify?token=${userData[0].token}">here</a> to verify Ur Gym Bud account registration</p>`,
+                    html: `<p>Click <a href="http://localhost:3000/verify?token=${userData[0].token}">here</a> to verify your Gym Bud account registration</p>`,
                     onError: (e) => console.log(e),
                     onSuccess: (i) => console.log(i)
                 });
