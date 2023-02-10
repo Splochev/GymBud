@@ -11,6 +11,11 @@ const useStyles = makeStyles((theme) => ({
     subTitle: {
     },
     cardTitle: {
+        textAlign: 'center',
+        fontWeight: 'bolder',
+        fontSize: theme.spacing(3.125),
+        color: '#1B1B1B',
+        marginBottom: theme.spacing(2)
     },
     cardSubTitle: {
     },

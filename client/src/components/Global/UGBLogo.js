@@ -1,5 +1,6 @@
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
+import logoNoBackgroundWhite from '../assets/logo-no-background-white.svg'
 
 const useStyles = makeStyles((theme) => ({
     logo: {
@@ -34,7 +35,7 @@ const UGBLogo = ({ setToggleNav }) => {
                 }
             }}
         >
-            <img src="/UrGymBudLogoLight.png" alt="Logo" className={styles.image} />
+            <img src={logoNoBackgroundWhite} alt="Logo" className={styles.image} />
         </a>
     );
 }

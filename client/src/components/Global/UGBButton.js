@@ -45,6 +45,19 @@ const useStyles = makeStyles((theme) => ({
             outline: 'none'
         },
     },
+    tertiary: {
+        background: '#007BFF',
+        '&:hover': {
+            backgroundColor: '#0090ff',
+            border: '1px solid #0036a9',
+        },
+        '&:focus': {
+            border: '1px solid #0036a9',
+            background: '#0090ff',
+            boxShadow: 'rgb(128,189,255) 0px 0px 0px 3px',
+            outline: 'none'
+        },
+    },
     neutral: {
 
     },

@@ -17,8 +17,6 @@ import isURL from 'validator/es/lib/isURL';
 import isEmpty from 'validator/es/lib/isEmpty';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -31,6 +29,7 @@ import lifting3 from '../assets/lifting3.svg'
 import addMarkersSvg from '../assets/mark.svg'
 import tallyIcon from '../assets/tallyIcon.png';
 import lifting2 from '../assets/lifting2.svg';
+import workout from '../assets/workout.svg';
 import muscle from '../assets/muscle.svg';
 import inputIcon from '../assets/inputIcon.png';
 import clsx from 'clsx';
@@ -74,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
         minHeight: theme.spacing(66.25),
     },
     exercisesList: {
-        height: theme.spacing(49),
+        height: theme.spacing(62.5),
         overflow: 'auto',
         '& .MuiListItem-gutters': {
             paddingLeft: 0,
@@ -366,7 +365,12 @@ const useStyles = makeStyles((theme) => ({
     },
     dragIndicatorIcon: {
         color: '#757575',
-        marginLeft: '-6px' 
+        marginLeft: '-6px'
+    },
+    workoutIcon: {
+        height: 'auto',
+        width: '44px',
+        cursor: 'pointer'
     }
 }));
 
@@ -424,12 +428,12 @@ const AddNewWorkoutJournal = ({ onSubmit, onClose }) => {
         <form onSubmit={addWorkoutJournal}>
             <div className={styles.titleSection}>
                 <UGBLabel variant='h5'>
-                    Add a new workout journal
+                    Add a new workout program
                 </UGBLabel>
             </div>
             <UGBIconInput
                 $value={workoutJournalName}
-                label='Workout Journal Name'
+                label='Name'
                 startIcon='fa-solid fa-file-signature'
                 validator={dataValidators.isRequired}
                 validatorPassed={workoutJournalNamePassed}
@@ -536,12 +540,12 @@ const EditWorkoutJournal = ({ selectedWorkoutJournalObj, setSelectedWorkoutJourn
         <form onSubmit={editWorkoutJournal}>
             <div className={styles.titleSection}>
                 <UGBLabel variant='h5'>
-                    Edit workout journal: {selectedWorkoutJournalObj?.name || ''}
+                    Edit workout: {selectedWorkoutJournalObj?.name || ''}
                 </UGBLabel>
             </div>
             <UGBIconInput
                 $value={workoutJournalName}
-                label='Workout Journal Name'
+                label='Name'
                 startIcon='fa-solid fa-file-signature'
                 validator={dataValidators.isRequired}
                 validatorPassed={workoutJournalNamePassed}
@@ -594,7 +598,7 @@ const DeleteWorkoutJournal = ({ selectedWorkoutJournalObj, refresh, onClose }) =
         <form onSubmit={deleteWJ}>
             <div className={styles.titleSection}>
                 <UGBLabel variant='h5'>
-                    Are you sure you want to delete workout journal &ldquo;{workoutJournalName}&rdquo;?
+                    Are you sure you want to delete workout &ldquo;{workoutJournalName}&rdquo;?
                 </UGBLabel>
             </div>
             <div className={styles.actions}>
@@ -648,7 +652,7 @@ const AddNewWorkoutSession = ({ workoutJournal, onSubmit, onClose }) => {
         <form onSubmit={addWorkoutSession}>
             <div className={styles.titleSection}>
                 <UGBLabel variant='h5'>
-                    Add a new session for the workout journal: {workoutJournal?.name || ''}
+                    Add a new day to the workout: {workoutJournal?.name || ''}
                 </UGBLabel>
             </div>
             <UGBIconInput
@@ -739,12 +743,12 @@ const EditWorkoutSession = ({ selectedWorkoutJournalObj, selectedWorkoutSessionO
         <form onSubmit={addWorkoutJournal}>
             <div className={styles.titleSection}>
                 <UGBLabel variant='h5'>
-                    Edit workout session: {selectedWorkoutSessionObj?.name || ''}
+                    Edit workout day: {selectedWorkoutSessionObj?.name || ''}
                 </UGBLabel>
             </div>
             <UGBIconInput
                 $value={workoutSessionName}
-                label='Workout Journal Name'
+                label='Workout Name'
                 startIcon='fa-solid fa-file-signature'
                 validator={dataValidators.isRequired}
                 validatorPassed={workoutSessionNamePassed}
@@ -797,7 +801,7 @@ const DeleteWorkoutSession = ({ selectedWorkoutJournalObj, selectedWorkoutSessio
         <form onSubmit={deleteWJ}>
             <div className={styles.titleSection}>
                 <UGBLabel variant='h5'>
-                    Are you sure you want to delete workout session &ldquo;{workoutSessionName}&rdquo;?
+                    Are you sure you want to delete workout day &ldquo;{workoutSessionName}&rdquo;?
                 </UGBLabel>
             </div>
             <div className={styles.actions}>
@@ -1002,40 +1006,53 @@ function ExerciseListItem({
     sessionExercises,
     setToggleExerciseContent,
     setSelectedSessionExercise,
-    props 
+    keepCollapseOpenedForSupersetItems,
+    setKeepCollapseOpenedForSupersetItems,
+    _props
 }) {
     const styles = useStyles();
     const [open, setOpen] = useState(false);
+    const [stopTransition, setStopTransition] = useState(false);
+
+    useEffect(() => {
+        if (exType === 'superset') {
+            for (let i = 0; i < supersetItems.superset.length; i++) {
+                if (keepCollapseOpenedForSupersetItems[supersetItems.superset[i].id]) {
+                    setStopTransition(true);
+                    setOpen(true);
+                    break;
+                }
+            }
+        }
+    }, [sessionExercises]);
+
+    useEffect(() => {
+        if (stopTransition) {
+            setStopTransition(false);
+        }
+    }, [stopTransition]);
+
 
     return (
-        <>
-            <ListItem
-                key={exType === 'superset' ? 'superset-list-item' : supersetItems.id}
-                button={false}
-                {...props}
-            >
-                <DragIndicatorIcon className={styles.dragIndicatorIcon} />
-                <ListItemIcon className={styles.clearBtn}>
-                    <IconButton
-                        className={styles.changePadding}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (exType === 'superset') {
-                                setSessionExercises(sessionExercises.filter(exx => exx !== supersetItems));
-                                setExercisesForMerge(exercisesForMerge.filter(exx => exx !== supersetItems));
-                            } else {
-                                setSessionExercises(sessionExercises.filter(exx => exx.id !== supersetItems.id));
-                                setExercisesForMerge(exercisesForMerge.filter(exx => exx.id !== supersetItems.id));
-                            }
-                        }}
-                    >
-                        <HighlightOffIcon />
-                    </IconButton>
-                </ListItemIcon>
-                <ListItemText
-                    primary={
-                        exType === 'superset' ?
-                            !open ?
+        exType === 'superset' ?
+            <List key={`superset-${supersetItems.superset[0].id}-${supersetItems.superset[1].id}`} {..._props}>
+                <>
+                    <ListItem key='superset-list-item' button={false}>
+                        <DragIndicatorIcon className={styles.dragIndicatorIcon} />
+                        <ListItemIcon className={styles.clearBtn}>
+                            <IconButton
+                                className={styles.changePadding}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSessionExercises(sessionExercises.filter(exx => exx !== supersetItems));
+                                    setExercisesForMerge(exercisesForMerge.filter(exx => exx !== supersetItems));
+                                }}
+                            >
+                                <HighlightOffIcon />
+                            </IconButton>
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={!open ?
                                 <div >
                                     <span className={styles.supersetLabel}>Superset: </span >
                                     <span>{(() => {
@@ -1046,55 +1063,166 @@ function ExerciseListItem({
                                 </div>
                                 :
                                 <span className={styles.supersetLabel}>Superset: </span >
-                            :
-                            supersetItems.exercise
-                    }
-                    secondary={exType === 'superset' ?
-                        null
-                        :
-                        <PopoverLink ex={supersetItems} color='primary' />
-                    }
-                />
-                <div className={exType === 'superset' ?
-                    styles.rightSideSupersetListIem
-                    :
-                    styles.rightSideListIem
-                }>
-                    <div className={styles.checkboxAndExpand}>
-                        <ListItemIcon className={styles.checkbox}>
-                            <UGBCheckbox
-                                onClick={e => e.stopPropagation()}
-                                onChange={e => {
-                                    const isChecked = e.target.checked;
-                                    if (isChecked) {
-                                        setExercisesForMerge([...exercisesForMerge, supersetItems])
-                                    } else {
-                                        if (exType === 'superset') {
-                                            setExercisesForMerge(exercisesForMerge.filter(exx => exx != supersetItems));
+                            }
+                        />
+                        <div className={styles.rightSideSupersetListIem}>
+                            <div className={styles.checkboxAndExpand}>
+                                <ListItemIcon className={styles.sort}>
+                                    <img className={styles.workoutIcon} src={workout} alt='' />
+                                </ListItemIcon>
+                                <ListItemIcon className={styles.checkbox}>
+                                    <UGBCheckbox
+                                        onClick={e => e.stopPropagation()}
+                                        onChange={e => {
+                                            const isChecked = e.target.checked;
+                                            if (isChecked) {
+                                                setExercisesForMerge([...exercisesForMerge, supersetItems])
+                                            } else {
+                                                setExercisesForMerge(exercisesForMerge.filter(exx => exx != supersetItems));
+                                            }
+                                        }}
+                                    />
+                                </ListItemIcon>
+                                <ListItemIcon className={styles.sort}>
+                                    <IconButton
+                                        className={styles.changePadding}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setOpen(!open);
+                                            if (!open) {
+                                                keepCollapseOpenedForSupersetItems[supersetItems.superset[0].id] = true;
+                                            } else {
+                                                for (let i = 0; i < supersetItems.superset.length; i++) {
+                                                    if (keepCollapseOpenedForSupersetItems[supersetItems.superset[i].id]) {
+                                                        delete keepCollapseOpenedForSupersetItems[supersetItems.superset[i].id];
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            setKeepCollapseOpenedForSupersetItems(keepCollapseOpenedForSupersetItems);
+                                        }}
+                                    >
+                                        {open ?
+                                            <ArrowForwardIosIcon className={styles.arrowExpandLess} />
+                                            :
+                                            <ArrowForwardIosIcon className={styles.arrowExpandMore} />
+                                        }
+                                    </IconButton>
+                                </ListItemIcon>
+                            </div>
+                        </div>
+                    </ListItem>
+                    <Collapse
+                        classes={{ root: stopTransition ? { transition: 'none' } : null }}
+                        timeout={stopTransition ? 0 : "auto"}
+                        in={open}
+                        unmountOnExit
+                    >
+                        <ReactMovableList
+                            values={supersetItems.superset}
+                            onChange={({ oldIndex, newIndex }) => {
+                                const tempSessionExercises = sessionExercises;
+                                const index = tempSessionExercises.indexOf(supersetItems);
+                                supersetItems.superset = arrayMove(supersetItems.superset, oldIndex, newIndex)
+                                tempSessionExercises[index] = supersetItems;
+                                setSessionExercises([...tempSessionExercises]);
+                            }}
+                            renderList={({ children, props }) => <List component="div" disablePadding className={styles.nested} {...props}>{children}</List>}
+                            renderItem={({ value, props }) => {
+                                const ex = value;
+                                return (
+                                    <ListItem key={ex.id} className={styles.nestedListItem} {...props}>
+                                        <DragIndicatorIcon className={styles.dragIndicatorIcon} />
+                                        <ListItemIcon className={styles.clearBtn}>
+                                            <IconButton
+                                                className={styles.changePadding}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const tempSessionExercises = sessionExercises;
+                                                    supersetItems.superset = supersetItems.superset.filter(exx => exx.id !== ex.id);
+                                                    if (supersetItems.superset.length === 1) {
+                                                        const tempSuperSetItem = supersetItems.superset[0];
+                                                        tempSessionExercises[tempSessionExercises.indexOf(supersetItems)] = tempSuperSetItem;
+                                                    }
+                                                    setSessionExercises([...tempSessionExercises]);
+                                                    setExercisesForMerge([...exercisesForMerge]);
+                                                }}
+                                            >
+                                                <HighlightOffIcon />
+                                            </IconButton>
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            primary={ex.exercise}
+                                            secondary={ex.videoLink ?
+                                                <PopoverLink ex={ex} color='green' />
+                                                :
+                                                null
+                                            }
+                                        />
+                                        <div className={styles.sorts}>
+                                            <ListItemIcon className={styles.sort}>
+                                                <IconButton
+                                                    className={styles.changePadding}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setToggleExerciseContent(true);
+                                                        setSelectedSessionExercise(ex);
+                                                    }}
+                                                >
+                                                    <ArrowForwardIosIcon />
+                                                </IconButton>
+                                            </ListItemIcon>
+                                        </div>
+                                    </ListItem>
+                                );
+                            }}
+                        />
+                    </Collapse>
+                </>
+                {open ? <span data-movable-handle /> : null}
+            </List>
+            :
+            <>
+                <ListItem
+                    key={supersetItems.id}
+                    button={false}
+                    {..._props}
+                >
+                    <DragIndicatorIcon className={styles.dragIndicatorIcon} />
+                    <ListItemIcon className={styles.clearBtn}>
+                        <IconButton
+                            className={styles.changePadding}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSessionExercises(sessionExercises.filter(exx => exx.id !== supersetItems.id));
+                                setExercisesForMerge(exercisesForMerge.filter(exx => exx.id !== supersetItems.id));
+                            }}
+                        >
+                            <HighlightOffIcon />
+                        </IconButton>
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={supersetItems.exercise}
+                        secondary={<PopoverLink ex={supersetItems} color='primary' />}
+                    />
+                    <div className={styles.rightSideListIem}>
+                        <div className={styles.checkboxAndExpand}>
+                            <ListItemIcon className={styles.sort}>
+                                <img className={styles.workoutIcon} src={workout} alt='' />
+                            </ListItemIcon>
+                            <ListItemIcon className={styles.checkbox}>
+                                <UGBCheckbox
+                                    onClick={e => e.stopPropagation()}
+                                    onChange={e => {
+                                        const isChecked = e.target.checked;
+                                        if (isChecked) {
+                                            setExercisesForMerge([...exercisesForMerge, supersetItems])
                                         } else {
                                             setExercisesForMerge(exercisesForMerge.filter(exx => exx.id !== supersetItems.id));
                                         }
-                                    }
-                                }}
-                            />
-                        </ListItemIcon>
-                        {exType === 'superset' ?
-                            <ListItemIcon className={styles.sort}>
-                                <IconButton
-                                    className={styles.changePadding}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setOpen(!open)
                                     }}
-                                >
-                                {open ?
-                                    <ArrowForwardIosIcon className={styles.arrowExpandLess}/>
-                                        :
-                                    <ArrowForwardIosIcon className={styles.arrowExpandMore}/>
-                                }
-                                </IconButton>
+                                />
                             </ListItemIcon>
-                            :
                             <ListItemIcon className={styles.sort}>
                                 <IconButton
                                     className={styles.changePadding}
@@ -1107,105 +1235,10 @@ function ExerciseListItem({
                                     <ArrowForwardIosIcon />
                                 </IconButton>
                             </ListItemIcon>
-                        }
+                        </div>
                     </div>
-                </div>
-            </ListItem>
-            {exType !== 'superset' ?
-                null
-                :
-                < Collapse in={open} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding className={styles.nested}>
-                        {supersetItems.superset.map(ex => {
-                            return (
-                                <ListItem key={ex.id} className={styles.nestedListItem}>
-                                    <ListItemIcon className={styles.clearBtn}>
-                                        <IconButton
-                                            className={styles.changePadding}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                const tempSessionExercises = sessionExercises;
-                                                supersetItems.superset = supersetItems.superset.filter(exx => exx.id !== ex.id);
-                                                if (supersetItems.superset.length === 1) {
-                                                    const tempSuperSetItem = supersetItems.superset[0];
-                                                    tempSessionExercises[tempSessionExercises.indexOf(supersetItems)] = tempSuperSetItem;
-                                                }
-                                                setSessionExercises([...tempSessionExercises]);
-                                                setExercisesForMerge([...exercisesForMerge]);
-                                            }}
-                                        >
-                                            <HighlightOffIcon/>
-                                        </IconButton>
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={ex.exercise}
-                                        secondary={ex.videoLink ?
-                                            <PopoverLink ex={ex} color='green' />
-                                            :
-                                            null
-                                        }
-                                    />
-                                    <div className={styles.sorts}>
-                                        <ListItemIcon className={styles.sort}>
-                                            <IconButton
-                                                className={styles.changePadding}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    const tempSessionExercises = supersetItems.superset;
-                                                    const current = tempSessionExercises.indexOf(ex);
-                                                    const next = current + 1;
-                                                    if (next >= tempSessionExercises.length) {
-                                                        return;
-                                                    }
-                                                    const temp = tempSessionExercises[next];
-                                                    tempSessionExercises[next] = tempSessionExercises[current];
-                                                    tempSessionExercises[current] = temp;
-                                                    setSessionExercises([...sessionExercises]);
-                                                }}
-                                            >
-                                                <ArrowDownwardIcon/>
-                                            </IconButton>
-                                        </ListItemIcon>
-                                        <ListItemIcon className={styles.sort}>
-                                            <IconButton
-                                                className={styles.changePadding}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    const tempSessionExercises = supersetItems.superset;
-                                                    const current = tempSessionExercises.indexOf(ex);
-                                                    const next = current - 1;
-                                                    if (next < 0) {
-                                                        return;
-                                                    }
-                                                    const temp = tempSessionExercises[next];
-                                                    tempSessionExercises[next] = tempSessionExercises[current];
-                                                    tempSessionExercises[current] = temp;
-                                                    setSessionExercises([...sessionExercises]);
-                                                }}
-                                            >
-                                                <ArrowUpwardIcon/>
-                                            </IconButton>
-                                        </ListItemIcon>
-                                        <ListItemIcon className={styles.sort}>
-                                            <IconButton
-                                                className={styles.changePadding}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setToggleExerciseContent(true);
-                                                    setSelectedSessionExercise(ex);
-                                                }}
-                                            >
-                                                <ArrowForwardIosIcon/>
-                                            </IconButton>
-                                        </ListItemIcon>
-                                    </div>
-                                </ListItem>
-                            );
-                        })}
-                    </List>
-                </Collapse>
-            }
-        </ >
+                </ListItem>
+            </>
     );
 }
 
@@ -1567,6 +1600,8 @@ const WorkoutBuilder = () => {
     const [hideExerciseContent, setHideExerciseContent] = useState(false);
     const [disableSave, setDisableSave] = useState(false);
 
+    const [keepCollapseOpenedForSupersetItems, setKeepCollapseOpenedForSupersetItems] = useState({});
+
     useEffect(() => {
         switch (tab) {
             case 'add-new-workout-journal':
@@ -1878,15 +1913,15 @@ const WorkoutBuilder = () => {
                 <div className={styles.leftSideContainer}>
                     <div>
                         <UGBLabel variant='h5'>
-                            Workout Builder
+                            Workout
                         </UGBLabel>
                         <UGBLabel variant='subtitle1'>
-                            Click the "ADD" button to add a non existing journal or session
+                            Click "ADD" to create a workout
                         </UGBLabel>
                     </div>
                     <div className={styles.select}>
                         <UGBLabel variant='subtitle2'>
-                            Workout Journal
+                            Workout
                         </UGBLabel>
                         <div className={styles.selectAndEditContainer}>
                             <UGBSelect
@@ -1931,7 +1966,7 @@ const WorkoutBuilder = () => {
                     </div>
                     <div className={styles.select}>
                         <UGBLabel variant='subtitle2'>
-                            Workout Session
+                            Workout Day
                         </UGBLabel>
                         <div className={styles.selectAndEditContainer}>
                             <UGBSelect
@@ -2005,46 +2040,26 @@ const WorkoutBuilder = () => {
                                 values={sessionExercises}
                                 onChange={({ oldIndex, newIndex }) => setSessionExercises(arrayMove(sessionExercises, oldIndex, newIndex))}
                                 renderList={({ children, props }) => <List className={clsx(styles.exercisesList, 'exercises-list')} {...props}>{children}</List>}
-                                renderItem={({ value, props }) => {
-                   
-                                    if (value.superset) {
-                                        return (
-                                            <List key={`superset-${value.superset[0].id}-${value.superset[1].id}`} {...props}>
-                                                <ExerciseListItem
-                                                    key={`superset-exerciseListItem-${value.superset[0].id}-${value.superset[1].id}`}
-                                                    exType='superset'
-                                                    supersetItems={value}
-                                                    setExercisesForMerge={setExercisesForMerge}
-                                                    exercisesForMerge={exercisesForMerge}
-                                                    setSessionExercises={setSessionExercises}
-                                                    sessionExercises={sessionExercises}
-                                                    setToggleExerciseContent={setToggleExerciseContent}
-                                                    setSelectedSessionExercise={setSelectedSessionExercise}
-                                                />
-                                            </List>
-                                        );
-                                    } else {
-                                        return (
-                                            <ExerciseListItem
-                                                key={value.id}
-                                                exType='single-exercise'
-                                                supersetItems={value}
-                                                setExercisesForMerge={setExercisesForMerge}
-                                                exercisesForMerge={exercisesForMerge}
-                                                setSessionExercises={setSessionExercises}
-                                                sessionExercises={sessionExercises}
-                                                setToggleExerciseContent={setToggleExerciseContent}
-                                                setSelectedSessionExercise={setSelectedSessionExercise}
-                                                props={props}
-                                            />
-                                        );
+                                renderItem={({ value, props }) => <ExerciseListItem
+                                    key={value.superset ?
+                                        `superset-exerciseListItem-${value.superset[0].id}-${value.superset[1].id}`
+                                        :
+                                        value.id
                                     }
-                                }}
+                                    exType={value.superset ? 'superset' : 'single-exercise'}
+                                    supersetItems={value}
+                                    setExercisesForMerge={setExercisesForMerge}
+                                    exercisesForMerge={exercisesForMerge}
+                                    setSessionExercises={setSessionExercises}
+                                    sessionExercises={sessionExercises}
+                                    setToggleExerciseContent={setToggleExerciseContent}
+                                    setSelectedSessionExercise={setSelectedSessionExercise}
+                                    _props={props}
+                                    keepCollapseOpenedForSupersetItems={keepCollapseOpenedForSupersetItems}
+                                    setKeepCollapseOpenedForSupersetItems={setKeepCollapseOpenedForSupersetItems}
+                                />}
                             />
                             <div className={clsx(styles.select, styles.autocomplete)}>
-                                <UGBLabel variant='subtitle2'>
-                                    Find Exercise
-                                </UGBLabel>
                                 <ExercisesAutoComplete
                                     disabled={!selectedWorkoutSession[0]}
                                     setMissingExerciseName={setMissingExerciseName}

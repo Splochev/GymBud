@@ -159,10 +159,11 @@ export const UGBInput = withStyles(() => ({
     );
 });
 
-export function UGBIconInput({ startIcon, endIcon, MuiIconStart, MuiIconEnd, imgIconStart, $$onClick, ...props }) {
+export function UGBIconInput({ startIcon, endIcon, MuiIconStart, MuiIconEnd, imgIconStart, $$onClick, placeholder,...props }) {
     const styles = useStyles()
     return (
         <UGBInput
+            placeholder={placeholder}
             InputProps={{
                 startAdornment: startIcon ?
                     <InputAdornment position="start">

@@ -139,6 +139,7 @@ export const ExercisesAutoComplete = ({ label, onSelectedExercise, setMissingExe
             loading={isLoading}
             renderInput={(params) => (
                 <UGBIconInput
+                    placeholder='Find Exercise'
                     {...params}
                     label={label}
                     InputProps={{

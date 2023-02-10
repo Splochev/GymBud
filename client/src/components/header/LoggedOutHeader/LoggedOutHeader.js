@@ -1,9 +1,6 @@
 import { IconButton, makeStyles } from '@material-ui/core';
 import OneRepMaxCalculator from '../../OneRepMaxCalculator/OneRepMaxCalculator.js';
-import Login from '../../Login/Login.js';
-import ForgotPassword from '../../Login/ForgotPassword/ForgotPassword.js';
 import { useState } from 'react';
-import Register from '../../Register/Register.js';
 import CalorieCalculator from '../../CalorieCalculator/CalorieCalculator.js';
 import UGBModal from '../../Global/UGBModal.js';
 import { useHistory } from 'react-router-dom';
@@ -97,11 +94,8 @@ const useStyles = makeStyles((theme) => ({
 const LoggedOutHeader = () => {
     const styles = useStyles();
     const history = useHistory();
-    const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [showOneRMCalculator, setShowOneRMCalculator] = useState(false);
     const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
-    const [showLogin, setShowLogin] = useState(false);
-    const [showRegister, setShowRegister] = useState(false);
     const { tab } = useQuery();
     const size = useWindowSize();
     const [toggleNav, setToggleNav] = useState(false)
@@ -120,21 +114,9 @@ const LoggedOutHeader = () => {
             case 'one-rep-max-calculator':
                 setShowOneRMCalculator(true);
                 break;
-            case 'sign-in':
-                setShowLogin(true);
-                break;
-            case 'sign-up':
-                setShowRegister(true);
-                break;
-            case 'forgotten-password':
-                setShowForgotPassword(true);
-                break;
             default:
                 setShowCalorieCalculator(false);
                 setShowOneRMCalculator(false);
-                setShowLogin(false);
-                setShowRegister(false);
-                setShowForgotPassword(false);
                 break;
         }
     }, [tab])
@@ -161,39 +143,6 @@ const LoggedOutHeader = () => {
                     maxWidth='sm'
                 >
                     <CalorieCalculator />
-                </UGBModal>
-                <UGBModal
-                    open={showRegister}
-                    onClose={() => {
-                        history.push(window.location.pathname);
-                        setShowRegister(false)
-                    }}
-                    maxWidth='sm'
-                >
-                    <Register />
-                </UGBModal>
-                <UGBModal
-                    open={showLogin}
-                    onClose={() => {
-                        history.push(window.location.pathname);
-                        setShowLogin(false)
-                    }}
-                    maxWidth='sm'
-                >
-                    <Login
-                        setShowForgotPassword={setShowForgotPassword}
-                        setShowLogin={setShowLogin}
-                    />
-                </UGBModal>
-                <UGBModal
-                    open={showForgotPassword}
-                    onClose={() => {
-                        history.push(window.location.pathname);
-                        setShowForgotPassword(false)
-                    }}
-                    maxWidth='sm'
-                >
-                    <ForgotPassword />
                 </UGBModal>
             </>
             <div className={styles.navigationBar}>
@@ -236,14 +185,23 @@ const LoggedOutHeader = () => {
 }
 
 const Auth = ({ setToggleNav }) => {
+    const history = useHistory();
     const styles = useStyles();
-    const { tab } = useQuery();
+    // const { tab } = useQuery();
     const [anchorMore, setAnchorMore] = useState(null);
     const [moreSelectItems] = useState([{ label: 'Opt1', path: '/home', setToggleNav: setToggleNav }, { label: 'Opt2', path: '/home', setToggleNav: setToggleNav }])
 
     return (
         <div className={styles.auth}>
-            <div className={styles.authLinks}>
+            {/* <div className={styles.authLinks}>
+                <LiItem
+                    path='?tab=sign-in'
+                    active={tab === 'sign-in' || tab === 'forgotten-password'}
+                    shrinkUrl={false}
+                    setToggleNav={setToggleNav}
+                >
+                    Sign In
+                </LiItem>
                 <LiItem
                     path='?tab=sign-in'
                     active={tab === 'sign-in' || tab === 'forgotten-password'}
@@ -260,7 +218,15 @@ const Auth = ({ setToggleNav }) => {
                 >
                     Sign Up
                 </LiItem>
-            </div>
+            </div> */}
+            <LiItem
+                path='/sign-in'
+                active={history.location.pathname === '/sign-in'}
+                shrinkUrl={false}
+                setToggleNav={setToggleNav}
+            >
+                Sign In
+            </LiItem>
             <LiItem
                 type='select'
                 anchor={anchorMore}

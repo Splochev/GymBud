@@ -12,6 +12,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import WorkoutBuilder from './components/WorkoutBuilder/WorkoutBuilder';
 import clsx from 'clsx';
 import Progress from './components/Progress/ProgressLayout';
+import SignIn from './components/SignIn/SignIn';
+import CreateNewAccount from './components/CreateNewAccount/CreateNewAccount';
+import ForgottenPassword from './components/ForgottenPassword/ForgottenPassword';
 require("dotenv").config();
 
 const AutoLoginComponent = ({ children }) => {
@@ -121,7 +124,7 @@ const App = () => {
                                     <Switch>
                                         <Route exact path="/home" component={HomePageArticles} />
                                         <Route exact path="/progress" component={Progress} />
-                                        <Route exact path="/workout-builder" component={WorkoutBuilder} />
+                                        <Route exact path="/workout" component={WorkoutBuilder} />
                                         <Redirect from="*" to="/home" />
                                     </Switch>
                                 </div>
@@ -133,6 +136,9 @@ const App = () => {
                                 <div className={clsx(styles.contentContainer, storeState.hasOverflow ? styles.hasOverflow : '')}>
                                     <Switch>
                                         <Route exact path="/home" component={HomePageArticles} />
+                                        <Route exact path="/sign-in" component={SignIn} />
+                                        <Route exact path="/create-new-account" component={CreateNewAccount} />
+                                        <Route exact path="/forgotten-password" component={ForgottenPassword} />
                                         <Redirect from="*" to="/home" />
                                     </Switch>
                                 </div>

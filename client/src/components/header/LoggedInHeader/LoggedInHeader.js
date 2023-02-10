@@ -310,7 +310,6 @@ const UserAndMore = ({ setToggleNav }) => {
 
 const NavItems = ({ setToggleNav }) => {
     const { tab } = useQuery();
-    const [anchorWorkout, setAnchorWorkout] = useState(null);
     const [anchorMeals, setAnchorMeals] = useState(null);
     const [anchorFood, setAnchorFood] = useState(null);
     const [anchorCalculators, setAnchorCalculators] = useState(null);
@@ -326,10 +325,6 @@ const NavItems = ({ setToggleNav }) => {
         { label: 'My Meals', path: '/home', setToggleNav: setToggleNav },
         { label: 'My Meal Plans', path: '/home', setToggleNav: setToggleNav }
     ])
-    const [workoutSelectItems] = useState([
-        { label: 'Workout Journal', path: '/home', setToggleNav: setToggleNav },
-        { label: 'Workout Builder', path: '/workout-builder', setToggleNav: setToggleNav }
-    ])
     const history = useHistory();
 
     return (
@@ -338,10 +333,17 @@ const NavItems = ({ setToggleNav }) => {
             <LiItem setToggleNav={setToggleNav} badgeCount={1}>Meal Planner</LiItem>
             <LiItem
                 path='/progress'
-                active={(history.location.pathname === '/progress' && !tab && !anchorCalculators && !anchorFood && !anchorMeals && !anchorWorkout) || tab === 'track-weight'}
+                active={(history.location.pathname === '/progress' && !tab && !anchorCalculators && !anchorFood && !anchorMeals) || tab === 'track-weight'}
                 setToggleNav={setToggleNav}
             >
                 Progress
+            </LiItem>
+            <LiItem
+                path='/workout'
+                active={(history.location.pathname === '/workout' && !tab && !anchorCalculators && !anchorFood && !anchorMeals) || tab === 'track-weight'}
+                setToggleNav={setToggleNav}
+            >
+                Workout
             </LiItem>
             <LiItem
                 type='select'
@@ -369,15 +371,6 @@ const NavItems = ({ setToggleNav }) => {
                 active={anchorMeals ? true : null}
             >
                 Meals
-            </LiItem>
-            <LiItem
-                type='select'
-                anchor={anchorWorkout}
-                setAnchor={setAnchorWorkout}
-                menuItems={workoutSelectItems}
-                active={anchorWorkout ? true : null}
-            >
-                Workout
             </LiItem>
         </>
     );
