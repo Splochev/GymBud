@@ -35,6 +35,11 @@ module.exports = class UserController {
                 res.status(401).json(ErrorHandler.GenerateError(401, ErrorHandler.ErrorTypes.authentication, 'Incorrect email or password!'));
                 return;
             }
+            
+            if (user['verification_token_expires_on'] || user['verification_token']) {
+                res.status(401).json(ErrorHandler.GenerateError(401, ErrorHandler.ErrorTypes.authentication, 'User not verified yet!'));
+                return;
+            }
 
             req.logIn(user, function (err) {
                 if (err) {
@@ -140,7 +145,7 @@ module.exports = class UserController {
                     from: process.env.OUTLOOK_NM_USERNAME,
                     to: body.email,
                     subject: 'Verify account',
-                    html: `<p>Click <a href="http://localhost:3000/verify?token=${userData[0].token}">here</a> to verify your Gym Bud account registration</p>`,
+                    html: `<p>Click <a href="${process.env.APP_HOST}/verify?token=${userData[0].token}">here</a> to verify your Gym Bud account registration</p>`,
                     onError: (e) => console.log(e),
                     onSuccess: (i) => console.log(i)
                 });
@@ -217,7 +222,7 @@ module.exports = class UserController {
                 from: process.env.OUTLOOK_NM_USERNAME,
                 to: req.body.email,
                 subject: 'Password Reset',
-                html: `<p>Click <a href="http://localhost:3000/change-password?token=${token[0].token}" target="_blank">here</a> to reset password</p>`,
+                html: `<p>Click <a href="${process.env.APP_HOST}/change-password?token=${token[0].token}" target="_blank">here</a> to reset password</p>`,
                 onError: (e) => console.log(e),
                 onSuccess: (i) => console.log(i)
             });
@@ -246,11 +251,16 @@ module.exports = class UserController {
             password = bcrypt.hashSync(password, 10);
 
             const email = await MysqlAdapter.query(`
-                    SELECT email FROM users
+                    SELECT email, id FROM users
                     WHERE
                         change_password_token=${token}
                 `);
             
+            if (!email.length) {
+                res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Invalid token!'));
+                return;
+            }
+
             const update = await MysqlAdapter.query(`
                     UPDATE users
                     SET
@@ -258,7 +268,7 @@ module.exports = class UserController {
                         change_password_token=null,
                         password='${password}'
                     WHERE
-                        change_password_token=${token}
+                        id=${email[0].id}
                 `);
 
             if (!update.changedRows) {
