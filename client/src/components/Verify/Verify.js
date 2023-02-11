@@ -1,13 +1,11 @@
+import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useQuery } from '../utils/RouteUtils.js';
+import { putData } from '../utils/FetchUtils'
 import { makeStyles } from '@material-ui/core';
 import logoNoBackgroundWithSlogan from '../assets/logo-no-background-with-slogan.svg'
-import { UGBIconInput } from '../Global/UGBInput';
-import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { UGBButton } from '../Global/UGBButton';
-import UGBHr from '../Global/UGBHr';
 import UGBLabel from '../Global/UGBLabel';
-import { putData } from '../utils/FetchUtils'
-import UGBModal from '../Global/UGBModal';
+import UGBLink from '../Global/UGBLink.js';
 
 const useStyles = makeStyles((theme) => ({
     signInContainer: {
@@ -82,15 +80,6 @@ const useStyles = makeStyles((theme) => ({
             maxWidth: '300px',
         }
     },
-    actions: {
-        width: '100%',
-        display: 'flex',
-        justifyContent: "center",
-        marginTop: theme.spacing(2),
-        "& button": {
-            width: theme.spacing(23.5),
-        }
-    },
     formTitle: {
         display: 'flex',
         alignItems: 'start',
@@ -98,90 +87,88 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         gap: theme.spacing(1)
     },
-    closeBtnContainer: {
-        display: 'flex',
-        justifyContent: 'end',
+    goToSignIn: {
         width: '100%',
-        marginTop: theme.spacing(2)
-    }
+        display: 'flex',
+        gap: theme.spacing(0.5),
+        justifyContent: 'center'
+    },
 }));
 
 
-const ForgotPassword = () => {
+const Verify = () => {
     const styles = useStyles();
     const history = useHistory();
-    const email = useState('')
-    const [forgottenPasswordFormSent, setForgottenPasswordFormSent] = useState(false);
+    const { token } = useQuery();
+    const [verified, setVerified] = useState(null);
 
-    async function onSubmitForgottenPasswordRequest(e) {
-        e.preventDefault();
+    async function verifyRegistration() {
         try {
-            const data = await putData(process.env.REACT_APP_HOST + '/api/user/forgotten-password', { email: email[0] });
+            const data = await putData(process.env.REACT_APP_HOST + `/api/user/verify?token=${token}`);
             if (!data) {
-                setForgottenPasswordFormSent(false);
-                throw Error('Incorrect email!')
+                setVerified(false);
+                throw Error('Incorrect token!')
             }
-            console.log(data);
-            setForgottenPasswordFormSent(true);
+            setVerified(true);
         } catch (err) {
+            setVerified(false);
             console.log(err.message);
-            setForgottenPasswordFormSent(false);
         }
     }
 
+    useEffect(() => {
+        if (token) {
+            verifyRegistration();
+        } else {
+            history.push('/home');
+        }
+    }, [token])
+
     return (
-        <form onSubmit={onSubmitForgottenPasswordRequest} className={styles.form}>
-            <UGBModal
-                open={forgottenPasswordFormSent}
-                maxWidth='xs'
-            >
-                <>
-                    <div className={styles.formTitle}>
-                        <UGBLabel variant='h4'>
-                            Request to reset password sent successfully.
-                        </UGBLabel>
-                        <UGBLabel variant='subtitle1'>
-                            Please check your email for a reset password link.
-                        </UGBLabel>
-                    </div>
-                    <div className={styles.closeBtnContainer}>
-                        <UGBButton
-                            btnType='secondary'
-                            onClick={() => history.push('/home')}
-                        >
-                            Close
-                        </UGBButton>
-                    </div>
-                </>
-            </UGBModal>
+        <div className={styles.form}>
             <div className={styles.formTitle}>
                 <UGBLabel variant='h5'>
-                    Reset Password
+                    Verification {verified === true ? 'was successful.' : verified === false ? 'failed.' : '.'}
                 </UGBLabel>
-                <UGBLabel variant='subtitle2'>
-                    Please provide your account email to reset your password.
-                </UGBLabel>
+                {verified === true ?
+                    <div className={styles.goToSignIn}>
+                        <UGBLink
+                            label='You may proceed to the login page.'
+                            color='blue'
+                            onClick={(e) => {
+                                e.preventDefault();
+                                history.push('/sign-in');
+                            }}
+                        />
+                    </div>
+                    :
+                    null
+                }
+                {verified === false ?
+                    <>
+                        <UGBLabel variant='subtitle2'>
+                            User could be already verified or there might be a problem<br />
+                            with the verification link. Please check your verification link<br />
+                            or contact support.
+                        </UGBLabel>
+                        <UGBLink
+                            label='Go back to home page.'
+                            color='blue'
+                            onClick={(e) => {
+                                e.preventDefault();
+                                history.push('/home');
+                            }}
+                        />
+                    </>
+                    :
+                    null
+                }
             </div>
-            <UGBHr type='horizontal' />
-            <UGBIconInput
-                $value={email}
-                required
-                label='Email'
-                startIcon='fas fa-envelope'
-            />
-            <div className={styles.actions}>
-                <UGBButton
-                    type='submit'
-                    btnType='primary'
-                >
-                    Reset Password
-                </UGBButton>
-            </div>
-        </form>
+        </div >
     );
 }
 
-const ForgottenPassword = () => {
+const VerifyRegistration = () => {
     const styles = useStyles();
     return (
         <div
@@ -196,10 +183,10 @@ const ForgottenPassword = () => {
                 <div>
                     <img src={logoNoBackgroundWithSlogan} alt="Logo" className={styles.image} />
                 </div>
-                <ForgotPassword />
+                <Verify />
             </div>
         </div>
     );
 }
 
-export default ForgottenPassword;
+export default VerifyRegistration;

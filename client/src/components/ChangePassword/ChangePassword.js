@@ -1,13 +1,15 @@
 import { makeStyles } from '@material-ui/core';
 import logoNoBackgroundWithSlogan from '../assets/logo-no-background-with-slogan.svg'
-import { UGBIconInput } from '../Global/UGBInput';
-import { useState } from 'react';
+import { UGBPasswordInput } from '../Global/UGBInput';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { UGBButton } from '../Global/UGBButton';
 import UGBHr from '../Global/UGBHr';
 import UGBLabel from '../Global/UGBLabel';
 import { putData } from '../utils/FetchUtils'
 import UGBModal from '../Global/UGBModal';
+import UGBLink from '../Global/UGBLink';
+import { useQuery } from '../utils/RouteUtils';
 
 const useStyles = makeStyles((theme) => ({
     signInContainer: {
@@ -107,42 +109,65 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const ForgotPassword = () => {
+const ChangePasswordForm = () => {
     const styles = useStyles();
     const history = useHistory();
-    const email = useState('')
-    const [forgottenPasswordFormSent, setForgottenPasswordFormSent] = useState(false);
+    const password = useState('');
+    const repeatPassword = useState('');
+    const { token } = useQuery();
+    const [newPasswordFormSent, setNewPasswordFormSent] = useState(false);
+
+    useEffect(() => {
+        if (!token) {
+            history.push('/home');
+        } 
+    }, [token])
 
     async function onSubmitForgottenPasswordRequest(e) {
         e.preventDefault();
         try {
-            const data = await putData(process.env.REACT_APP_HOST + '/api/user/forgotten-password', { email: email[0] });
+            if (password[0] !== repeatPassword[0]) {
+                throw Error("Passwords don't match")
+            }
+
+            const data = await putData(process.env.REACT_APP_HOST + '/api/user/reset-forgotten-password', {
+                token: token,
+                password: password[0]
+            });
+
             if (!data) {
-                setForgottenPasswordFormSent(false);
-                throw Error('Incorrect email!')
+                setNewPasswordFormSent(false);
+                throw Error('Change password error!')
             }
             console.log(data);
-            setForgottenPasswordFormSent(true);
+            setNewPasswordFormSent(true);
         } catch (err) {
             console.log(err.message);
-            setForgottenPasswordFormSent(false);
+            setNewPasswordFormSent(false);
         }
     }
 
     return (
         <form onSubmit={onSubmitForgottenPasswordRequest} className={styles.form}>
             <UGBModal
-                open={forgottenPasswordFormSent}
+                open={newPasswordFormSent}
                 maxWidth='xs'
             >
                 <>
                     <div className={styles.formTitle}>
                         <UGBLabel variant='h4'>
-                            Request to reset password sent successfully.
+                            Password was changed successfully.
                         </UGBLabel>
-                        <UGBLabel variant='subtitle1'>
-                            Please check your email for a reset password link.
-                        </UGBLabel>
+                        <div className={styles.goToSignIn}>
+                            <UGBLink
+                                label='You may proceed to the login page.'
+                                color='blue'
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    history.push('/sign-in');
+                                }}
+                            />
+                        </div>
                     </div>
                     <div className={styles.closeBtnContainer}>
                         <UGBButton
@@ -158,16 +183,19 @@ const ForgotPassword = () => {
                 <UGBLabel variant='h5'>
                     Reset Password
                 </UGBLabel>
-                <UGBLabel variant='subtitle2'>
-                    Please provide your account email to reset your password.
-                </UGBLabel>
             </div>
             <UGBHr type='horizontal' />
-            <UGBIconInput
-                $value={email}
+            <UGBPasswordInput
+                $value={password}
                 required
-                label='Email'
-                startIcon='fas fa-envelope'
+                label='Password'
+                startIcon='fas fa-lock'
+            />
+            <UGBPasswordInput
+                $value={repeatPassword}
+                required
+                label='Repeat password'
+                startIcon='fas fa-lock'
             />
             <div className={styles.actions}>
                 <UGBButton
@@ -181,7 +209,7 @@ const ForgotPassword = () => {
     );
 }
 
-const ForgottenPassword = () => {
+const ChangePassword = () => {
     const styles = useStyles();
     return (
         <div
@@ -196,10 +224,10 @@ const ForgottenPassword = () => {
                 <div>
                     <img src={logoNoBackgroundWithSlogan} alt="Logo" className={styles.image} />
                 </div>
-                <ForgotPassword />
+                <ChangePasswordForm />
             </div>
         </div>
     );
 }
 
-export default ForgottenPassword;
+export default ChangePassword;

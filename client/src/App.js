@@ -15,6 +15,8 @@ import Progress from './components/Progress/ProgressLayout';
 import SignIn from './components/SignIn/SignIn';
 import CreateNewAccount from './components/CreateNewAccount/CreateNewAccount';
 import ForgottenPassword from './components/ForgottenPassword/ForgottenPassword';
+import VerifyRegistration from './components/Verify/Verify';
+import ChangePassword from './components/ChangePassword/ChangePassword';
 require("dotenv").config();
 
 const AutoLoginComponent = ({ children }) => {
@@ -139,6 +141,8 @@ const App = () => {
                                         <Route exact path="/sign-in" component={SignIn} />
                                         <Route exact path="/create-new-account" component={CreateNewAccount} />
                                         <Route exact path="/forgotten-password" component={ForgottenPassword} />
+                                        <Route exact path="/verify" component={VerifyRegistration} />
+                                        <Route exact path="/change-password" component={ChangePassword} />
                                         <Redirect from="*" to="/home" />
                                     </Switch>
                                 </div>
