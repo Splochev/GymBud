@@ -1,6 +1,3 @@
-
-
-
 import { makeStyles, Typography } from '@material-ui/core';
 import logoNoBackgroundWithSlogan from '../assets/logo-no-background-with-slogan.svg'
 import { FormControlLabel, Radio } from '@material-ui/core';
@@ -18,6 +15,9 @@ import UGBHr from '../Global/UGBHr';
 import UGBLabel from '../Global/UGBLabel';
 import UGBModal from '../Global/UGBModal';
 import UGBLink from '../Global/UGBLink';
+import { BrandAlert } from '../Global/BrandAlert';
+import { UGBLoaderDots } from '../Global/UGBLoader';
+import { textContainsEmptySpaces, textIsEmail, textIsPassword } from '../utils/ValidationUtils';
 
 const useStyles = makeStyles((theme) => ({
     createNewAccountContainer: {
@@ -44,18 +44,28 @@ const useStyles = makeStyles((theme) => ({
         maxHeight: theme.spacing(40)
     },
     logo: {
-        // '@media (max-width: 465px)': {
-        //     marginTop:'10px'
-        // },
-        // '@media (max-width: 460px)': {
-        //     marginTop: '25px'
-        // },
-        // '@media (max-width: 448px)': {
-        //     marginTop: '35px'
-        // },
+        '@media (max-width: 880px)': {
+            width: '370px'
+        },
+        '@media (max-width: 430px)': {
+            width: '340px'
+        },
+        '@media (max-width: 380px)': {
+            width: '310px'
+        },
+        '@media (max-width: 350px)': {
+            width: '280px'
+        }
     },
     icon: {
         fontSize: theme.spacing(2.5),
+    },
+    requestSentTitle: {
+        display: 'flex',
+        alignItems: 'start',
+        flexDirection: 'column',
+        gap: theme.spacing(1),
+        width: '100%',
     },
     form: {
         maxWidth: '420px',
@@ -189,6 +199,34 @@ const GetTermsAndConditionsDialog = ({ onClose }) => {
     );
 }
 
+const dataValidators = {
+    validatePassword: (value) => {
+        const errors = []
+        const res = textIsPassword(value);
+        if (res !== true) {
+            errors.push(res)
+        }
+        return errors;
+    },
+    validateEmail: (value) => {
+        const errors = []
+        if (!textIsEmail(value)) {
+            errors.push('Invalid mail.')
+        }
+        if (textContainsEmptySpaces(value)) {
+            errors.push('Value must not contain empty spaces.')
+        }
+        return errors;
+    },
+    validateNames: (value) => {
+        const errors = []
+        if (textContainsEmptySpaces(value)) {
+            errors.push('Value must not contain empty spaces.')
+        }
+        return errors;
+    },
+}
+
 const Register = () => {
     const history = useHistory();
     const styles = useStyles();
@@ -211,6 +249,15 @@ const Register = () => {
     const termsRead = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [userRegistered, setUserRegistered] = useState(false);
+
+    const [loading, setLoading] = useState(false);
+    const [submitDisabled, setSubmitDisabled] = useState(false);
+    const emailPassed = useState(false);
+    const passwordPassed = useState(true);
+    const firstNamePassed = useState(true);
+    const lastNamePassed = useState(true);
+    const repeatPasswordPassed = useState(true);
+    const [alert, setAlert] = useState('');
 
     useEffect(() => {
         const daysOfMonthCount = daysOfMonths[month - 1];
@@ -260,37 +307,68 @@ const Register = () => {
 
     function register(e) {
         e.preventDefault();
+        try {
+            setLoading(true);
 
-        if (!termsRead[0]) {
-            throw Error('Please accept the terms and conditions.')
-        }
-
-        if (password[0] !== repeatPassword[0]) {
-            throw Error("Passwords don't match")
-        }
-
-        if (!days[day[0]]) {
-            throw Error('Invalid date')
-        }
-
-        const birthDate = `${year}-${month}-${day[0]}`;
-        postData(process.env.REACT_APP_HOST + '/api/user/register', {
-            email: email[0],
-            password: password[0],
-            firstName: firstName[0],
-            lastName: lastName[0],
-            sex: sex[0],
-            secretUgbPassword: secretUgbPassword[0],
-            birthDate: birthDate,
-        }).then(data => {
-            console.log(data);
-            if (data.success) {
-                setUserRegistered(true);
+            if (!termsRead[0]) {
+                throw Error('Please accept the terms and conditions.')
             }
-        }, error => {
-            console.log('register error', error)
-        })
+
+            if (password[0] !== repeatPassword[0]) {
+                throw Error("Passwords don't match")
+            }
+
+            if (!days.includes(day[0])) {
+                throw Error('Invalid date')
+            }
+
+            const birthDate = `${year}-${month}-${day[0]}`;
+            postData(process.env.REACT_APP_HOST + '/api/user/register', {
+                email: email[0],
+                password: password[0],
+                firstName: firstName[0],
+                lastName: lastName[0],
+                sex: sex[0],
+                secretUgbPassword: secretUgbPassword[0],
+                birthDate: birthDate,
+            }).then(data => {
+                if (data.success) {
+                    setUserRegistered(true);
+                    setLoading(false);
+                } else {
+                    setAlert('Register Error');
+                    setLoading(false);
+                }
+            }, err => {
+                setAlert(err.message);
+                setLoading(false);
+            })
+        } catch (err) {
+            setAlert(err.message);
+            setLoading(false);
+        }
     }
+
+    useEffect(() => {
+        if (loading) {
+            setSubmitDisabled(true);
+            return;
+        }
+
+        if (!passwordPassed[0] || !repeatPasswordPassed[0] || !emailPassed[0] || !firstNamePassed[0] || !lastNamePassed[0]) {
+            setSubmitDisabled(true);
+        } else {
+            if (!password[0] || !repeatPassword[0] || !email[0] || !firstName[0] || !lastName[0] || !secretUgbPassword[0] || !days.includes(day[0]) || !termsRead[0]) {
+                setSubmitDisabled(true);
+                return;
+            }
+            setSubmitDisabled(false);
+        }
+    }, [password[0], passwordPassed[0], repeatPassword[0], repeatPasswordPassed[0], email[0], emailPassed[0], firstName[0], firstNamePassed[0], lastName[0], lastNamePassed[0], loading, secretUgbPassword[0], days, day[0], termsRead[0]])
+
+    useEffect(() => {
+        setAlert('');
+    }, [password[0], repeatPassword[0], email[0], firstName[0], lastName[0], secretUgbPassword[0]]);
 
     return (
         <form className={styles.form} onSubmit={register}>
@@ -299,7 +377,7 @@ const Register = () => {
                 maxWidth='xs'
             >
                 <>
-                    <div className={styles.formTitle}>
+                    <div className={styles.requestSentTitle}>
                         <UGBLabel variant='h4'>
                             User registered successfully.
                         </UGBLabel>
@@ -336,12 +414,16 @@ const Register = () => {
             <div className={styles.inputs}>
                 <UGBIconInput
                     $value={firstName}
+                    validator={dataValidators.validateNames}
+                    validatorPassed={firstNamePassed}
                     required
                     label='First name'
                     startIcon='fa-solid fa-file-signature'
                 />
                 <UGBIconInput
                     $value={lastName}
+                    validator={dataValidators.validateNames}
+                    validatorPassed={lastNamePassed}
                     required
                     label='Last name'
                     startIcon='fa-solid fa-file-signature'
@@ -352,6 +434,8 @@ const Register = () => {
                 required
                 label='Email'
                 startIcon='fas fa-envelope'
+                validator={dataValidators.validateEmail}
+                validatorPassed={emailPassed}
             />
             <UGBPasswordInput
                 $value={secretUgbPassword}
@@ -365,12 +449,16 @@ const Register = () => {
                     required
                     label='Password'
                     startIcon='fas fa-lock'
+                    validator={dataValidators.validatePassword}
+                    validatorPassed={passwordPassed}
                 />
                 <UGBPasswordInput
                     $value={repeatPassword}
                     required
                     label='Repeat password'
                     startIcon='fas fa-lock'
+                    validator={dataValidators.validatePassword}
+                    validatorPassed={repeatPasswordPassed}
                 />
             </div>
             <UGBLabel
@@ -380,20 +468,20 @@ const Register = () => {
                 Birthday
             </UGBLabel>
             <div className={styles.inputs}>
-                <UGBSelect label='' $value={day}>
-                    {days.map(x => {
-                        return (
-                            <UGBMenuItem key={x} value={x}>
-                                {x}
-                            </UGBMenuItem>
-                        )
-                    })}
-                </UGBSelect>
                 <UGBSelect label='' value={month} onChange={onChangeMonth}>
                     {months.map(x => {
                         return (
                             <UGBMenuItem key={x} value={x}>
                                 {monthsLabel[x]}
+                            </UGBMenuItem>
+                        )
+                    })}
+                </UGBSelect>
+                <UGBSelect label='' $value={day}>
+                    {days.map(x => {
+                        return (
+                            <UGBMenuItem key={x} value={x}>
+                                {x}
                             </UGBMenuItem>
                         )
                     })}
@@ -435,12 +523,24 @@ const Register = () => {
                     }}
                 />
             </div>
+            <div>
+                <UGBLink
+                    label='Return to login page'
+                    color='blue'
+                    onClick={(e) => {
+                        e.preventDefault();
+                        history.push('/sign-in');
+                    }}
+                />
+            </div>
+            <BrandAlert minHeight={20}>{alert}</BrandAlert>
             <div className={styles.actions}>
                 <UGBButton
                     type='submit'
                     btnType='primary'
+                    disabled={submitDisabled}
                 >
-                    Sign Up
+                    {loading ? <UGBLoaderDots /> : 'Sign Up'}
                 </UGBButton>
             </div>
         </form>

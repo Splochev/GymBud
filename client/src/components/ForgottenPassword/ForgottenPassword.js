@@ -1,13 +1,16 @@
 import { makeStyles } from '@material-ui/core';
 import logoNoBackgroundWithSlogan from '../assets/logo-no-background-with-slogan.svg'
 import { UGBIconInput } from '../Global/UGBInput';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { UGBButton } from '../Global/UGBButton';
 import UGBHr from '../Global/UGBHr';
 import UGBLabel from '../Global/UGBLabel';
 import { putData } from '../utils/FetchUtils'
 import UGBModal from '../Global/UGBModal';
+import { UGBLoaderDots } from '../Global/UGBLoader';
+import { textContainsEmptySpaces, textIsEmail} from '../utils/ValidationUtils';
+import UGBLink from '../Global/UGBLink';
 
 const useStyles = makeStyles((theme) => ({
     signInContainer: {
@@ -88,15 +91,59 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "center",
         marginTop: theme.spacing(2),
         "& button": {
-            width: theme.spacing(23.5),
+            width: theme.spacing(26.75),
         }
+    },
+    requestSentTitle: {
+        display: 'flex',
+        alignItems: 'start',
+        flexDirection: 'column',
+        gap: theme.spacing(1),
+        width: '100%',
     },
     formTitle: {
         display: 'flex',
         alignItems: 'start',
         width: '420px',
         flexDirection: 'column',
-        gap: theme.spacing(1)
+        gap: theme.spacing(1),
+        '@media (max-width: 455px)': {
+            width:'auto',
+            maxWidth: '410px',
+        },
+        '@media (max-width: 442px)': {
+            maxWidth: '400px',
+        },
+        '@media (max-width: 432px)': {
+            maxWidth: '390px',
+        },
+        '@media (max-width: 422px)': {
+            maxWidth: '380px',
+        },
+        '@media (max-width: 412px)': {
+            maxWidth: '370px',
+        },
+        '@media (max-width: 402px)': {
+            maxWidth: '360px',
+        },
+        '@media (max-width: 392px)': {
+            maxWidth: '350px',
+        },
+        '@media (max-width: 382px)': {
+            maxWidth: '340px',
+        },
+        '@media (max-width: 372px)': {
+            maxWidth: '330px',
+        },
+        '@media (max-width: 362px)': {
+            maxWidth: '320px',
+        },
+        '@media (max-width: 352px)': {
+            maxWidth: '310px',
+        },
+        '@media (max-width: 342px)': {
+            maxWidth: '300px',
+        }
     },
     closeBtnContainer: {
         display: 'flex',
@@ -106,28 +153,58 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const dataValidators = {
+    validateEmail: (value) => {
+        const errors = []
+        if (!textIsEmail(value)) {
+            errors.push('Invalid mail.')
+        }
+        if (textContainsEmptySpaces(value)) {
+            errors.push('Value must not be contain empty spaces.')
+        }
+        return errors;
+    },
+}
+
 
 const ForgotPassword = () => {
     const styles = useStyles();
     const history = useHistory();
     const email = useState('')
     const [forgottenPasswordFormSent, setForgottenPasswordFormSent] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const emailPassed = useState(false);
+    const [submitDisabled, setSubmitDisabled] = useState(false);
 
     async function onSubmitForgottenPasswordRequest(e) {
         e.preventDefault();
+        setLoading(true);
         try {
-            const data = await putData(process.env.REACT_APP_HOST + '/api/user/forgotten-password', { email: email[0] });
-            if (!data) {
-                setForgottenPasswordFormSent(false);
-                throw Error('Incorrect email!')
-            }
-            console.log(data);
+            await putData(process.env.REACT_APP_HOST + '/api/user/forgotten-password', { email: email[0] });
             setForgottenPasswordFormSent(true);
+            setLoading(false);
         } catch (err) {
-            console.log(err.message);
-            setForgottenPasswordFormSent(false);
+            setLoading(false);
+            setForgottenPasswordFormSent(true);
         }
     }
+
+    useEffect(() => {
+        if (loading) {
+            setSubmitDisabled(true);
+            return;
+        }
+
+        if (!emailPassed[0]) {
+            setSubmitDisabled(true);
+        } else {
+            if (!email[0]) {
+                setSubmitDisabled(true);
+                return;
+            }
+            setSubmitDisabled(false);
+        }
+    }, [email[0], emailPassed[0], loading])
 
     return (
         <form onSubmit={onSubmitForgottenPasswordRequest} className={styles.form}>
@@ -136,12 +213,12 @@ const ForgotPassword = () => {
                 maxWidth='xs'
             >
                 <>
-                    <div className={styles.formTitle}>
-                        <UGBLabel variant='h4'>
-                            Request to reset password sent successfully.
+                    <div className={styles.requestSentTitle}>
+                        <UGBLabel variant='h5'>
+                            Request sent successfully.
                         </UGBLabel>
                         <UGBLabel variant='subtitle1'>
-                            Please check your email for a reset password link.
+                            Reset password instructions were sent to {email[0]}, please check your email.
                         </UGBLabel>
                     </div>
                     <div className={styles.closeBtnContainer}>
@@ -159,7 +236,7 @@ const ForgotPassword = () => {
                     Reset Password
                 </UGBLabel>
                 <UGBLabel variant='subtitle2'>
-                    Please provide your account email to reset your password.
+                    Please provide your email to reset your password.
                 </UGBLabel>
             </div>
             <UGBHr type='horizontal' />
@@ -168,13 +245,30 @@ const ForgotPassword = () => {
                 required
                 label='Email'
                 startIcon='fas fa-envelope'
+                validator={dataValidators.validateEmail}
+                validatorPassed={emailPassed}
             />
+            <div>
+                <UGBLink
+                    label='Return to login page'
+                    color='blue'
+                    onClick={(e) => {
+                        e.preventDefault();
+                        history.push('/sign-in');
+                    }}
+                />
+            </div>
             <div className={styles.actions}>
                 <UGBButton
                     type='submit'
                     btnType='primary'
+                    disabled={submitDisabled}
                 >
-                    Reset Password
+                    {loading ?
+                        <UGBLoaderDots />
+                        :
+                        'Send reset instructions'
+                    }
                 </UGBButton>
             </div>
         </form>

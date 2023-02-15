@@ -10,8 +10,18 @@ import { putData } from '../utils/FetchUtils'
 import UGBModal from '../Global/UGBModal';
 import UGBLink from '../Global/UGBLink';
 import { useQuery } from '../utils/RouteUtils';
+import { textIsPassword } from '../utils/ValidationUtils';
+import { BrandAlert } from '../Global/BrandAlert';
+import { UGBLoaderDots } from '../Global/UGBLoader';
 
 const useStyles = makeStyles((theme) => ({
+    requestSentTitle: {
+        display: 'flex',
+        alignItems: 'start',
+        flexDirection: 'column',
+        gap: theme.spacing(1),
+        width: '100%',
+    },
     signInContainer: {
         display: 'flex',
         alignItems: 'center',
@@ -98,7 +108,43 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'start',
         width: '420px',
         flexDirection: 'column',
-        gap: theme.spacing(1)
+        gap: theme.spacing(1),
+        '@media (max-width: 455px)': {
+            maxWidth: '410px',
+        },
+        '@media (max-width: 442px)': {
+            maxWidth: '400px',
+        },
+        '@media (max-width: 432px)': {
+            maxWidth: '390px',
+        },
+        '@media (max-width: 422px)': {
+            maxWidth: '380px',
+        },
+        '@media (max-width: 412px)': {
+            maxWidth: '370px',
+        },
+        '@media (max-width: 402px)': {
+            maxWidth: '360px',
+        },
+        '@media (max-width: 392px)': {
+            maxWidth: '350px',
+        },
+        '@media (max-width: 382px)': {
+            maxWidth: '340px',
+        },
+        '@media (max-width: 372px)': {
+            maxWidth: '330px',
+        },
+        '@media (max-width: 362px)': {
+            maxWidth: '320px',
+        },
+        '@media (max-width: 352px)': {
+            maxWidth: '310px',
+        },
+        '@media (max-width: 342px)': {
+            maxWidth: '300px',
+        }
     },
     closeBtnContainer: {
         display: 'flex',
@@ -108,14 +154,30 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const dataValidators = {
+    validatePassword: (value) => {
+        const errors = []
+        const res = textIsPassword(value);
+        if (res !== true) {
+            errors.push(res)
+        }
+        return errors;
+    },
+}
 
 const ChangePasswordForm = () => {
     const styles = useStyles();
     const history = useHistory();
+    const { token } = useQuery();
     const password = useState('');
     const repeatPassword = useState('');
-    const { token } = useQuery();
     const [newPasswordFormSent, setNewPasswordFormSent] = useState(false);
+
+    const [loading, setLoading] = useState(false);
+    const [submitDisabled, setSubmitDisabled] = useState(false);
+    const passwordPassed = useState(true);
+    const repeatPasswordPassed = useState(true);
+    const [alert, setAlert] = useState('');
 
     useEffect(() => {
         if (!token) {
@@ -126,6 +188,7 @@ const ChangePasswordForm = () => {
     async function onSubmitForgottenPasswordRequest(e) {
         e.preventDefault();
         try {
+            setLoading(true)
             if (password[0] !== repeatPassword[0]) {
                 throw Error("Passwords don't match")
             }
@@ -136,16 +199,37 @@ const ChangePasswordForm = () => {
             });
 
             if (!data) {
-                setNewPasswordFormSent(false);
                 throw Error('Change password error!')
             }
-            console.log(data);
+            setLoading(false)
             setNewPasswordFormSent(true);
         } catch (err) {
-            console.log(err.message);
+            setAlert(err.message);
+            setLoading(false)
             setNewPasswordFormSent(false);
         }
     }
+
+    useEffect(() => {
+        if (loading) {
+            setSubmitDisabled(true);
+            return;
+        }
+
+        if (!passwordPassed[0] || !repeatPasswordPassed[0]) {
+            setSubmitDisabled(true);
+        } else {
+            if (!password[0] || !repeatPassword[0]) {
+                setSubmitDisabled(true);
+                return;
+            }
+            setSubmitDisabled(false);
+        }
+    }, [password[0], repeatPassword[0],passwordPassed[0], repeatPasswordPassed[0], loading])
+
+    useEffect(() => {
+        setAlert('');
+    }, [password[0], repeatPassword[0]]);
 
     return (
         <form onSubmit={onSubmitForgottenPasswordRequest} className={styles.form}>
@@ -154,7 +238,7 @@ const ChangePasswordForm = () => {
                 maxWidth='xs'
             >
                 <>
-                    <div className={styles.formTitle}>
+                    <div className={styles.requestSentTitle}>
                         <UGBLabel variant='h4'>
                             Password was changed successfully.
                         </UGBLabel>
@@ -187,22 +271,38 @@ const ChangePasswordForm = () => {
             <UGBHr type='horizontal' />
             <UGBPasswordInput
                 $value={password}
+                validator={dataValidators.validatePassword}
+                validatorPassed={passwordPassed}
                 required
                 label='Password'
                 startIcon='fas fa-lock'
             />
             <UGBPasswordInput
                 $value={repeatPassword}
+                validator={dataValidators.validatePassword}
+                validatorPassed={repeatPasswordPassed}
                 required
                 label='Repeat password'
                 startIcon='fas fa-lock'
             />
+            <div>
+                <UGBLink
+                    label='Return to login page'
+                    color='blue'
+                    onClick={(e) => {
+                        e.preventDefault();
+                        history.push('/sign-in');
+                    }}
+                />
+            </div>
+            <BrandAlert minHeight={20}>{alert}</BrandAlert>
             <div className={styles.actions}>
                 <UGBButton
                     type='submit'
                     btnType='primary'
+                    disabled={submitDisabled}
                 >
-                    Reset Password
+                    {loading ? <UGBLoaderDots /> : 'Reset Password'}
                 </UGBButton>
             </div>
         </form>

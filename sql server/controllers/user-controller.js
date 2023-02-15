@@ -106,7 +106,7 @@ module.exports = class UserController {
                 }
             } else {
                 if (body.secretUgbPassword !== process.env.SECRET_UGB_PASSWORD) {
-                    res.status(403).json(ErrorHandler.GenerateError(403, ErrorHandler.ErrorTypes.authentication, 'Access denied, secret UGB password is required!'));
+                    res.status(403).json(ErrorHandler.GenerateError(403, ErrorHandler.ErrorTypes.authentication, 'Access denied, secret UGB password is wrong!'));
                     return;
                 }
 
@@ -204,7 +204,7 @@ module.exports = class UserController {
                 `);
 
             if (!insert.changedRows) {
-                res.status(409).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.authentication, 'Failed to submit, please try again!'));
+                res.json({ success: true });
                 return;
             }
 

@@ -82,10 +82,46 @@ const useStyles = makeStyles((theme) => ({
     },
     formTitle: {
         display: 'flex',
-        alignItems: 'start',
+        alignItems: 'center',
         width: '420px',
         flexDirection: 'column',
-        gap: theme.spacing(1)
+        gap: theme.spacing(1),
+        '@media (max-width: 455px)': {
+            maxWidth: '410px',
+        },
+        '@media (max-width: 442px)': {
+            maxWidth: '400px',
+        },
+        '@media (max-width: 432px)': {
+            maxWidth: '390px',
+        },
+        '@media (max-width: 422px)': {
+            maxWidth: '380px',
+        },
+        '@media (max-width: 412px)': {
+            maxWidth: '370px',
+        },
+        '@media (max-width: 402px)': {
+            maxWidth: '360px',
+        },
+        '@media (max-width: 392px)': {
+            maxWidth: '350px',
+        },
+        '@media (max-width: 382px)': {
+            maxWidth: '340px',
+        },
+        '@media (max-width: 372px)': {
+            maxWidth: '330px',
+        },
+        '@media (max-width: 362px)': {
+            maxWidth: '320px',
+        },
+        '@media (max-width: 352px)': {
+            maxWidth: '310px',
+        },
+        '@media (max-width: 342px)': {
+            maxWidth: '300px',
+        }
     },
     goToSignIn: {
         width: '100%',
@@ -93,6 +129,14 @@ const useStyles = makeStyles((theme) => ({
         gap: theme.spacing(0.5),
         justifyContent: 'center'
     },
+    failedVerificationTitle: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'start',
+        '@media (max-width: 880px)': {
+            justifyContent: 'center',
+        }
+    }
 }));
 
 
@@ -127,9 +171,11 @@ const Verify = () => {
     return (
         <div className={styles.form}>
             <div className={styles.formTitle}>
-                <UGBLabel variant='h5'>
-                    Verification {verified === true ? 'was successful.' : verified === false ? 'failed.' : '.'}
-                </UGBLabel>
+                <div className={verified === false ? styles.failedVerificationTitle : null}>
+                    <UGBLabel variant='h5'>
+                        Verification {verified === true ? 'was successful.' : verified === false ? 'failed.' : '.'}
+                    </UGBLabel>
+                </div>
                 {verified === true ?
                     <div className={styles.goToSignIn}>
                         <UGBLink
@@ -147,8 +193,8 @@ const Verify = () => {
                 {verified === false ?
                     <>
                         <UGBLabel variant='subtitle2'>
-                            User could be already verified or there might be a problem<br />
-                            with the verification link. Please check your verification link<br />
+                            User could be already verified or there might be a problems
+                            with the verification link. Please check your verification link
                             or contact support.
                         </UGBLabel>
                         <UGBLink

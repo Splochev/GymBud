@@ -14,7 +14,10 @@ const useStyles = makeStyles((theme) => ({
 export function BrandAlert(params) {
     const styles = useStyles();
     return (
-        <div className={clsx(params.className, params.success ? styles.success : styles.warning)}>
+        <div
+            style={{ minHeight: params.minHeight ? `${params.minHeight}px` : null }}
+            className={clsx(params.className, params.success ? styles.success : styles.warning)}
+        >
             {params.children}
         </div>
     );

@@ -4,10 +4,13 @@ import { UGBIconInput, UGBPasswordInput } from '../Global/UGBInput';
 import { useStoreContext } from '../store/Store';
 import { postData } from '../utils/FetchUtils'
 import { useHistory } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import UGBLink from '../Global/UGBLink';
 import { UGBButton } from '../Global/UGBButton';
 import UGBHr from '../Global/UGBHr';
+import { BrandAlert } from '../Global/BrandAlert';
+import { UGBLoaderDots } from '../Global/UGBLoader';
+import { textContainsEmptySpaces, textIsEmail } from '../utils/ValidationUtils';
 
 const useStyles = makeStyles((theme) => ({
     signInContainer: {
@@ -105,20 +108,32 @@ const Login = () => {
     const history = useHistory();
     const email = useState('')
     const password = useState('')
+    const [alert, setAlert] = useState('');
+    const [loading, setLoading] = useState(false);
 
     async function onLogin(e) {
         e.preventDefault()
         try {
+            setLoading(true);
+            if (email[0] != 1 && (!textIsEmail(email[0]) || textContainsEmptySpaces(email[0]))) {
+                throw Error('Invalid mail.');
+            }
             const data = await postData(process.env.REACT_APP_HOST + '/api/user/login', { email: email[0], password: password[0] });
             if (!data) {
                 throw Error('Incorrect email or password!')
             }
             store[1](state => (state.user = data, { ...state }))
             history.push('/');
+            setLoading(false);
         } catch (err) {
-            console.log(err.message);
+            setAlert(err.message);
+            setLoading(false);
         }
     }
+
+    useEffect(() => {
+        setAlert('');
+    }, [email[0], password[0]]);
 
     return (
         <form className={styles.form} onSubmit={onLogin}>
@@ -138,8 +153,13 @@ const Login = () => {
                 <UGBButton
                     type='submit'
                     btnType='primary'
+                    disabled={loading}
                 >
-                    Sign In
+                    {loading ?
+                        <UGBLoaderDots />
+                        :
+                        'Sign In'
+                    }
                 </UGBButton>
             </div>
             <div className={styles.forgotPass}>
@@ -153,6 +173,7 @@ const Login = () => {
                 />
             </div>
             <UGBHr type='horizontal' />
+            <BrandAlert minHeight={20}>{alert}</BrandAlert>
             <UGBButton
                 type='submit'
                 btnType='tertiary'
