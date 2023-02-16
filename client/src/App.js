@@ -17,11 +17,23 @@ import CreateNewAccount from './components/CreateNewAccount/CreateNewAccount';
 import ForgottenPassword from './components/ForgottenPassword/ForgottenPassword';
 import VerifyRegistration from './components/Verify/Verify';
 import ChangePassword from './components/ChangePassword/ChangePassword';
+import {useLocationChange} from './components/utils/RouteUtils';
 require("dotenv").config();
 
 const AutoLoginComponent = ({ children }) => {
     const [state, setState] = useStoreContext();
     const history = useHistory();
+
+    useLocationChange(() => {
+        if (window.location.href.includes('www')) {
+            console.log(window.location.href);
+            const a = document.createElement('a');
+            a.href = process.env.REACT_APP_HOST+'/home';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+    })
 
     useEffect(() => {
         if (state.autoLoginLoading && state.returnUrl) {
