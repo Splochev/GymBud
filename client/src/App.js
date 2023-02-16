@@ -26,7 +26,6 @@ const AutoLoginComponent = ({ children }) => {
 
     useLocationChange(() => {
         if (window.location.href.includes('www')) {
-            console.log(window.location.href);
             const a = document.createElement('a');
             a.href = process.env.REACT_APP_HOST+'/home';
             document.body.appendChild(a);
