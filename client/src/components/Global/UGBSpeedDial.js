@@ -49,6 +49,9 @@ const useStylesTest = makeStyles((theme) => ({
         position: 'absolute',
         bottom: theme.spacing(-1.2),
         right: theme.spacing(2),
+        '@media (max-width: 459px)': {
+            bottom: theme.spacing(0),
+        },
     },
 }));
 

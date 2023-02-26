@@ -4,6 +4,17 @@ const { escape } = require('mysql');
 const ErrorHandler = require('../utils/error-handler');
 const AuthHelpers = require('../utils/auth-helpers');
 
+function parseDate(date, delimiter = '-') {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    if (!year || !month || !day) {
+        return ''
+    }
+    return `${year}${delimiter}${month < 10 ? `0${month}` : month}${delimiter}${day < 10 ? `0${day}` : day}`
+}
+
+const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 module.exports = class WorkoutController {
     constructor() {
         this.router = express.Router();
@@ -24,6 +35,11 @@ module.exports = class WorkoutController {
         this.router.get('/get-exercises', AuthHelpers.loggedIn, (req, res) => this.getExercises(req, res));
         this.router.get('/get-workout-journal-session-exercises', AuthHelpers.loggedIn, (req, res) => this.getWorkoutJournalSessionExercises(req, res));
         this.router.post('/add-workout-journal-session-exercises', AuthHelpers.loggedIn, (req, res) => this.addWorkoutJournalSessionExercises(req, res));
+
+
+        this.router.put('/add-weight-entry', AuthHelpers.loggedIn, (req, res) => this.addWeightEntry(req, res));
+        this.router.put('/add-reps-entry', AuthHelpers.loggedIn, (req, res) => this.addRepsEntry(req, res));
+        this.router.get('/get-repetitions-data', AuthHelpers.loggedIn, (req, res) => this.getRepetitionsData(req, res));
     }
 
     async addWorkoutJournal(req, res) {
@@ -547,7 +563,7 @@ module.exports = class WorkoutController {
             console.log(error)
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
         }
-    }
+    };
 
     async addWorkoutJournalSessionExercises(req, res) {
         try {
@@ -592,21 +608,51 @@ module.exports = class WorkoutController {
                 }
             }
 
-            const values = []
-            for (const ex of sessionExercises) {
-                let insert = `(${escape(user.id)},${escape(workoutSessionId)},${escape(ex.id)},${ex.markers ? escape(ex.markers) : "NULL"},${ex.periodization ? escape(ex.periodization) : "NULL"},${ex.intensityVolume ? escape(ex.intensityVolume) : "NULL"},${ex.sets ? escape(ex.sets) : "NULL"},${escape(ex.ordered)})`;
-                values.push(insert);
+            const exercises = await MysqlAdapter.query(`
+                SELECT
+                    id,
+                    exercise_id
+                FROM daily_workout_data
+                WHERE
+                    user_id = ${escape(user.id)}
+                    AND daily_workout_id = ${escape(workoutSessionId)}
+            `);
+
+            const forDelete = [];
+            const forUpdate = [];
+
+            for (const exercise of exercises) {
+                const foundExerciseIndex = sessionExercises.findIndex(ex => ex.id === exercise.exercise_id);
+                if (foundExerciseIndex < 0) {
+                    forDelete.push(exercise.id);
+                } else {
+                    sessionExercises[foundExerciseIndex].dailyWorkoutDataId = exercise.id;
+                    forUpdate.push(sessionExercises[foundExerciseIndex]);
+                    sessionExercises.splice(foundExerciseIndex, 1);
+                }
             }
 
+            const forInsert = sessionExercises;
+
             await MysqlAdapter.transactionScope(async transactionQuery => {
-                await transactionQuery(`
-                    DELETE FROM
-                        daily_workout_data
-                    WHERE
-                        user_id = ${escape(user.id)}
-                        AND daily_workout_id = ${escape(workoutSessionId)}
-                `)
-                if (values.length) {
+                if (forDelete.length) {
+                    await transactionQuery(`
+                        DELETE FROM
+                            daily_workout_data
+                        WHERE
+                            user_id = ${escape(user.id)}
+                            AND daily_workout_id = ${escape(workoutSessionId)}
+                            AND id IN (${forDelete.join()})
+                    `)
+                }
+
+                if (forInsert.length) {
+                    const values = []
+                    for (const ex of forInsert) {
+                        let insert = `(${escape(user.id)},${escape(workoutSessionId)},${escape(ex.id)},${ex.markers ? escape(ex.markers) : "NULL"},${ex.periodization ? escape(ex.periodization) : "NULL"},${ex.intensityVolume ? escape(ex.intensityVolume) : "NULL"},${ex.sets ? escape(ex.sets) : "NULL"},${escape(ex.ordered)})`;
+                        values.push(insert);
+                    }
+
                     await transactionQuery(`
                     INSERT INTO 
                         daily_workout_data
@@ -615,6 +661,22 @@ module.exports = class WorkoutController {
                         ${values.join(',')}
                     `)
                 }
+
+                if (forUpdate.length) {
+                    for (const ex of forUpdate) {
+                        await transactionQuery(`
+                            UPDATE daily_workout_data
+                            SET
+                                markers = ${ex.markers ? escape(ex.markers) : "NULL"},
+                                periodization = ${ex.periodization ? escape(ex.periodization) : "NULL"},
+                                intensity_volume = ${ex.intensityVolume ? escape(ex.intensityVolume) : "NULL"},
+                                sets = ${ex.sets ? escape(ex.sets) : "NULL"},
+                                ordered = ${escape(ex.ordered)}
+                            WHERE
+                                id = ${escape(ex.dailyWorkoutDataId)}
+                        `)
+                    }
+                }
             });
 
             res.json({ success: true });
@@ -622,5 +684,218 @@ module.exports = class WorkoutController {
             console.log(error)
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
         }
-    }
+    };
+
+    async addWeightEntry(req, res) {
+        try {
+            const weight = req.body.weight;
+            const forSet = req.body.forSet;
+            const createdOn = req.body.createdOn;
+            const dailyWorkoutDataId = req.body.dailyWorkoutDataId;
+
+            if (isNaN(Number(weight)) || !forSet || !createdOn || !dailyWorkoutDataId) {
+                let invalidParam = ''
+                if (isNaN(Number(weight))) {
+                    invalidParam = 'weight'
+                } else if (!forSet) {
+                    invalidParam = 'forSet'
+                } else if (!createdOn) {
+                    invalidParam = 'createdOn'
+                } else if (!dailyWorkoutDataId) {
+                    invalidParam = 'dailyWorkoutDataId'
+                }
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
+                return;
+            }
+
+            const entries = await MysqlAdapter.query(`
+                SELECT
+                    *
+                FROM daily_workout_weight_entries      
+                WHERE
+                    daily_workout_data_id = ${escape(dailyWorkoutDataId)}
+                    AND createdOn = ${escape(createdOn)}
+            `);
+
+            if (entries.length) {
+                const weightEntries = JSON.parse(entries[0]['weight_entries']);
+                weightEntries[forSet] = Number(weight);
+                const entry = JSON.stringify(weightEntries)
+
+                await MysqlAdapter.query(`
+                    UPDATE daily_workout_weight_entries
+                    SET weight_entries = ${escape(entry)}
+                    WHERE
+                        daily_workout_data_id = ${escape(dailyWorkoutDataId)}
+                        AND createdOn = ${escape(createdOn)}
+                 `);
+            } else {
+                const entry = `{"${forSet}":${Number(weight)}}`;
+                await MysqlAdapter.query(`
+                    INSERT INTO daily_workout_weight_entries(daily_workout_data_id,weight_entries,createdOn)
+                        VALUES (
+                            ${escape(dailyWorkoutDataId)},
+                            ${escape(entry)},
+                            ${escape(createdOn)}
+                        )
+                 `);
+            }
+
+            res.json({ success: true });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+    async addRepsEntry(req, res) {
+        try {
+            const reps = req.body.reps;
+            const forSet = req.body.forSet;
+            const createdOn = req.body.createdOn;
+            const dailyWorkoutDataId = req.body.dailyWorkoutDataId;
+
+            if (isNaN(Number(reps)) || !forSet || !createdOn || !dailyWorkoutDataId) {
+                let invalidParam = ''
+                if (isNaN(Number(reps))) {
+                    invalidParam = 'reps'
+                } else if (!forSet) {
+                    invalidParam = 'forSet'
+                } else if (!createdOn) {
+                    invalidParam = 'createdOn'
+                } else if (!dailyWorkoutDataId) {
+                    invalidParam = 'dailyWorkoutDataId'
+                }
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
+                return;
+            }
+
+            const entries = await MysqlAdapter.query(`
+                SELECT
+                    *
+                FROM daily_workout_reps_entries
+                WHERE
+                    daily_workout_data_id = ${escape(dailyWorkoutDataId)}
+                    AND createdOn = ${escape(createdOn)}
+            `);
+
+            if (entries.length) {
+                const repsEntries = JSON.parse(entries[0]['reps_entries']);
+                repsEntries[forSet] = Number(reps);
+                const entry = JSON.stringify(repsEntries)
+
+                await MysqlAdapter.query(`
+                    UPDATE daily_workout_reps_entries
+                    SET reps_entries = ${escape(entry)}
+                    WHERE
+                        daily_workout_data_id = ${escape(dailyWorkoutDataId)}
+                        AND createdOn = ${escape(createdOn)}
+                 `);
+            } else {
+                const entry = `{"${forSet}":${Number(reps)}}`;
+                await MysqlAdapter.query(`
+                    INSERT INTO daily_workout_reps_entries(daily_workout_data_id,reps_entries,createdOn)
+                        VALUES (
+                            ${escape(dailyWorkoutDataId)},
+                            ${escape(entry)},
+                            ${escape(createdOn)}
+                        )
+                 `);
+            }
+
+            res.json({ success: true });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+    async getRepetitionsData(req, res) {
+        try {
+            const dailyWorkoutDataId = req.query.dailyWorkoutDataId;
+            if (!dailyWorkoutDataId) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid dailyWorkoutDataId`));
+                return;
+            }
+
+            const weightEntries = await MysqlAdapter.query(`
+                    SELECT * FROM daily_workout_weight_entries
+                    WHERE daily_workout_data_id = ${escape(dailyWorkoutDataId)}
+                    ORDER BY createdOn DESC
+                    LIMIT 6
+            `);
+
+            const repsEntries = await MysqlAdapter.query(`
+                    SELECT * FROM daily_workout_reps_entries
+                    WHERE daily_workout_data_id = ${escape(dailyWorkoutDataId)}
+                    ORDER BY createdOn DESC
+                    LIMIT 6
+            `);
+
+            const today = parseDate(new Date(), '/')
+            let todaysData = {};
+            const historicalEntires = {};
+
+            for (const entry of weightEntries) {
+                const weightEntry = JSON.parse(entry['weight_entries']);
+                if (entry.createdOn === today) {
+                    for (const key of Object.keys(weightEntry)) {
+                        todaysData[key] = { weight: Number(weightEntry[key]) || '', reps: '' };
+                    }
+                } else {
+                    let createdOnAsString = new Date(entry.createdOn);
+                    const month = createdOnAsString.getMonth() + 1;
+                    const day = createdOnAsString.getDate();
+                    createdOnAsString = `${days[createdOnAsString.getDay()]} ${month < 10 ? `0${month}` : month}/${day < 10 ? `0${day}` : day}`;
+                    for (const key of Object.keys(weightEntry)) {
+                        const historicalEntry = { weight: Number(weightEntry[key]) || '', reps: '', date: createdOnAsString }
+                        if (historicalEntires[key]) {
+                            historicalEntires[key].push(historicalEntry)
+                        } else {
+                            historicalEntires[key] = [historicalEntry]
+                        }
+                    }
+                }
+            }
+
+            for (const entry of repsEntries) {
+                const repEntry = JSON.parse(entry['reps_entries']);
+                if (entry.createdOn === today) {
+                    for (const key of Object.keys(repEntry)) {
+                        if (todaysData[key]) {
+                            todaysData[key].reps = Number(repEntry[key]) || '';
+                        } else {
+                            todaysData[key] = { weight: '', reps: Number(repEntry[key]) || '' };
+                        }
+                    }
+                } else {
+                    let createdOnAsString = new Date(entry.createdOn);
+                    const month = createdOnAsString.getMonth() + 1;
+                    const day = createdOnAsString.getDate();
+                    createdOnAsString = `${days[createdOnAsString.getDay()]} ${month < 10 ? `0${month}` : month}/${day < 10 ? `0${day}` : day}`;
+                    for (const key of Object.keys(repEntry)) {
+                        if (historicalEntires[key]) {
+                            const historicalEntry = historicalEntires[key].find(he => he.date === createdOnAsString);
+                            if (historicalEntry) {
+                                historicalEntry.reps = Number(repEntry[key]) || '';
+                            } else {
+                                historicalEntires[key].push({ reps: Number(repEntry[key]) || '', weight: '', date: createdOnAsString });
+                            }
+                        } else {
+                            historicalEntires[key] = [{ reps: Number(repEntry[key]) || '', weight: '', date: createdOnAsString }]
+                        }
+                    }
+                }
+            }
+
+            if (!Object.keys(todaysData).length) {
+                todaysData = null;
+            }
+
+            res.json({ todaysData: todaysData, historicalEntires: historicalEntires });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
 }

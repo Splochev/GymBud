@@ -244,7 +244,7 @@ const Register = () => {
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
     const [minYear] = useState(new Date().getFullYear() - 125);
-    const [maxYear] = useState(new Date().getFullYear());
+    const [maxYear] = useState(new Date().getFullYear()-19);
     const [years, setYears] = useState([]);
     const termsRead = useState(false);
     const [showModal, setShowModal] = useState(false);

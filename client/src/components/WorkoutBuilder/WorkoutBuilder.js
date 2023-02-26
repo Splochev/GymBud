@@ -1,17 +1,21 @@
+/* eslint-disable no-useless-escape */
+/* eslint-disable eqeqeq */
+/* eslint-disable no-sequences */
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import { List as ReactMovableList, arrayMove } from 'react-movable';
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { List, IconButton, ListItemIcon, ListItem, InputAdornment, makeStyles, ListItemText, Collapse, Tooltip, Popover, MenuList, MenuItem } from '@material-ui/core';
+import { List, IconButton, ListItemIcon, ListItem, InputAdornment, makeStyles, ListItemText, Collapse, Tooltip, Popover, MenuList, MenuItem, Chip } from '@material-ui/core';
 import { ExercisesAutoComplete } from '../Autocompletes/ExercisesAutocomplete';
 import { UGBIconButton, UGBButton } from '../Global/UGBButton';
 import { UGBCheckbox } from '../Global/UGBCheckbox';
 import UGBLabel from '../Global/UGBLabel';
 import { UGBMenuItem, UGBSelect } from '../Global/UGBSelect';
 import UGBModal from '../Global/UGBModal';
-import { UGBIconInput, UGBInput, UGBInputArea } from '../Global/UGBInput';
+import { UGBIconInput, UGBInput, UGBInputArea, UGBLegendInput, UGBTimeInput } from '../Global/UGBInput';
 import UGBLink from '../Global/UGBLink';
-import { deleteData, getData, postData, putData } from '../utils/FetchUtils';
+import { debounce, deleteData, getData, postData, putData } from '../utils/FetchUtils';
 import { useQuery } from '../utils/RouteUtils';
 import isURL from 'validator/es/lib/isURL';
 import isEmpty from 'validator/es/lib/isEmpty';
@@ -33,6 +37,19 @@ import workout from '../assets/workout.svg';
 import muscle from '../assets/muscle.svg';
 import inputIcon from '../assets/inputIcon.png';
 import clsx from 'clsx';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import AppBar from '@material-ui/core/AppBar';
+import { UGBLoaderSpinner } from '../Global/UGBLoader';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import CloudDoneIcon from '@material-ui/icons/CloudDone';
+import CountDownTimer from '../utils/CountDownTimer';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ClearIcon from '@material-ui/icons/Clear';
+import { textIsEmpty } from '../utils/ValidationUtils';
+import { parseDate } from '../utils/utilFunc';
 
 const useStyles = makeStyles((theme) => ({
     titleSection: {
@@ -70,10 +87,16 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(1),
     },
     exerciseMapping: {
-        minHeight: theme.spacing(66.25),
+        height: '570px'
+    },
+    deleteSetBtn: {
+        width: '35px',
+        height: '35px',
+        marginLeft: '2px',
+        padding: '0px'
     },
     exercisesList: {
-        height: theme.spacing(62.5),
+        height: '450px',
         overflow: 'auto',
         '& .MuiListItem-gutters': {
             paddingLeft: 0,
@@ -204,6 +227,16 @@ const useStyles = makeStyles((theme) => ({
     contentBox: {
         display: 'initial'
     },
+    linkAsChip: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        border: '1px solid rgba(0, 0, 0, 0.23)',
+        paddingLeft: '12px',
+        paddingRight: '12px',
+        height: '32px',
+        borderRadius: '16px'
+    },
     tooltipImg: {
         height: '100%',
         width: theme.spacing(31.25)
@@ -249,8 +282,8 @@ const useStyles = makeStyles((theme) => ({
     },
     addSet: {
         display: 'flex',
-        alignItems: 'end',
-        gap: theme.spacing(1)
+        gap: theme.spacing(1),
+        alignItems: 'center',
     },
     addSetBtn: {
         display: 'flex',
@@ -265,7 +298,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         flexDirection: 'column',
         gap: theme.spacing(2),
-        height: theme.spacing(53.75),
+        height: theme.spacing(57.5),
         overflow: 'auto',
     },
     rightSideContainer: {
@@ -354,9 +387,6 @@ const useStyles = makeStyles((theme) => ({
     divFiller: {
         width: theme.spacing(6)
     },
-    iconPrimaryColor: {
-        color: '#757575'
-    },
     arrowExpandMore: {
         transform: 'rotate(90deg)'
     },
@@ -371,6 +401,21 @@ const useStyles = makeStyles((theme) => ({
         height: 'auto',
         width: '44px',
         cursor: 'pointer'
+    },
+    repetitionsButton: {
+        padding: '0px',
+        '&:hover': {
+            backgroundColor: 'transparent',
+        },
+        '& .MuiButtonBase-root': {
+            padding: '0px',
+            '&:hover': {
+                backgroundColor: 'transparent',
+            },
+        },
+    },
+    repetitionsComponentLabel: {
+        alignItems: 'baseline'
     }
 }));
 
@@ -460,6 +505,8 @@ const AddNewWorkoutJournal = ({ onSubmit, onClose }) => {
         </form>
     );
 }
+
+const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 const EditWorkoutJournal = ({ selectedWorkoutJournalObj, setSelectedWorkoutJournalObj, workoutJournals, setWorkoutJournals, onClose }) => {
     const styles = useStyles();
@@ -961,7 +1008,7 @@ const AddNewExercise = ({ onClose, missingExerciseName }) => {
     );
 }
 
-const PopoverLink = ({ ex, color }) => {
+const PopoverLink = ({ ex, color, isChip }) => {
     const styles = useStyles();
     const [videoLink, setVideoLink] = useState('');
 
@@ -976,7 +1023,7 @@ const PopoverLink = ({ ex, color }) => {
                 :
                 null
             }>
-            <div className={styles.contentBox}>
+            <div className={clsx(styles.contentBox, isChip ? styles.linkAsChip : null)}>
                 <UGBLink
                     url={ex.videoLink}
                     label='Video Link'
@@ -1008,6 +1055,7 @@ function ExerciseListItem({
     setSelectedSessionExercise,
     keepCollapseOpenedForSupersetItems,
     setKeepCollapseOpenedForSupersetItems,
+    onClickRepetitionsButton,
     _props
 }) {
     const styles = useStyles();
@@ -1055,11 +1103,7 @@ function ExerciseListItem({
                             primary={!open ?
                                 <div >
                                     <span className={styles.supersetLabel}>Superset: </span >
-                                    <span>{(() => {
-                                        let exercises = [];
-                                        supersetItems.superset.forEach(exx => exercises.push(exx.exercise));
-                                        return exercises.join(', ');
-                                    })()}</span >
+                                    <span>{(() => supersetItems.superset.map(exx => exx.exercise).join(', '))()}</span >
                                 </div>
                                 :
                                 <span className={styles.supersetLabel}>Superset: </span >
@@ -1068,7 +1112,19 @@ function ExerciseListItem({
                         <div className={styles.rightSideSupersetListIem}>
                             <div className={styles.checkboxAndExpand}>
                                 <ListItemIcon className={styles.sort}>
-                                    <img className={styles.workoutIcon} src={workout} alt='' />
+                                    <IconButton
+                                        disableFocusRipple={true}
+                                        disableRipple={true}
+                                        className={styles.repetitionsButton}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onClickRepetitionsButton(supersetItems);
+                                            setToggleExerciseContent(true);
+                                            setSelectedSessionExercise(supersetItems);
+                                        }}
+                                    >
+                                        <img className={styles.workoutIcon} src={workout} alt='' />
+                                    </IconButton>
                                 </ListItemIcon>
                                 <ListItemIcon className={styles.checkbox}>
                                     <UGBCheckbox
@@ -1208,7 +1264,19 @@ function ExerciseListItem({
                     <div className={styles.rightSideListIem}>
                         <div className={styles.checkboxAndExpand}>
                             <ListItemIcon className={styles.sort}>
-                                <img className={styles.workoutIcon} src={workout} alt='' />
+                                <IconButton
+                                    disableFocusRipple={true}
+                                    disableRipple={true}
+                                    className={styles.repetitionsButton}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onClickRepetitionsButton(supersetItems);
+                                        setToggleExerciseContent(true);
+                                        setSelectedSessionExercise(supersetItems);
+                                    }}
+                                >
+                                    <img className={styles.workoutIcon} src={workout} alt='' />
+                                </IconButton>
                             </ListItemIcon>
                             <ListItemIcon className={styles.checkbox}>
                                 <UGBCheckbox
@@ -1242,7 +1310,7 @@ function ExerciseListItem({
     );
 }
 
-const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercise, setSelectedSessionExercise }) => {
+const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercise, setSelectedSessionExercise, timeValidations, setTimeValidations, repsValidations, setRepsValidations }) => {
     const styles = useStyles();
 
     return (
@@ -1251,6 +1319,8 @@ const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercis
                 return (
                     <div key={set.set} className={styles.addSet}>
                         <IconButton
+                            className={clsx(styles.editButton, styles.deleteSetBtn)}
+                            disableRipple
                             onClick={(e) => {
                                 const tempSets = selectedSessionExercise.sets;
                                 const exI = tempSets.indexOf(set);
@@ -1258,33 +1328,56 @@ const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercis
                                 for (let j = 0; j < tempSets.length; j++) {
                                     tempSets[j].set = `Set ${j + 1}`
                                 }
+                                delete repsValidations[set.set + '-reps'];
+                                delete timeValidations[set.set + '-rest'];
+                                setRepsValidations(repsValidations);
                                 setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets = tempSets, { ...selectedSessionExercise }));
                                 setSessionExercises([...sessionExercises]);
                             }}
                         >
-                            <HighlightOffIcon />
+                            <ClearIcon />
                         </IconButton>
-                        <UGBIconInput
-                            imgIconStart={tallyIcon}
-                            label={`Reps for ${set.set}`}
-                            value={set.reps}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets[i].reps = value, { ...selectedSessionExercise }));
-                                setSessionExercises([...sessionExercises]);
-                            }}
-                        />
-                        <UGBIconInput
-                            MuiIconStart={TimerIcon}
-                            label='Rest time after set'
-                            type="time"
-                            value={set.rest}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets[i].rest = value, { ...selectedSessionExercise }));
-                                setSessionExercises([...sessionExercises])
-                            }}
-                        />
+                        <div>
+                            <UGBIconInput
+                                imgIconStart={tallyIcon}
+                                label={`${set.set}: Reps goal`}
+                                value={set.reps}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (isNaN(Number(value)) || textIsEmpty(value)) {
+                                        repsValidations[set.set + '-reps'] = true;
+                                    } else {
+                                        delete repsValidations[set.set + '-reps'];
+                                    }
+                                    setRepsValidations(repsValidations);
+                                    setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets[i].reps = value, { ...selectedSessionExercise }));
+                                    setSessionExercises([...sessionExercises]);
+                                }}
+                            />
+                            <div style={{ color: '#F42A82', fontSize: '12px', height: '14px' }}>{repsValidations && repsValidations[set.set + '-reps'] ? 'Number required' : null}</div>
+                        </div>
+                        <div>
+                            <UGBTimeInput
+                                name="Rest Time"
+                                label='Rest time after set'
+                                initTime={set.rest}
+                                mountFocus='true'
+                                onTimeChange={(props) => {
+                                    const value = props;
+                                    const re = /^(([0]?[0-5][0-9]|[0-9]):([0-5][0-9]))$/;
+                                    const isValidFormat = re.test(value);
+                                    if (isValidFormat) {
+                                        delete timeValidations[set.set + '-rest'];
+                                    } else {
+                                        timeValidations[set.set + '-rest'] = true;
+                                    }
+                                    setTimeValidations(timeValidations);
+                                    setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets[i].rest = value, { ...selectedSessionExercise }));
+                                    setSessionExercises([...sessionExercises])
+                                }}
+                            />
+                            <div style={{ color: '#F42A82', fontSize: '12px', height: '14px' }}>{timeValidations && timeValidations[set.set + '-rest'] ? 'Format mm:ss required' : null}</div>
+                        </div>
                     </div>
                 );
             })}
@@ -1295,6 +1388,10 @@ const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercis
                         const tempSets = selectedSessionExercise.sets;
                         const set = `Set ${tempSets.length + 1}`;
                         tempSets.push({ set: set, reps: '', rest: '' })
+                        timeValidations[set + '-rest'] = false;
+                        repsValidations[set + '-reps'] = false;
+                        setTimeValidations(timeValidations);
+                        setRepsValidations(repsValidations);
                         setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets = tempSets, { ...selectedSessionExercise }));
                         setSessionExercises([...sessionExercises])
                     }}
@@ -1308,7 +1405,6 @@ const AddSets = ({ sessionExercises, setSessionExercises, selectedSessionExercis
 }
 
 const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExercise, setSelectedSessionExercise }) => {
-    //TODO make the user unable to select Periodization or Intensity Volume more than once
     const styles = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
     const [anchorIndex, setAnchorIndex] = useState(null);
@@ -1421,12 +1517,14 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
             <div className={styles.addSetAndMarkersContainer}>
                 {selectedSessionExercise.markers.map((marker, i) => {
                     return (
-                        <div key={marker + i} className={styles.addMarkerContainer}>
+                        <div key={marker.marker + i} className={styles.addMarkerContainer}>
                             <UGBLabel variant='subtitle2'>
                                 Marker Type
                             </UGBLabel>
                             <div key={i} className={styles.addMarker}>
                                 <IconButton
+                                    className={clsx(styles.editButton, styles.deleteSetBtn)}
+                                    disableRipple
                                     onClick={(e) => {
                                         const tempMarkers = selectedSessionExercise.markers;
                                         const exI = tempMarkers.indexOf(marker);
@@ -1435,14 +1533,14 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
                                         setSessionExercises([...sessionExercises]);
                                     }}
                                 >
-                                    <HighlightOffIcon />
+                                    <ClearIcon />
                                 </IconButton>
                                 <div className={styles.addMarkerInputs}>
                                     <UGBInput
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment className={styles.svgInputIcon} position="start">
-                                                    <i class="fa-solid fa-highlighter"></i>
+                                                    <i className="fa-solid fa-highlighter"></i>
                                                 </InputAdornment>
                                             ),
                                             endAdornment: (
@@ -1486,12 +1584,12 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
                                             startAdornment: (
                                                 marker.marker === 'Intensity Volume' ?
                                                     <InputAdornment className={styles.svgInputIcon} position="start">
-                                                        <i class="fa-solid fa-percent" />
+                                                        <i className="fa-solid fa-percent" />
                                                     </InputAdornment>
                                                     :
                                                     marker.marker === 'Periodization' ?
                                                         <InputAdornment className={styles.svgInputIcon} position="start">
-                                                            <i class="fa-solid fa-chart-line" />
+                                                            <i className="fa-solid fa-chart-line" />
                                                         </InputAdornment>
                                                         :
                                                         <img src={inputIcon} alt='inputIcon' className={styles.imgIcon} />
@@ -1520,6 +1618,7 @@ const AddMarkers = ({ sessionExercises, setSessionExercises, selectedSessionExer
                 })}
                 <div className={styles.addSetBtn}>
                     <UGBIconButton
+                        disabled={selectedSessionExercise.markers.length >= 10}
                         $onClick={() => {
                             const tempMarkers = selectedSessionExercise.markers;
                             tempMarkers.push({ marker: '', markerValue: '' })
@@ -1601,6 +1700,10 @@ const WorkoutBuilder = () => {
     const [disableSave, setDisableSave] = useState(false);
 
     const [keepCollapseOpenedForSupersetItems, setKeepCollapseOpenedForSupersetItems] = useState({});
+    const [showRepetitionsComponent, setShowRepetitionsComponent] = useState(false);
+    const [refreshWorkoutJournalSessionExercises, setRefreshWorkoutJournalSessionExercises] = useState({});
+    const [timeValidations, setTimeValidations] = useState({});
+    const [repsValidations, setRepsValidations] = useState({});
 
     useEffect(() => {
         switch (tab) {
@@ -1696,7 +1799,7 @@ const WorkoutBuilder = () => {
                     setSessionExercises(data.data);
                 }, error => { })
         }
-    }, [selectedWorkoutSession[0]])
+    }, [selectedWorkoutSession[0], refreshWorkoutJournalSessionExercises])
 
     useEffect(() => {
         if (exercisesForMerge.length && exercisesForMerge.length > 1) {
@@ -1706,31 +1809,19 @@ const WorkoutBuilder = () => {
         }
     }, [exercisesForMerge])
 
-    function onClickMerge() {
-        const tempSessionExercises = sessionExercises.filter(exx => !exercisesForMerge.includes(exx));
-        const superset = [];
-        for (const exx of exercisesForMerge) {
-            if (exx.superset) {
-                for (const exxx of exx.superset) {
-                    superset.push(exxx);
-                }
-            } else {
-                superset.push(exx);
-            }
-        }
-        tempSessionExercises.push({ superset: superset });
-        setSessionExercises(tempSessionExercises);
-        setExercisesForMerge([]);
-    }
-
     useEffect(() => {
+        if (Object.keys(timeValidations).length || Object.keys(repsValidations).length) {
+            setDisableSave(true);
+            return;
+        }
+
         const tempSessionExercisesAsString = JSON.stringify(sessionExercises)
         if (sessionExercisesAsString === tempSessionExercisesAsString) {
             setDisableSave(true);
         } else {
             setDisableSave(false);
         }
-    }, [sessionExercises, sessionExercisesAsString])
+    }, [sessionExercises, sessionExercisesAsString, timeValidations, repsValidations])
 
     useEffect(() => {
         if (exercisesForMergeDisabled && !exercisesForMerge.length) {
@@ -1789,14 +1880,14 @@ const WorkoutBuilder = () => {
             order++;
         }
 
-
         postData(process.env.REACT_APP_HOST + '/api/workout/add-workout-journal-session-exercises', {
             workoutSessionId: selectedWorkoutSessionObj.id,
             sessionExercises: tempSessionExercises
-        }).then(data => {
-            setSessionExercisesAsString(JSON.stringify(sessionExercises));
+        }).then(() => {
+            setRefreshWorkoutJournalSessionExercises({});
         }, error => {
             console.log('LOGOUT ERROR--->', error);
+            setRefreshWorkoutJournalSessionExercises({});
         })
 
         // console.log(sessionExercises)
@@ -1806,6 +1897,27 @@ const WorkoutBuilder = () => {
 
         //setSavingChangesLoading(false);
         //setSavedChanges(true);
+    }
+
+    function onClickMerge() {
+        const tempSessionExercises = sessionExercises.filter(exx => !exercisesForMerge.includes(exx));
+        const superset = [];
+        for (const exx of exercisesForMerge) {
+            if (exx.superset) {
+                for (const exxx of exx.superset) {
+                    superset.push(exxx);
+                }
+            } else {
+                superset.push(exx);
+            }
+        }
+        tempSessionExercises.push({ superset: superset });
+        setSessionExercises(tempSessionExercises);
+        setExercisesForMerge([]);
+    }
+
+    function onClickRepetitionsButton(ex) {
+        setShowRepetitionsComponent(true);
     }
 
     return (
@@ -1915,13 +2027,10 @@ const WorkoutBuilder = () => {
                         <UGBLabel variant='h5'>
                             Workout
                         </UGBLabel>
-                        <UGBLabel variant='subtitle1'>
-                            Click "ADD" to create a workout
-                        </UGBLabel>
                     </div>
                     <div className={styles.select}>
                         <UGBLabel variant='subtitle2'>
-                            Workout
+                            Workout Program
                         </UGBLabel>
                         <div className={styles.selectAndEditContainer}>
                             <UGBSelect
@@ -2030,8 +2139,9 @@ const WorkoutBuilder = () => {
                                 <div className={styles.mergeBtn}>
                                     <UGBButton
                                         disabled={exercisesForMergeDisabled}
-                                        btnType='primary'
-                                        onClick={onClickMerge}>
+                                        onClick={onClickMerge}
+                                        btnType={exercisesForMergeDisabled ? '' : 'outlinedPrimary'}
+                                    >
                                         Merge Into Superset
                                     </UGBButton>
                                 </div>
@@ -2057,6 +2167,7 @@ const WorkoutBuilder = () => {
                                     _props={props}
                                     keepCollapseOpenedForSupersetItems={keepCollapseOpenedForSupersetItems}
                                     setKeepCollapseOpenedForSupersetItems={setKeepCollapseOpenedForSupersetItems}
+                                    onClickRepetitionsButton={onClickRepetitionsButton}
                                 />}
                             />
                             <div className={clsx(styles.select, styles.autocomplete)}>
@@ -2090,12 +2201,42 @@ const WorkoutBuilder = () => {
                                 :
                                 styles.collapsed
                         )}>
-                            <div className={clsx(styles.exercisesContentHeader, hideExerciseContent ? styles.exercisesContentHeaderAlign : null)}>
+                            <div className={clsx(
+                                styles.exercisesContentHeader,
+                                hideExerciseContent ? styles.exercisesContentHeaderAlign : null,
+                                showRepetitionsComponent ? styles.repetitionsComponentLabel : null
+                            )}>
                                 <IconButton
                                     onClick={(e) => {
                                         e.stopPropagation();
+                                        if (showRepetitionsComponent) {
+                                            setShowRepetitionsComponent(false);
+                                            setToggleExerciseContent(false);
+                                            setSelectedSessionExercise({});
+                                            return;
+                                        }
                                         if (hideExerciseContent) {
-                                            if (showExerciseAddSet) { setShowExerciseAddSet(false); }
+                                            if (showExerciseAddSet) {
+                                                if (Object.keys(timeValidations).length || Object.keys(repsValidations).length) {
+                                                    const tempSets = selectedSessionExercise.sets;
+                                                    for (let i = 0; i < tempSets.length; i++) {
+                                                        if (timeValidations[tempSets[i].set + '-rest'] === false || timeValidations[tempSets[i].set + '-rest']) {
+                                                            delete timeValidations[tempSets[i].set + '-rest'];
+                                                            delete repsValidations[tempSets[i].set + '-reps'];
+                                                            tempSets.splice(i, 1);
+                                                        } else if (repsValidations[tempSets[i].set + '-reps'] === false || repsValidations[tempSets[i].set + '-reps']) {
+                                                            delete timeValidations[tempSets[i].set + '-rest'];
+                                                            delete repsValidations[tempSets[i].set + '-reps'];
+                                                            tempSets.splice(i, 1);
+                                                        }
+                                                    }
+                                                    setRepsValidations(repsValidations);
+                                                    setTimeValidations(timeValidations);
+                                                    setSelectedSessionExercise(selectedSessionExercise => (selectedSessionExercise.sets = tempSets, { ...selectedSessionExercise }));
+                                                    setSessionExercises([...sessionExercises]);
+                                                }
+                                                setShowExerciseAddSet(false);
+                                            }
                                             if (showAddMarkers) { setShowAddMarkers(false); }
                                             setHideExerciseContent(false)
                                         } else {
@@ -2106,78 +2247,99 @@ const WorkoutBuilder = () => {
                                     <ArrowBackIcon />
                                 </IconButton>
                                 <UGBLabel variant='h5'>
-                                    {selectedSessionExercise.exercise}
-                                    {hideExerciseContent ? <br /> : null}
-                                    {showExerciseAddSet ? 'Add Sets' : ''}
-                                    {showAddMarkers ? 'Add Markers' : ''}
+                                    {showRepetitionsComponent ?
+                                        "Set reps for today's workout"
+                                        :
+                                        <>
+                                            {selectedSessionExercise.exercise}
+                                            {hideExerciseContent ? <br /> : null}
+                                            {showExerciseAddSet ? 'Add Sets' : ''}
+                                            {showAddMarkers ? 'Add Markers' : ''}
+                                        </>
+                                    }
                                 </UGBLabel>
                                 <div className={styles.divFiller} />
                             </div>
-                            <>
-                                {!hideExerciseContent ?
-                                    <>
-                                        <div
-                                            className={styles.exercisesContentContainer}
-                                            onClick={() => {
-                                                setHideExerciseContent(true);
-                                                setShowExerciseAddSet(true);
-                                                setShowAddMarkers(false);
-                                            }}
-                                        >
-                                            <div className={styles.exercisesContent} >
-                                                <img src={lifting3} alt='lifting' className={styles.svg} />
-                                                <UGBLabel variant='h5'>
-                                                    Add Sets
-                                                </UGBLabel>
+                            {showRepetitionsComponent ?
+                                <RepetitionsComponent
+                                    exercise={selectedSessionExercise}
+                                    notSaved={disableSave}
+                                />
+                                :
+                                <>
+                                    {!hideExerciseContent ?
+                                        <>
+                                            <div
+                                                className={styles.exercisesContentContainer}
+                                                onClick={() => {
+                                                    setHideExerciseContent(true);
+                                                    setShowExerciseAddSet(true);
+                                                    setShowAddMarkers(false);
+                                                }}
+                                            >
+                                                <div className={styles.exercisesContent} >
+                                                    <img src={lifting3} alt='lifting' className={styles.svg} />
+                                                    <UGBLabel variant='h5'>
+                                                        Add Sets
+                                                    </UGBLabel>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div
-                                            className={styles.exercisesContentContainer}
-                                            onClick={() => {
-                                                setHideExerciseContent(true);
-                                                setShowAddMarkers(true);
-                                                setShowExerciseAddSet(false);
-                                            }}
-                                        >
-                                            <div className={styles.exercisesContent}  >
-                                                <img src={addMarkersSvg} alt='Add Markers' className={styles.svg} />
-                                                <UGBLabel variant='h5'>
-                                                    Add Markers
-                                                </UGBLabel>
+                                            <div
+                                                className={styles.exercisesContentContainer}
+                                                onClick={() => {
+                                                    setHideExerciseContent(true);
+                                                    setShowAddMarkers(true);
+                                                    setShowExerciseAddSet(false);
+                                                }}
+                                            >
+                                                <div className={styles.exercisesContent}  >
+                                                    <img src={addMarkersSvg} alt='Add Markers' className={styles.svg} />
+                                                    <UGBLabel variant='h5'>
+                                                        Add Markers
+                                                    </UGBLabel>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </>
-                                    :
-                                    <>
-                                        {showExerciseAddSet ?
-                                            <AddSets
-                                                sessionExercises={sessionExercises}
-                                                setSessionExercises={setSessionExercises}
-                                                selectedSessionExercise={selectedSessionExercise}
-                                                setSelectedSessionExercise={setSelectedSessionExercise}
-                                            />
-                                            :
-                                            null
-                                        }
-                                        {showAddMarkers ?
-                                            <AddMarkers
-                                                sessionExercises={sessionExercises}
-                                                setSessionExercises={setSessionExercises}
-                                                selectedSessionExercise={selectedSessionExercise}
-                                                setSelectedSessionExercise={setSelectedSessionExercise}
-                                            />
-                                            :
-                                            null
-                                        }
-                                    </>
-                                }
-                            </>
+                                        </>
+                                        :
+                                        <>
+                                            {showExerciseAddSet ?
+                                                <AddSets
+                                                    sessionExercises={sessionExercises}
+                                                    setSessionExercises={setSessionExercises}
+                                                    selectedSessionExercise={selectedSessionExercise}
+                                                    setSelectedSessionExercise={setSelectedSessionExercise}
+                                                    timeValidations={timeValidations}
+                                                    setTimeValidations={setTimeValidations}
+                                                    repsValidations={repsValidations}
+                                                    setRepsValidations={setRepsValidations}
+                                                />
+                                                :
+                                                null
+                                            }
+                                            {showAddMarkers ?
+                                                <AddMarkers
+                                                    sessionExercises={sessionExercises}
+                                                    setSessionExercises={setSessionExercises}
+                                                    selectedSessionExercise={selectedSessionExercise}
+                                                    setSelectedSessionExercise={setSelectedSessionExercise}
+                                                />
+                                                :
+                                                null
+                                            }
+                                        </>
+                                    }
+                                </>
+                            }
                         </div>
                     </div>
-                    <div className={styles.saveAndResetActions}>
-                        {/* <UGBButton className={styles.defaultButton} onClick={resetToDefault} btnType='outlinedPrimary' variant='outlined'>Reset To Default</UGBButton> */}
-                        <UGBButton onClick={saveChanges} btnType='primary' disabled={disableSave} >Save Changes</UGBButton>
-                    </div>
+                    {showRepetitionsComponent ?
+                        null
+                        :
+                        < div className={styles.saveAndResetActions}>
+                            {/* <UGBButton className={styles.defaultButton} onClick={resetToDefault} btnType='outlinedPrimary' variant='outlined'>Reset To Default</UGBButton> */}
+                            <UGBButton onClick={saveChanges} btnType='primary' disabled={disableSave} >Save Changes</UGBButton>
+                        </div>
+                    }
                 </div>
                 <div className={styles.rightSideContainer}>
                     <img src={lifting2} alt='lifting2' className={styles.svg} />
@@ -2188,3 +2350,706 @@ const WorkoutBuilder = () => {
 }
 
 export default WorkoutBuilder;
+
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`scrollable-auto-tabpanel-${index}`}
+            aria-labelledby={`scrollable-auto-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box p={3}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
+    );
+}
+
+function getProps(index) {
+    return {
+        id: `scrollable-auto-tab-${index}`,
+        'aria-controls': `scrollable-auto-tabpanel-${index}`,
+    };
+}
+
+const useStyles3 = makeStyles((theme) => ({
+    repetitionsComponentContainer: {
+        flexGrow: 1,
+        width: '100%',
+        '& .MuiPaper-root': {
+            backgroundColor: 'transparent',
+            boxShadow: 'none'
+        },
+        '& .MuiAppBar-colorPrimary': {
+            backgroundColor: '#28A745',
+        },
+        '& .MuiTabs-indicator': {
+            backgroundColor: '#28A745'
+        },
+        '& .MuiBox-root': {
+            padding: 0
+        },
+        "& .MuiButtonBase-root": {
+            color: '#1B1B1B',
+        },
+        "& .Mui-selected": {
+            color: '#28A745',
+        }
+    },
+    repetitionsTabPanelContainer: {
+        paddingTop: theme.spacing(1),
+        display: 'flex',
+        width: '100%',
+        height: '394px',
+        flexDirection: 'column',
+        overflow: 'auto'
+    },
+    chips: {
+        display: 'flex',
+        width: '100%',
+        gap: theme.spacing(1.5),
+    },
+    imgIcon: {
+        width: 'auto',
+        height: '90%',
+    },
+    tabs: {
+        '& .Mui-selected': {
+            '& .MuiTab-wrapper': {
+                height: '34px',
+                alignItems: 'normal',
+                gap: theme.spacing(1),
+                flexDirection: 'row-reverse'
+            }
+        }
+    },
+    barIconWidth: {
+        width: '24px'
+    },
+    chipsAppBar: {
+        '& .MuiTabs-scroller': {
+            display: 'flex',
+            alignItems: 'center'
+        }
+    },
+    sort: {
+        minWidth: 'auto',
+        '& .MuiSvgIcon-root': {
+            color: '#757575'
+        }
+    },
+    historyContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        '& .MuiListItemText-root': {
+            textAlign: 'center',
+            flex: 'unset',
+            '& .MuiListItemText-primary': {
+                width: '116px',
+                fontSize: '13px'
+            },
+            '& .MuiListItemText-secondary ': {
+                width: '116px'
+            },
+        }
+    },
+    newEntries: {
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        gap: theme.spacing(1)
+    },
+    changePadding: {
+        padding: theme.spacing(0.375)
+    },
+    startTimer: {
+        height: '40px',
+        width: '40px',
+        color: '#28A745',
+        border: '1px solid #28A745',
+        background: 'transparent',
+        '&:hover': {
+            background: 'transparent',
+            border: '1px solid #1E7E34',
+        },
+        '&:focus': {
+            background: 'transparent',
+            border: '1px solid #1E7E34',
+            boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
+            outline: 'none'
+        },
+    },
+    circularProgressWithLabel: {
+        '& .MuiCircularProgress-root': { color: '#28A745' }
+    },
+    timerIcon: {
+        color: '#28A745'
+    }
+}));
+
+const RepetitionsComponent = ({ exercise, notSaved }) => {
+    const styles = useStyles3();
+    const [value, setValue] = React.useState(0);
+    const [isSaving, setIsSaving] = useState([]);
+    const [isSaved, setIsSaved] = useState([]);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    return (
+        <div className={styles.repetitionsComponentContainer}>
+            <AppBar position="static" color="default">
+                <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    aria-label="scrollable auto tabs example"
+                    className={styles.tabs}
+                >
+                    {exercise && exercise.superset ?
+                        exercise.superset.map((exx, i) => <Tab
+                            key={'tab' + exx.id}
+                            label={exx.exercise}
+                            {...getProps(i)}
+                            icon={isSaving.length && i === value ?
+                                <div className={styles.barIconWidth}>
+                                    <UGBLoaderSpinner
+                                        height={20}
+                                        width={20}
+                                        color='#28A745'
+                                    />
+                                </div>
+                                :
+                                isSaved.length && i === value ?
+                                    <div className={styles.barIconWidth}>
+                                        <CloudDoneIcon />
+                                    </div>
+                                    :
+                                    <div className={styles.barIconWidth} />
+                            }
+                        />)
+                        :
+                        exercise ?
+                            <Tab
+                                icon={isSaving.length ?
+                                    <div className={styles.barIconWidth}>
+                                        <UGBLoaderSpinner
+                                            height={20}
+                                            width={20}
+                                            color='#28A745'
+                                        />
+                                    </div>
+                                    :
+                                    isSaved.length ?
+                                        <div className={styles.barIconWidth}>
+                                            <CloudDoneIcon />
+                                        </div>
+                                        :
+                                        <div className={styles.barIconWidth} />
+                                }
+                                key={'tab' + exercise.id}
+                                label={exercise.exercise}
+                                {...getProps(0)}
+                            />
+                            :
+                            <Tab
+                                icon={isSaving.length ?
+                                    <div className={styles.barIconWidth}>
+                                        <UGBLoaderSpinner
+                                            height={20}
+                                            width={20}
+                                            color='#28A745'
+                                        />
+                                    </div>
+                                    :
+                                    isSaved.length ?
+                                        <div className={styles.barIconWidth}>
+                                            <CloudDoneIcon />
+                                        </div>
+                                        :
+                                        <div className={styles.barIconWidth} />
+                                }
+                                label=''
+                                {...getProps(0)}
+                            />
+                    }
+                </Tabs>
+            </AppBar>
+            {exercise && exercise.superset ?
+                exercise.superset.map((exx, i) => {
+                    return (
+                        <TabPanel key={exx.id} value={value} index={i}>
+                            <RepetitionsTabPanel
+                                exercise={exx}
+                                notSaved={notSaved}
+                                setIsSaving={setIsSaving}
+                                setIsSaved={setIsSaved}
+                                isSaving={isSaving}
+                                isSaved={isSaved}
+                            />
+                        </TabPanel>
+                    );
+                })
+                :
+                exercise ?
+                    <TabPanel key={exercise.id} value={value} index={0}>
+                        <RepetitionsTabPanel
+                            exercise={exercise}
+                            notSaved={notSaved}
+                            setIsSaving={setIsSaving}
+                            setIsSaved={setIsSaved}
+                            isSaving={isSaving}
+                            isSaved={isSaved}
+                        />
+                    </TabPanel>
+                    :
+                    <TabPanel value={value} index={0} />
+            }
+        </div>
+    );
+}
+
+const RepetitionsTabPanel = ({ exercise, notSaved, setIsSaving, setIsSaved, isSaving, isSaved }) => {
+    const styles = useStyles3();
+    const [markers, setMarkers] = useState([]);
+    const [historicalEntries, setHistoricalEntires] = useState({});
+    const [todaysData, setTodaysData] = useState({});
+    const [dailyWorkoutDataId, setDailyWorkoutDataId] = useState(null);
+
+    useEffect(() => {
+        if (exercise && exercise.markers && exercise.markers.length) {
+            const markers = [...exercise.markers];
+            const intensityVolumeIndex = markers.findIndex(m => m.marker === 'Intensity Volume')
+            if (intensityVolumeIndex >= 0 && intensityVolumeIndex >= 2) {
+                const intensityVolume = markers[intensityVolumeIndex];
+                markers.splice(intensityVolumeIndex, 1);
+                markers.unshift(intensityVolume);
+            }
+            const periodizationIndex = markers.findIndex(m => m.marker === 'Periodization')
+            if (intensityVolumeIndex >= 0 && periodizationIndex >= 2) {
+                const periodization = markers[periodizationIndex];
+                markers.splice(periodizationIndex, 1);
+                markers.unshift(periodization);
+            }
+            setMarkers(markers);
+        }
+
+        setDailyWorkoutDataId(exercise.dailyWorkoutDataId)
+        getRepetitionsData(exercise.dailyWorkoutDataId);
+    }, []);
+
+    function getRepetitionsData(dailyWorkoutDataId) {
+        getData(process.env.REACT_APP_HOST + `/api/workout/get-repetitions-data?dailyWorkoutDataId=${dailyWorkoutDataId}`)
+            .then(data => {
+                setHistoricalEntires(data.historicalEntires);
+                if (data.todaysData) {
+                    setTodaysData(data.todaysData);
+                } else {
+                    if (exercise && exercise.sets && exercise.sets.length) {
+                        const _todaysData = {};
+                        for (const set of exercise.sets) {
+                            _todaysData[set.set] = { reps: '', weight: '' }
+                        }
+                        setTodaysData(_todaysData);
+                    }
+                }
+            }, error => {
+                console.log(error);
+            })
+    }
+
+    return (
+        <div className={styles.repetitionsTabPanelContainer}>
+
+            <AppBar position="static" color="default" className={styles.chipsAppBar}>
+                <Tabs
+                    value={-1}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    aria-label="scrollable auto tabs example"
+                >
+                    {
+                        exercise && (markers || exercise.muscleGroups || exercise.videoLink) ?
+                            <div className={styles.chips}>
+                                {exercise.videoLink ?
+                                    <div {...getProps(exercise.videoLink)}>
+                                        <PopoverLink ex={exercise} color='green' isChip={true} />
+                                    </div>
+                                    :
+                                    null
+                                }
+                                {exercise.muscleGroups ?
+                                    <Chip
+                                        icon={<img src={muscle} alt='muscle' className={styles.imgIcon} />}
+                                        key={exercise.muscleGroups}
+                                        label={exercise.muscleGroups}
+                                        variant="outlined"
+                                        {...getProps(exercise.muscleGroups)}
+                                    />
+                                    :
+                                    null
+                                }
+                                {markers && markers.length ?
+                                    markers.map((marker, i) => {
+                                        if (!marker.marker.length) {
+                                            return null;
+                                        }
+
+                                        return (
+                                            <Chip
+                                                key={`${marker.marker}=${marker.markerValue}`}
+                                                label={`${marker.marker}${marker.markerValue ? '=' : ''}${marker.markerValue}`}
+                                                variant="outlined"
+                                                {...getProps(i)}
+                                            />
+                                        );
+                                    })
+                                    :
+                                    null
+                                }
+                            </div>
+                            :
+                            null
+                    }
+                </Tabs>
+            </AppBar>
+            {notSaved ?
+                !exercise.sets || (exercise && exercise.sets && exercise.sets.length === 0) ?
+                    <UGBLabel variant='subtitle1'>
+                        You haven't added any sets and reps goals to this exercise
+                    </UGBLabel>
+                    :
+                    <div>
+                        <List component="div" disablePadding>
+                            {exercise.sets.map((set, i) => {
+                                const timeTokens = set.rest.split(':');
+                                const minutes = Number(timeTokens[0]);
+                                const seconds = Number(timeTokens[1]);
+                                const timeInSeconds = (minutes * 60) + seconds;
+
+                                return (
+                                    <ListItem key={set.set + i} button={false}>
+                                        < HistoryListItem historicalEntry={historicalEntries[set.set]} />
+                                        <div className={styles.newEntries}>
+                                            <div style={{ width: '100%' }}>
+                                                <DebouncingWeightInput
+                                                    todaysData={todaysData}
+                                                    set={set}
+                                                    setTodaysData={setTodaysData}
+                                                    setIsSaving={setIsSaving}
+                                                    setIsSaved={setIsSaved}
+                                                    isSaving={isSaving}
+                                                    isSaved={isSaved}
+                                                    dailyWorkoutDataId={dailyWorkoutDataId}
+                                                />
+                                            </div>
+                                            <div style={{ width: '100%' }}>
+                                                <DebouncingRepsInput
+                                                    todaysData={todaysData}
+                                                    set={set}
+                                                    setTodaysData={setTodaysData}
+                                                    setIsSaving={setIsSaving}
+                                                    setIsSaved={setIsSaved}
+                                                    isSaving={isSaving}
+                                                    isSaved={isSaved}
+                                                    dailyWorkoutDataId={dailyWorkoutDataId}
+                                                />
+                                            </div>
+                                            <Timer timeInSeconds={timeInSeconds} />
+                                        </div>
+
+                                    </ListItem>
+                                );
+                            })}
+                        </List>
+                    </div>
+                :
+                <UGBLabel variant='subtitle1'>
+                    You need to save changes before setting reps
+                </UGBLabel>
+            }
+        </div>
+    );
+}
+
+const Timer = ({ timeInSeconds }) => {
+    const styles = useStyles3();
+    const [startTimer, setStartTimer] = useState(false);
+    const [countDown, setCountDown] = useState('00:00');
+    const [visualProgress, setVisualProgress] = useState(0);
+    const [initiallyLoaded, setInitiallyLoaded] = useState(false);
+
+    function format(minutes, seconds) {
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        setCountDown(minutes + ':' + seconds);
+    }
+
+    useEffect(() => {
+        const countDownTokens = countDown.split(':');
+        const countDownInSeconds = (Number(countDownTokens[0]) * 60) + Number(countDownTokens[1]);
+
+        const progress = Math.abs(countDownInSeconds - timeInSeconds) * 100.0 / Math.abs(0 - timeInSeconds);
+
+        if (initiallyLoaded) {
+            if (progress >= 100) {
+                beep();
+            }
+        } else {
+            setInitiallyLoaded(true);
+        }
+        setVisualProgress(progress);
+    }, [countDown]);
+
+
+    function beep() {
+        let context = new AudioContext();
+        let oscillator = context.createOscillator();
+        oscillator.type = "sine";
+        oscillator.frequency.value = 800;
+        oscillator.connect(context.destination);
+        oscillator.start();
+        setTimeout(function () {
+            oscillator.stop();
+        }, 800);
+    }
+
+    return (
+        <div>
+            {startTimer ?
+                <div className={styles.circularProgressWithLabel} onClick={() => setStartTimer(false)}>
+                    <CircularProgressWithLabel value={visualProgress} label={countDown} />
+                </div>
+                :
+                <IconButton className={styles.startTimer}
+                    onClick={() => {
+                        setStartTimer(true);
+                        const timer = new CountDownTimer(timeInSeconds);
+                        const timeObj = CountDownTimer.parseTime(timeInSeconds);
+                        format(timeObj.minutes, timeObj.seconds);
+                        timer.onTick(format);
+                        timer.start();
+                    }}
+                >
+                    <TimerIcon className={styles.timerIcon} />
+                </IconButton>
+            }
+        </div>
+    );
+}
+
+const HistoryListItem = ({ historicalEntry }) => {
+    const styles = useStyles3();
+    const [max, setMax] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        if (historicalEntry) {
+            setMax(historicalEntry.length);
+            setCurrentIndex(historicalEntry.length - 1);
+        }
+    }, [historicalEntry])
+
+    return (
+        <div className={styles.historyContainer}>
+            <ListItemIcon className={styles.sort}>
+                <IconButton
+                    className={styles.changePadding}
+                    onClick={() => setCurrentIndex(currentIndex - 1)}
+                    disabled={currentIndex === 0}
+                >
+                    <ArrowBackIosIcon />
+                </IconButton>
+            </ListItemIcon>
+            <ListItemText
+                primary={historicalEntry && historicalEntry[currentIndex] && (historicalEntry[currentIndex].weight || historicalEntry[currentIndex].reps) ? `${historicalEntry[currentIndex].weight || 0}Kg X ${historicalEntry[currentIndex].reps || 0}Reps` : 'N/A'}
+                secondary={historicalEntry && historicalEntry[currentIndex] && (historicalEntry[currentIndex].weight || historicalEntry[currentIndex].reps) ? historicalEntry[currentIndex].date : 'N/A'}
+            />
+            <ListItemIcon className={styles.sort}>
+                <IconButton
+                    className={styles.changePadding}
+                    disabled={currentIndex + 1 >= max}
+                    onClick={() => setCurrentIndex(currentIndex + 1)}
+                >
+                    <ArrowForwardIosIcon />
+                </IconButton>
+            </ListItemIcon>
+        </div>
+    );
+}
+
+function CircularProgressWithLabel(props) {
+    return (
+        <Box position="relative" display="inline-flex">
+            <CircularProgress variant="determinate"{...props} />
+            <Box
+                top={0}
+                left={0}
+                bottom={0}
+                right={0}
+                position="absolute"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                color='#28A745'
+            >
+                <Typography variant="caption" component="div">{props.label}</Typography>
+            </Box>
+        </Box>
+    );
+}
+
+const DebouncingWeightInput = ({ todaysData, set, setTodaysData, setIsSaving, setIsSaved, isSaving, isSaved, dailyWorkoutDataId }) => {
+    const [tempWeight, setTempWeight] = useState('');
+    const [weight, setWeight] = useState('');
+    const [initiallyLoaded, setInitiallyLoaded] = useState(false);
+    const [loadedTodaysData, setLoadedTodaysData] = useState(false);
+
+    const updateWeightEntry = async () => {
+        setIsSaving([...isSaving, set.set + '-w']);
+        const created = new Date();
+        const reqData = {
+            weight: weight,
+            forSet: set.set,
+            createdOn: parseDate(created, '/'),
+            dailyWorkoutDataId: dailyWorkoutDataId
+        }
+        putData(process.env.REACT_APP_HOST + '/api/workout/add-weight-entry', reqData)
+            .then(data => {
+            }, error => {
+                console.log('LOGOUT ERROR--->', error)
+            })
+
+        setIsSaving(isSaving.filter(save => save === set.set + '-w'));
+        setIsSaved([...isSaved, set.set + '-w']);
+        setTimeout(
+            function () {
+                setIsSaved(isSaved.filter(save => save === set.set + '-w'));
+            }, 1250);
+    }
+
+    useEffect(() => {
+        if (!initiallyLoaded) {
+            setInitiallyLoaded(true);
+            return;
+        }
+        updateWeightEntry();
+    }, [weight])
+
+    useEffect(() => {
+        if (!loadedTodaysData && todaysData && todaysData[set.set] && !isNaN(Number(todaysData[set.set].weight))) {
+            setTempWeight(todaysData[set.set].weight);
+            setLoadedTodaysData(true);
+            return;
+        }
+    }, [todaysData])
+
+    const debounceMemo = React.useMemo(
+        () => debounce(
+            (event) => {
+                setTempWeight(event.target.value);
+            }, (event) => {
+                setWeight(event.target.value);
+            }, 500),
+        [],
+    );
+
+    return (
+        <UGBInput
+            label=''
+            value={tempWeight}
+            onChange={(e) => {
+                if (todaysData && todaysData[set.set]) {
+                    todaysData[set.set].weight = e.target.value;
+                    setTodaysData({ ...todaysData });
+                    debounceMemo(e);
+                }
+            }}
+            InputProps={{ endAdornment: (<InputAdornment position="start">Kg</InputAdornment>) }}
+        />
+    );
+}
+
+const DebouncingRepsInput = ({ todaysData, set, setTodaysData, setIsSaving, setIsSaved, isSaving, isSaved, dailyWorkoutDataId }) => {
+    const [tempReps, setTempReps] = useState('');
+    const [reps, setReps] = useState('');
+    const [initiallyLoaded, setInitiallyLoaded] = useState(false);
+    const [loadedTodaysData, setLoadedTodaysData] = useState(false);
+
+    const updateRepsEntry = async () => {
+        setIsSaving([...isSaving, set.set + '-r']);
+        const created = new Date();
+        const reqData = {
+            reps: reps,
+            forSet: set.set,
+            createdOn: parseDate(created, '/'),
+            dailyWorkoutDataId: dailyWorkoutDataId
+        }
+        putData(process.env.REACT_APP_HOST + '/api/workout/add-reps-entry', reqData)
+            .then(data => {
+            }, error => {
+                console.log('LOGOUT ERROR--->', error)
+            })
+
+        setIsSaving(isSaving.filter(save => save === set.set + '-r'));
+        setIsSaved([...isSaved, set.set + '-r']);
+        setTimeout(
+            function () {
+                setIsSaved(isSaved.filter(save => save === set.set + '-r'));
+            }, 1250);
+    }
+
+    useEffect(() => {
+        if (!initiallyLoaded) {
+            setInitiallyLoaded(true);
+            return;
+        }
+        updateRepsEntry();
+    }, [reps])
+
+    useEffect(() => {
+        if (!loadedTodaysData && todaysData && todaysData[set.set] && !isNaN(Number(todaysData[set.set].reps))) {
+            setTempReps(todaysData[set.set].reps);
+            setLoadedTodaysData(true);
+            return;
+        }
+    }, [todaysData])
+
+    const debounceMemo = React.useMemo(
+        () => debounce(
+            (event) => {
+                setTempReps(event.target.value);
+            }, (event) => {
+                setReps(event.target.value);
+            }, 500),
+        [],
+    );
+
+    return (
+        <UGBLegendInput
+            minWidth='100px'
+            label={`Reps Goal: ${set && set.reps ? set.reps : null}`}
+            value={tempReps}
+            onChange={(e) => {
+                if (todaysData && todaysData[set.set]) {
+                    todaysData[set.set].reps = e.target.value;
+                    setTodaysData({ ...todaysData });
+                    debounceMemo(e);
+                }
+            }}
+            endAdornment={<InputAdornment position="start">Reps</InputAdornment>}
+        />
+    );
+}

@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
             border: '1px solid #1E7E34',
             boxShadow: 'rgb(163,217,176) 0px 0px 0px 3px',
             outline: 'none'
-        },
+        }
     },
     outlinedSecondary: {
         border: '1px solid #dc3545',

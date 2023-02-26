@@ -13,7 +13,7 @@ export function UGBLoaderDots(params) {
 
 export function UGBLoaderSpinner(params) {
     return (
-        <UGBLoader />
+        <UGBLoader {...params} />
     );
 }
 

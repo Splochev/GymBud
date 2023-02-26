@@ -61,10 +61,11 @@ const Footer = () => {
                 </div>
                 <UGBLink
                     url='https://www.linkedin.com/in/stanislav-plochev-14023a155/'
-                    label='&copy; 2021 Stanislav Plochev'
+                    label='&copy; 2021 Stanislav Plochev - experimental and for personal use only'
                     color='white'
                     target='blank'
                 />
+                
             </div>
             {store.user ?
                 <SpeedDialTooltipOpen open={open} handleOpen={handleOpen} handleClose={handleClose} />

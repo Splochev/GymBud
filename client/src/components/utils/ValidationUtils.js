@@ -15,7 +15,7 @@ export function textIsNumber(text) {
 
 export function textIsEmail(text) {
     if (text && text.length) {
-        const emailRe = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        const emailRe = /^[\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/;;
         return emailRe.test(text);
     } else {
         return true;
@@ -33,22 +33,22 @@ export function textContainsEmptySpaces(text) {
 
 export function textIsPassword(text) {
     if (text && text.length) {
-        const digitRe = /\d+/;
-        const lowerCaseRe = /[a-z]+/;
-        const upperCaseRe = /[A-Z]+/;
-        const specialSymbolRe = /[^0-9A-Za-z]+/;
-        if (!digitRe.test(text)) {
-            return 'Password must contain at least 1 digit.'
-        }
-        if (!lowerCaseRe.test(text)) {
-            return 'Password must contain at least 1 lower case letter.'
-        }
-        if (!upperCaseRe.test(text)) {
-            return 'Password must contain at least 1 upper case letter.'
-        }
-        if (!specialSymbolRe.test(text)) {
-            return 'Password must contain at least 1 special symbol.'
-        }
+        // const digitRe = /\d+/;
+        // const lowerCaseRe = /[a-z]+/;
+        // const upperCaseRe = /[A-Z]+/;
+        // const specialSymbolRe = /[^0-9A-Za-z]+/;
+        // if (!digitRe.test(text)) {
+        //     return 'Password must contain at least 1 digit.'
+        // }
+        // if (!lowerCaseRe.test(text)) {
+        //     return 'Password must contain at least 1 lower case letter.'
+        // }
+        // if (!upperCaseRe.test(text)) {
+        //     return 'Password must contain at least 1 upper case letter.'
+        // }
+        // if (!specialSymbolRe.test(text)) {
+        //     return 'Password must contain at least 1 special symbol.'
+        // }
         if (text.length < 8) {
             return 'Password length must be at least 8 symbols.'
         }
