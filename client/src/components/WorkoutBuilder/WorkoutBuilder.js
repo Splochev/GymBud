@@ -2642,27 +2642,26 @@ const RepetitionsTabPanel = ({ exercise, notSaved, setIsSaving, setIsSaved, isSa
                 markers.unshift(periodization);
             }
             setMarkers(markers);
-        }
 
-        setDailyWorkoutDataId(exercise.dailyWorkoutDataId)
-        getRepetitionsData(exercise.dailyWorkoutDataId);
-    }, []);
+            setDailyWorkoutDataId(exercise.dailyWorkoutDataId)
+            getRepetitionsData(exercise.dailyWorkoutDataId);
+        }
+    }, [exercise]);
 
     function getRepetitionsData(dailyWorkoutDataId) {
         getData(process.env.REACT_APP_HOST + `/api/workout/get-repetitions-data?dailyWorkoutDataId=${dailyWorkoutDataId}`)
             .then(data => {
                 setHistoricalEntires(data.historicalEntires);
-                if (data.todaysData) {
-                    setTodaysData(data.todaysData);
-                } else {
-                    if (exercise && exercise.sets && exercise.sets.length) {
-                        const _todaysData = {};
-                        for (const set of exercise.sets) {
+                const _todaysData = data.todaysData || {};
+                if (exercise && exercise.sets && exercise.sets.length) {
+                    for (const set of exercise.sets) {
+                        if (!_todaysData[set.set]) {
                             _todaysData[set.set] = { reps: '', weight: '' }
-                        }
-                        setTodaysData(_todaysData);
+                        } 
                     }
                 }
+                console.log(_todaysData);
+                setTodaysData(_todaysData);
             }, error => {
                 console.log(error);
             })
@@ -2798,19 +2797,21 @@ const Timer = ({ timeInSeconds }) => {
     }
 
     useEffect(() => {
-        const countDownTokens = countDown.split(':');
-        const countDownInSeconds = (Number(countDownTokens[0]) * 60) + Number(countDownTokens[1]);
+        if (startTimer) {
+            const countDownTokens = countDown.split(':');
+            const countDownInSeconds = (Number(countDownTokens[0]) * 60) + Number(countDownTokens[1]);
 
-        const progress = Math.abs(countDownInSeconds - timeInSeconds) * 100.0 / Math.abs(0 - timeInSeconds);
+            const progress = Math.abs(countDownInSeconds - timeInSeconds) * 100.0 / Math.abs(0 - timeInSeconds);
 
-        if (initiallyLoaded) {
-            if (progress >= 100) {
-                beep();
+            if (initiallyLoaded) {
+                if (progress >= 100) {
+                    beep();
+                }
+            } else {
+                setInitiallyLoaded(true);
             }
-        } else {
-            setInitiallyLoaded(true);
+            setVisualProgress(progress);
         }
-        setVisualProgress(progress);
     }, [countDown]);
 
 
