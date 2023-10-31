@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(1),
     },
     exerciseMapping: {
-        height: '570px'
+        height: theme.spacing(73)
     },
     deleteSetBtn: {
         width: '35px',
@@ -170,8 +170,8 @@ const useStyles = makeStyles((theme) => ({
     },
     toolbarTitle: {
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
+        gap: theme.spacing(1),
+        alignItems: 'center'
     },
     mergeBtn: {
         height: theme.spacing(5.25),
@@ -505,8 +505,6 @@ const AddNewWorkoutJournal = ({ onSubmit, onClose }) => {
         </form>
     );
 }
-
-const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 const EditWorkoutJournal = ({ selectedWorkoutJournalObj, setSelectedWorkoutJournalObj, workoutJournals, setWorkoutJournals, onClose }) => {
     const styles = useStyles();
@@ -1704,6 +1702,7 @@ const WorkoutBuilder = () => {
     const [refreshWorkoutJournalSessionExercises, setRefreshWorkoutJournalSessionExercises] = useState({});
     const [timeValidations, setTimeValidations] = useState({});
     const [repsValidations, setRepsValidations] = useState({});
+    const [showWeightAndRepsGoal, setShowWeightAndRepsGoal] = useState(null);
 
     useEffect(() => {
         switch (tab) {
@@ -2132,6 +2131,27 @@ const WorkoutBuilder = () => {
                         >
                             <div className={styles.toolbar}>
                                 <div className={styles.toolbarTitle}>
+                                    <IconButton
+                                        className={styles.editButton}
+                                        onClick={(e) => setShowWeightAndRepsGoal(e.currentTarget)}
+                                    >
+                                        <i class="fa-solid fa-crosshairs" />
+                                    </IconButton>
+                                    <Popover
+                                        open={Boolean(showWeightAndRepsGoal)}
+                                        anchorEl={showWeightAndRepsGoal}
+                                        onClose={() => setShowWeightAndRepsGoal(null)}
+                                        anchorOrigin={{
+                                            vertical: 'bottom',
+                                            horizontal: 'center',
+                                        }}
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'center',
+                                        }}
+                                    >
+                                        <WeightAndRepsGoal />
+                                    </Popover>
                                     <UGBLabel variant='subtitle1'>
                                         Exercises:
                                     </UGBLabel>
@@ -2627,8 +2647,8 @@ const RepetitionsTabPanel = ({ exercise, notSaved, setIsSaving, setIsSaved, isSa
     const [dailyWorkoutDataId, setDailyWorkoutDataId] = useState(null);
 
     useEffect(() => {
-        if (exercise && exercise.markers && exercise.markers.length) {
-            const markers = [...exercise.markers];
+        if (exercise) {
+            const markers = exercise?.markers?.length ? [...exercise.markers] : [];
             const intensityVolumeIndex = markers.findIndex(m => m.marker === 'Intensity Volume')
             if (intensityVolumeIndex >= 0 && intensityVolumeIndex >= 2) {
                 const intensityVolume = markers[intensityVolumeIndex];
@@ -2657,7 +2677,7 @@ const RepetitionsTabPanel = ({ exercise, notSaved, setIsSaving, setIsSaved, isSa
                     for (const set of exercise.sets) {
                         if (!_todaysData[set.set]) {
                             _todaysData[set.set] = { reps: '', weight: '' }
-                        } 
+                        }
                     }
                 }
                 console.log(_todaysData);
@@ -2768,7 +2788,6 @@ const RepetitionsTabPanel = ({ exercise, notSaved, setIsSaving, setIsSaved, isSa
                                             </div>
                                             <Timer timeInSeconds={timeInSeconds} />
                                         </div>
-
                                     </ListItem>
                                 );
                             })}
@@ -2929,16 +2948,16 @@ const DebouncingWeightInput = ({ todaysData, set, setTodaysData, setIsSaving, se
         }
         putData(process.env.REACT_APP_HOST + '/api/workout/add-weight-entry', reqData)
             .then(data => {
+                setIsSaving(isSaving.filter(save => save === set.set + '-w'));
+                setIsSaved([...isSaved, set.set + '-w']);
+                setTimeout(
+                    function () {
+                        setIsSaved(isSaved.filter(save => save === set.set + '-w'));
+                    }, 1250);
             }, error => {
+                setIsSaving(isSaving.filter(save => save === set.set + '-w'));
                 console.log('LOGOUT ERROR--->', error)
             })
-
-        setIsSaving(isSaving.filter(save => save === set.set + '-w'));
-        setIsSaved([...isSaved, set.set + '-w']);
-        setTimeout(
-            function () {
-                setIsSaved(isSaved.filter(save => save === set.set + '-w'));
-            }, 1250);
     }
 
     useEffect(() => {
@@ -3000,16 +3019,16 @@ const DebouncingRepsInput = ({ todaysData, set, setTodaysData, setIsSaving, setI
         }
         putData(process.env.REACT_APP_HOST + '/api/workout/add-reps-entry', reqData)
             .then(data => {
+                setIsSaving(isSaving.filter(save => save === set.set + '-r'));
+                setIsSaved([...isSaved, set.set + '-r']);
+                setTimeout(
+                    function () {
+                        setIsSaved(isSaved.filter(save => save === set.set + '-r'));
+                    }, 1250);
             }, error => {
+                setIsSaving(isSaving.filter(save => save === set.set + '-r'));
                 console.log('LOGOUT ERROR--->', error)
             })
-
-        setIsSaving(isSaving.filter(save => save === set.set + '-r'));
-        setIsSaved([...isSaved, set.set + '-r']);
-        setTimeout(
-            function () {
-                setIsSaved(isSaved.filter(save => save === set.set + '-r'));
-            }, 1250);
     }
 
     useEffect(() => {
@@ -3052,5 +3071,20 @@ const DebouncingRepsInput = ({ todaysData, set, setTodaysData, setIsSaving, setI
             }}
             endAdornment={<InputAdornment position="start">Reps</InputAdornment>}
         />
+    );
+}
+
+const WeightAndRepsGoal = () => {
+    //TODO: create component as per design made from paint
+    // and have a default LI to be 2.5kg and if any of the the
+    // exercises has a specific LI marker, apply it instead
+    // and show the next workout's weight goal (last workout weight + LI)
+    // Apply button will apply it to the workouts, in order to be left
+    // with only the option to apply the reps of the exercise
+
+    return (
+        <div>
+
+        </div>
     );
 }
