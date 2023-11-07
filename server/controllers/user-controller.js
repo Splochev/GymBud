@@ -6,17 +6,20 @@ const { escape } = require('mysql');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 var nodeOutlook = require('nodejs-nodemailer-outlook')
+const jwt = require('jsonwebtoken');
 
 module.exports = class UserController {
     constructor() {
         this.router = express.Router();
         this.attachEndpoints();
     }
-    //Dont forget to add AuthHelpers where needed
+
     attachEndpoints() {
         this.router.post('/login', (req, res) => this.login(req, res));
         this.router.get('/me', AuthHelpers.loggedIn, (req, res) => this.getMe(req, res));
         this.router.post('/logout', AuthHelpers.loggedIn, (req, res) => this.logout(req, res));
+        this.router.get('/native/me', AuthHelpers.loggedInNative, (req, res) => this.getMe(req, res));
+        this.router.post('/native/logout', AuthHelpers.loggedInNative, (req, res) => this.logout(req, res));
         this.router.post('/register', (req, res) => this.register(req, res));
         this.router.put('/verify', (req, res) => this.verify(req, res));
         this.router.put('/forgotten-password', (req, res) => this.forgottenPassword(req, res));
@@ -30,7 +33,7 @@ module.exports = class UserController {
                 console.error(err);
                 return;
             }
-
+            
             if (!user) {
                 res.status(401).json(ErrorHandler.GenerateError(401, ErrorHandler.ErrorTypes.authentication, 'Incorrect email or password!'));
                 return;
@@ -40,7 +43,7 @@ module.exports = class UserController {
                 res.status(401).json(ErrorHandler.GenerateError(401, ErrorHandler.ErrorTypes.authentication, 'User not verified yet!'));
                 return;
             }
-
+            
             req.logIn(user, function (err) {
                 if (err) {
                     res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error'));
@@ -48,8 +51,12 @@ module.exports = class UserController {
                 }
 
                 delete user.password;
-
-                res.json(user);
+                if(req.body.isNative){
+                    const token = jwt.sign({ user_id: user.id }, process.env.AUTH_TOKEN);
+                    res.json({...user, authorization: token});
+                } else{
+                    res.json(user);
+                }
             });
         })(req, res, next);
     }
