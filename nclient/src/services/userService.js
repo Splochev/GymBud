@@ -1,9 +1,9 @@
 import axios from "axios";
-import { API_URL } from "@env";
+import { getHostUrl } from "../Utils/commonFunctions";
 
 export const login = async (email, password) => {
   try {
-    const res = await axios.post(API_URL + "/api/user/login", {
+    const res = await axios.post(getHostUrl() + "/api/user/login", {
       email: email,
       password: password,
       isNative: true,
@@ -18,7 +18,7 @@ export const login = async (email, password) => {
 export const logout = async (authorizationToken) => {
   try {
     const res = await axios.post(
-      API_URL + "/api/user/native/logout",
+      getHostUrl() + "/api/user/native/logout",
       {},
       {
         headers: {
@@ -43,7 +43,7 @@ export const register = async (
   birthDate
 ) => {
   try {
-    const res = await axios.post(API_URL + "/api/user/register", {
+    const res = await axios.post(getHostUrl() + "/api/user/register", {
       email,
       password,
       firstName,
@@ -61,7 +61,7 @@ export const register = async (
 
 export const verify = async (token) => {
   try {
-    const res = await axios.put(API_URL + `/api/user/verify?token=${token}`);
+    const res = await axios.put(getHostUrl() + `/api/user/verify?token=${token}`);
     return res.data;
   } catch (err) {
     console.error("Verify: ", err);
@@ -71,7 +71,7 @@ export const verify = async (token) => {
 
 export const forgottenPassword = async (email) => {
   try {
-    const res = await axios.put(API_URL + "/forgotten-password", { email });
+    const res = await axios.put(getHostUrl() + "/forgotten-password", { email });
     return res.data;
   } catch (err) {
     console.error("Forgotten Password: ", err);
@@ -81,7 +81,7 @@ export const forgottenPassword = async (email) => {
 
 export const resetForgottenPassword = async (password, token) => {
   try {
-    const res = await axios.put(API_URL + "/reset-forgotten-password", {
+    const res = await axios.put(getHostUrl() + "/reset-forgotten-password", {
       password,
       token,
     });
@@ -94,7 +94,7 @@ export const resetForgottenPassword = async (password, token) => {
 
 export const getMe = async (authorizationToken) => {
   try {
-    const res = await axios.get(API_URL + "/api/user/native/me", {
+    const res = await axios.get(getHostUrl() + "/api/user/native/me", {
       headers: {
         Authorization: authorizationToken,
       },
