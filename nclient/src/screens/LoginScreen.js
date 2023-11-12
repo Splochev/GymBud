@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import "react-native-gesture-handler";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, ImageBackground, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../services/userService";
 import { useStoreContext } from "../store/Store";
@@ -28,13 +27,23 @@ const dataValidators = {
   },
 };
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-end",
     gap: 15,
     paddingBottom: 50,
+  },
+  backgroundImage: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
   },
   divider: {
     margin: 10,
@@ -43,6 +52,10 @@ const style = StyleSheet.create({
   },
   signInButton: {
     width: "90%",
+  },
+  logo: {
+    maxHeight: 300,
+    resizeMode: "contain",
   },
 });
 
@@ -72,44 +85,53 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={style.container}>
-      <Input
-        label="Email"
-        value={email}
-        setValue={setEmail}
-        leftIcon="email"
-        validator={dataValidators.isEmail}
-        setValidatorPassed={setEmailIsCorrect}
-      />
-      <Input
-        label="Password"
-        value={password}
-        setValue={setPassword}
-        isPassword={true}
-        leftIcon="lock"
-        validator={dataValidators.isRequired}
-        setValidatorPassed={setPasswordIsCorrect}
-      />
-      <Button
-        mode="contained"
-        onPress={
-          (emailIsCorrect || email === "1") && passwordIsCorrect && signIn
-        }
-        style={style.signInButton}
-      >
-        Sign In
-      </Button>
-      <Button
-        mode="text"
-        onPress={() => console.log("Forgotten Password Page")}
-      >
-        Forgot Password?
-      </Button>
-      <Divider style={style.divider} />
-      <Button mode="contained" onPress={() => console.log("Register Page")}>
-        Create New Account
-      </Button>
-    </View>
+    <ImageBackground
+      source={require("../../assets/indoorBike.png")}
+      style={styles.backgroundImage}
+    >
+      <View style={styles.container}>
+        <Image
+          source={require("../../assets/logo-no-background-with-slogan.png")}
+          style={styles.logo}
+        />
+        <Input
+          label="Email"
+          value={email}
+          setValue={setEmail}
+          leftIcon="email"
+          validator={dataValidators.isEmail}
+          setValidatorPassed={setEmailIsCorrect}
+        />
+        <Input
+          label="Password"
+          value={password}
+          setValue={setPassword}
+          isPassword={true}
+          leftIcon="lock"
+          validator={dataValidators.isRequired}
+          setValidatorPassed={setPasswordIsCorrect}
+        />
+        <Button
+          mode="contained"
+          onPress={
+            (emailIsCorrect || email === "1") && passwordIsCorrect && signIn
+          }
+          style={styles.signInButton}
+        >
+          Sign In
+        </Button>
+        <Button
+          mode="text"
+          onPress={() => console.log("Forgotten Password Page")}
+        >
+          Forgot Password?
+        </Button>
+        <Divider style={styles.divider} />
+        <Button mode="contained" onPress={() => console.log("Register Page")}>
+          Create New Account
+        </Button>
+      </View>
+    </ImageBackground>
   );
 };
 
