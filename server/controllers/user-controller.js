@@ -7,6 +7,7 @@ const passport = require('passport');
 const bcrypt = require('bcryptjs');
 var nodeOutlook = require('nodejs-nodemailer-outlook')
 const jwt = require('jsonwebtoken');
+const { generateRandomCode, generateVerificationCodeEmail, generateVerifyRegistrationEmail } = require('../utils/commonFunctions');
 
 module.exports = class UserController {
     constructor() {
@@ -23,6 +24,7 @@ module.exports = class UserController {
         this.router.post('/register', (req, res) => this.register(req, res));
         this.router.put('/verify', (req, res) => this.verify(req, res));
         this.router.put('/forgotten-password', (req, res) => this.forgottenPassword(req, res));
+        this.router.put('/native/forgotten-password', (req, res) => this.forgottenPasswordInNative(req, res));
         this.router.put('/reset-forgotten-password', (req, res) => this.resetForgottenPassword(req, res));
     }
 
@@ -221,6 +223,7 @@ module.exports = class UserController {
                         email=${email}
                 `);
 
+            const emailContent = generateVerifyRegistrationEmail(token[0].token);
             nodeOutlook.sendEmail({
                 auth: {
                     user: process.env.OUTLOOK_NM_USERNAME,
@@ -229,7 +232,54 @@ module.exports = class UserController {
                 from: process.env.OUTLOOK_NM_USERNAME,
                 to: req.body.email,
                 subject: 'Password Reset',
-                html: `<p>Click <a href="${process.env.APP_HOST}/change-password?token=${token[0].token}" target="_blank">here</a> to reset password</p>`,
+                html: emailContent,
+                onError: (e) => console.log(e),
+                onSuccess: (i) => console.log(i)
+            });
+            res.json({ success: true });
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
+
+    async forgottenPasswordInNative(req, res) {
+        try {
+            const email = req.body.email ? escape(req.body.email) : undefined;
+            if (!email) {
+                res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Email not provided!'));
+                return;
+            }
+
+            const dateObj = new Date(new Date().setDate(new Date().getDate() + 30));
+            const expirationDate = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
+            const shortVerificationCode = generateRandomCode(6);
+
+            const insert = await MysqlAdapter.query(`
+                    UPDATE users
+                    SET
+                        change_password_token_expires_on='${expirationDate}',
+                        change_password_token='${shortVerificationCode}'
+                    WHERE
+                        email=${email}
+                `);
+
+            if (!insert.changedRows) {
+                res.json({ success: true });
+                return;
+            }
+
+            const emailContent = generateVerificationCodeEmail(shortVerificationCode);
+            nodeOutlook.sendEmail({
+                auth: {
+                    user: process.env.OUTLOOK_NM_USERNAME,
+                    pass: process.env.OUTLOOK_NM_PASSWORD,
+                },
+                from: process.env.OUTLOOK_NM_USERNAME,
+                to: req.body.email,
+                subject: 'Password Reset',
+                html: emailContent,
                 onError: (e) => console.log(e),
                 onSuccess: (i) => console.log(i)
             });
