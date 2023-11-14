@@ -1,3 +1,4 @@
+import React from "react";
 import { Text, TextInput } from "react-native-paper";
 import {
   StyleSheet,
@@ -17,10 +18,14 @@ const style = StyleSheet.create({
   input: {
     width: "100%",
   },
+  label:{
+    marginBottom: 6,
+  }
 });
 
 const UgbInput = ({ ...params }) => {
   const [isPassword, setIsPassword] = useState(params.isPassword || false);
+  // eslint-disable-next-line no-unused-vars
   const [validationErr, setValidationErr] = useState([]);
 
   const onChangeText = (text) => {
@@ -46,7 +51,7 @@ const UgbInput = ({ ...params }) => {
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
       <View style={style.container}>
-        <Text>{params.label}</Text>
+        <Text variant="titleMedium" style={style.label}>{params.label}</Text>
         <TextInput
           style={style.input}
           {...params}

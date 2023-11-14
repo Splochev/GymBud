@@ -71,7 +71,7 @@ export const verify = async (token) => {
 
 export const forgottenPassword = async (email) => {
   try {
-    const res = await axios.put(getHostUrl() + "/forgotten-password", { email });
+    const res = await axios.put(getHostUrl() + "/api/user/native/forgotten-password", { email });
     return res.data;
   } catch (err) {
     console.error("Forgotten Password: ", err);
@@ -81,7 +81,7 @@ export const forgottenPassword = async (email) => {
 
 export const resetForgottenPassword = async (password, token) => {
   try {
-    const res = await axios.put(getHostUrl() + "/reset-forgotten-password", {
+    const res = await axios.put(getHostUrl() + "/api/user/reset-forgotten-password", {
       password,
       token,
     });

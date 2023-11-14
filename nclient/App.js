@@ -6,8 +6,9 @@ import LoginScreen from "./src/screens/LoginScreen";
 import DetailsScreen from "./src/screens/DetailsScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMe } from "./src/services/userService";
-import { ActivityIndicator, MD2Colors } from "react-native-paper";
+import { ActivityIndicator, PaperProvider } from "react-native-paper";
 import { StoreContext, initialStoreState } from "./src/store/Store";
+import ForgotPassword from "./src/screens/ForgotPassword";
 
 const Stack = createStackNavigator();
 
@@ -43,32 +44,41 @@ export default function App() {
   }, []);
 
   if (loading) {
-    return <ActivityIndicator animating={true} color={MD2Colors.red800} />;
+    return <ActivityIndicator animating={true} />;
   }
 
   if (storeState.isLoggedIn) {
     return (
-      <StoreContext.Provider value={[storeState, setStoreState]}>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName={"Details"}>
-            <Stack.Screen name="Details" component={DetailsScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </StoreContext.Provider>
+      <PaperProvider>
+        <StoreContext.Provider value={[storeState, setStoreState]}>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName={"Details"}>
+              <Stack.Screen name="Details" component={DetailsScreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </StoreContext.Provider>
+      </PaperProvider>
     );
   }
 
   return (
-    <StoreContext.Provider value={[storeState, setStoreState]}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName={"LoginScreen"}>
-          <Stack.Screen
-            name="LoginScreen"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </StoreContext.Provider>
+    <PaperProvider>
+      <StoreContext.Provider value={[storeState, setStoreState]}>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName={"LoginScreen"}>
+            <Stack.Screen
+              name="LoginScreen"
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ForgotPassword"
+              component={ForgotPassword}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </StoreContext.Provider>
+    </PaperProvider>
   );
 }
