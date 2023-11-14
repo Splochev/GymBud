@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
-import { View, StyleSheet, ImageBackground, Image } from "react-native";
+import React from "react";
+import { StyleSheet, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../services/userService";
 import { useStoreContext } from "../store/Store";
 import { Divider } from "react-native-paper";
 import Button from "../components/Button";
 import Input from "../components/Input";
+import PropTypes from "prop-types";
+import LoggedOutPageLayout from "../components/LoggedOutPageLayout";
 
 const dataValidators = {
   isRequired: (value) => {
@@ -28,23 +30,6 @@ const dataValidators = {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-end",
-    gap: 15,
-    paddingBottom: 50,
-  },
-  backgroundImage: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  contentContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
   divider: {
     margin: 10,
     width: "90%",
@@ -53,9 +38,8 @@ const styles = StyleSheet.create({
   signInButton: {
     width: "90%",
   },
-  logo: {
-    maxHeight: 300,
-    resizeMode: "contain",
+  marginTop: {
+    marginTop: 20,
   },
 });
 
@@ -85,54 +69,47 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground
-      source={require("../../assets/indoorBike.png")}
-      style={styles.backgroundImage}
-    >
-      <View style={styles.container}>
-        <Image
-          source={require("../../assets/logo-no-background-with-slogan.png")}
-          style={styles.logo}
-        />
-        <Input
-          label="Email"
-          value={email}
-          setValue={setEmail}
-          leftIcon="email"
-          validator={dataValidators.isEmail}
-          setValidatorPassed={setEmailIsCorrect}
-        />
-        <Input
-          label="Password"
-          value={password}
-          setValue={setPassword}
-          isPassword={true}
-          leftIcon="lock"
-          validator={dataValidators.isRequired}
-          setValidatorPassed={setPasswordIsCorrect}
-        />
-        <Button
-          mode="contained"
-          onPress={
-            (emailIsCorrect || email === "1") && passwordIsCorrect && signIn
-          }
-          style={styles.signInButton}
-        >
-          Sign In
-        </Button>
-        <Button
-          mode="text"
-          onPress={() => console.log("Forgotten Password Page")}
-        >
-          Forgot Password?
-        </Button>
-        <Divider style={styles.divider} />
-        <Button mode="contained" onPress={() => console.log("Register Page")}>
-          Create New Account
-        </Button>
-      </View>
-    </ImageBackground>
+    <LoggedOutPageLayout>
+      <Input
+        label="Email"
+        value={email}
+        setValue={setEmail}
+        leftIcon="email"
+        validator={dataValidators.isEmail}
+        setValidatorPassed={setEmailIsCorrect}
+      />
+      <View style={styles.marginTop} />
+      <Input
+        label="Password"
+        value={password}
+        setValue={setPassword}
+        isPassword={true}
+        leftIcon="lock"
+        validator={dataValidators.isRequired}
+        setValidatorPassed={setPasswordIsCorrect}
+      />
+      <Button
+        mode="contained"
+        onPress={
+          (emailIsCorrect || email === "1") && passwordIsCorrect && signIn
+        }
+        style={[styles.signInButton, styles.marginTop]}
+      >
+        Sign In
+      </Button>
+      <Button mode="text" onPress={() => navigation.navigate("ForgotPassword")}>
+        Forgot Password?
+      </Button>
+      <Divider style={styles.divider} />
+      <Button mode="contained" onPress={() => console.log("Register Page")}>
+        Create New Account
+      </Button>
+    </LoggedOutPageLayout>
   );
+};
+
+LoginScreen.propTypes = {
+  navigation: PropTypes.object,
 };
 
 export default LoginScreen;
