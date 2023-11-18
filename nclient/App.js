@@ -9,6 +9,9 @@ import { getMe } from "./src/services/userService";
 import { ActivityIndicator, PaperProvider } from "react-native-paper";
 import { StoreContext, initialStoreState } from "./src/store/Store";
 import ForgotPassword from "./src/screens/ForgotPassword";
+import ConfirmForgotPasswordCode from "./src/screens/ConfirmForgotPasswordCode";
+import ResetPassword from "./src/screens/ResetPassword";
+import Register from "./src/screens/Register";
 
 const Stack = createStackNavigator();
 
@@ -74,6 +77,21 @@ export default function App() {
             <Stack.Screen
               name="ForgotPassword"
               component={ForgotPassword}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ConfirmForgotPasswordCode"
+              component={ConfirmForgotPasswordCode}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ResetPassword"
+              component={ResetPassword}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Register"
+              component={Register}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

@@ -79,6 +79,19 @@ export const forgottenPassword = async (email) => {
   }
 };
 
+export const verifyForgotPasswordCode = async (email, code) => {
+  try {
+    const res = await axios.put(getHostUrl() + "/api/user/verify-forgotten-password-code", {
+      email,
+      code,
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Verify Forgotten Password Code: ", err);
+    return null;
+  }
+}
+
 export const resetForgottenPassword = async (password, token) => {
   try {
     const res = await axios.put(getHostUrl() + "/api/user/reset-forgotten-password", {

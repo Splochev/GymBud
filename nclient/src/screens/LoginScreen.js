@@ -8,26 +8,7 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import PropTypes from "prop-types";
 import LoggedOutPageLayout from "../components/LoggedOutPageLayout";
-
-const dataValidators = {
-  isRequired: (value) => {
-    const errors = [];
-    if (value.trim() === "") {
-      errors.push("This field is required.");
-    }
-    return errors;
-  },
-  isEmail: (value) => {
-    const errors = [];
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(value)) {
-      errors.push("Please enter a valid email address.");
-    }
-
-    return errors;
-  },
-};
+import { dataValidators } from "../Utils/dataValidators";
 
 const styles = StyleSheet.create({
   divider: {
@@ -101,7 +82,7 @@ const LoginScreen = ({ navigation }) => {
         Forgot Password?
       </Button>
       <Divider style={styles.divider} />
-      <Button mode="contained" onPress={() => console.log("Register Page")}>
+      <Button mode="contained" onPress={() =>navigation.navigate("Register")}>
         Create New Account
       </Button>
     </LoggedOutPageLayout>

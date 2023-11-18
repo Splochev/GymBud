@@ -7,6 +7,8 @@ import { Text } from "react-native-paper";
 import PropTypes from "prop-types";
 import LoggedOutPageLayout from "../components/LoggedOutPageLayout";
 import { Divider } from "react-native-paper";
+import { useStoreContext } from "../store/Store";
+import { dataValidators } from "../Utils/dataValidators";
 
 const styles = StyleSheet.create({
   sendResetInstructionsBtn: {
@@ -30,27 +32,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const dataValidators = {
-  isEmail: (value) => {
-    const errors = [];
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(value)) {
-      errors.push("Please enter a valid email address.");
-    }
-
-    return errors;
-  },
-};
-
 const ForgotPassword = ({ navigation }) => {
+  const storeState = useStoreContext();
   const [email, setEmail] = React.useState("");
   const [emailIsCorrect, setEmailIsCorrect] = React.useState(false);
 
   const resetPassword = async () => {
     try {
       await forgottenPassword(email);
-      //TODO: redirect to reset password page that uses a token
+      storeState[1]({
+        ...storeState,
+        email: email,
+      });
+      setEmail("");
+      navigation.navigate("ConfirmForgotPasswordCode");
     } catch (error) {
       console.log(error);
       console.error("Error while signing in:", error);
