@@ -42,6 +42,24 @@ module.exports = class MysqlAdapter {
         });
     }
 
+    /**
+     * @param {string} query
+     * @param {any[]} params
+     * @returns {Promise<any[], Error>}
+     */
+        static debugQuery(query, params = []) {
+            console.log(query);
+            return new Promise((res, rej) => {
+                this.getPool().query(query, params, (err, result) => {
+                    if (err) {
+                        return rej(err);
+                    }
+    
+                    res(result);
+                });
+            });
+        }    
+
     static transactionScope(callback) {
         return new Promise((res, rej) => {
             this.getPool().getConnection((ex, connection) => {
