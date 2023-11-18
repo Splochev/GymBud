@@ -26,6 +26,7 @@ module.exports = class UserController {
         this.router.put('/forgotten-password', (req, res) => this.forgottenPassword(req, res));
         this.router.put('/native/forgotten-password', (req, res) => this.forgottenPasswordInNative(req, res));
         this.router.put('/reset-forgotten-password', (req, res) => this.resetForgottenPassword(req, res));
+        this.router.put('/verify-forgotten-password-code', (req, res) => this.verifyForgottenPasswordCode(req, res));
     }
 
     async login(req, res, next) {
@@ -252,8 +253,8 @@ module.exports = class UserController {
                 return;
             }
 
-            const dateObj = new Date(new Date().setDate(new Date().getDate() + 30));
-            const expirationDate = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
+            const dateObj = new Date(new Date().setMinutes(new Date().getMinutes() + 30));
+            const expirationDate = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()} ${dateObj.getHours()}:${dateObj.getMinutes()}:${dateObj.getSeconds()}`;
             const shortVerificationCode = generateRandomCode(6);
 
             const insert = await MysqlAdapter.query(`
@@ -353,4 +354,36 @@ module.exports = class UserController {
         }
     };
 
+    async verifyForgottenPasswordCode(req, res) {
+        try {
+            const email = req.body.email ? escape(req.body.email) : undefined;
+            const code = req.body.code ? escape(req.body.code) : undefined;
+
+            if (!email) {
+                res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Token not provided!'));
+                return;
+            }
+            if (!code) {
+                res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Password not provided!'));
+                return;
+            }
+
+            const result = await MysqlAdapter.query(`
+                    SELECT * FROM users
+                    WHERE
+                        change_password_token=${code} AND email=${email}
+                `);
+            
+            if (!result.length) {
+                res.status(400).json(ErrorHandler.GenerateError(400, ErrorHandler.ErrorTypes.server_error, 'Invalid token!'));
+                return;
+            }
+
+            res.json({ success: true });
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
+        }
+    };
 }
