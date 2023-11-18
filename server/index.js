@@ -42,8 +42,9 @@ app.listen(port, () => {
     console.log(`Gym Bud Server listening on http://localhost:${port}`)
 });
 
-schedule.scheduleJob('0 0 * * *', async () => {
-    console.log("in")
+schedule.scheduleJob("*/30 * * * *", async () => {
+    console.log("Running scheduled job: delete expired tokens");
+    await MysqlAdapter.query(`SET time_zone = '+02:00'`)
     await MysqlAdapter.query(`DELETE FROM users WHERE verification_token_expires_on <= now()`)
     await MysqlAdapter.query(`
             UPDATE users
