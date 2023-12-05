@@ -30,18 +30,18 @@ const UGBRadioButton = ({
           style={{ flexDirection: "row", alignItems: "center", minWidth: 85 }}
           onPress={() => setSelectedButton(button)}
         >
-          <Icon source={button} size={30} />
+          <Icon source={button} size={25} />
           <Icon
             source={
               selectedButton === button
                 ? isIOS()
                   ? "check"
                   : "radiobox-marked"
-                : isIOS
+                : isIOS()
                 ? ""
                 : "radiobox-blank"
             }
-            size={30}
+            size={25}
           />
         </Button>
       ))}

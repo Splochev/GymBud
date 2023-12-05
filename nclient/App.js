@@ -12,6 +12,8 @@ import ForgotPassword from "./src/screens/ForgotPassword";
 import ConfirmForgotPasswordCode from "./src/screens/ConfirmForgotPasswordCode";
 import ResetPassword from "./src/screens/ResetPassword";
 import Register from "./src/screens/Register";
+import NavigationBar from "./src/components/NavigationBar";
+import { LOGGED_OUT_PAGES } from "./src/Utils/constants";
 
 const Stack = createStackNavigator();
 
@@ -68,31 +70,32 @@ export default function App() {
     <PaperProvider>
       <StoreContext.Provider value={[storeState, setStoreState]}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={"LoginScreen"}>
+          <Stack.Navigator
+            initialRouteName={LOGGED_OUT_PAGES.LOGIN}
+            screenOptions={{
+              header: (props) => <NavigationBar {...props} />,
+            }}
+          >
             <Stack.Screen
-              name="LoginScreen"
+              name={LOGGED_OUT_PAGES.LOGIN}
               component={LoginScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="ForgotPassword"
+              name={LOGGED_OUT_PAGES.FORGOT_PASSWORD}
               component={ForgotPassword}
-              options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="ConfirmForgotPasswordCode"
+              name={LOGGED_OUT_PAGES.CONFIRM_FORGOT_PASSWORD_CODE}
               component={ConfirmForgotPasswordCode}
-              options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="ResetPassword"
+              name={LOGGED_OUT_PAGES.RESET_PASSWORD}
               component={ResetPassword}
-              options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="Register"
+              name={LOGGED_OUT_PAGES.REGISTER}
               component={Register}
-              options={{ headerShown: false }}
             />
           </Stack.Navigator>
         </NavigationContainer>

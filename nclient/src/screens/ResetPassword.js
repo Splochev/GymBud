@@ -13,27 +13,24 @@ import { dataValidators } from "../Utils/dataValidators";
 const styles = StyleSheet.create({
   sendResetInstructionsBtn: {
     width: "60%",
+    marginTop: 16,
   },
   divider: {
-    margin: 10,
+    margin: 8,
     width: "90%",
     padding: 1,
   },
   headLine: {
-    marginBottom: 10,
-    marginTop: 90,
+    marginBottom: 8,
   },
   text: {
     width: "90%",
     textAlign: "left",
   },
-  returnToLoginPageBtn: {
-    marginBottom: 10,
-  },
 });
 
 const ResetPassword = ({ navigation }) => {
-  const storeState = useStoreContext();
+  const [store] = useStoreContext();
   const [password, setPassword] = useState("");
   const [passwordIsCorrect, setPasswordIsCorrect] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -47,7 +44,7 @@ const ResetPassword = ({ navigation }) => {
         setPasswordsMatch(false);
         throw new Error("Passwords do not match");
       }
-      await resetForgottenPassword(password, storeState[0].code);
+      await resetForgottenPassword(password, store.code);
       navigation.navigate("LoginScreen");
     } catch (error) {
       console.log(error);
@@ -87,15 +84,13 @@ const ResetPassword = ({ navigation }) => {
         <Text style={{ color: "red" }}>Passwords do not match</Text>
       )}
       <Button
-        style={styles.returnToLoginPageBtn}
-        mode="text"
-        onPress={() => navigation.navigate("LoginScreen")}
-      >
-        Return to login page
-      </Button>
-      <Button
         mode="contained"
-        onPress={passwordIsCorrect && confirmPasswordIsCorrect && passwordsMatch && resetPassword}
+        onPress={
+          passwordIsCorrect &&
+          confirmPasswordIsCorrect &&
+          passwordsMatch &&
+          resetPassword
+        }
         style={styles.sendResetInstructionsBtn}
       >
         Confirm

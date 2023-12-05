@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, ScrollView, Dimensions, View } from "react-native";
+import {
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import { Text } from "react-native-paper";
@@ -12,43 +18,47 @@ import { GENDERS, GENDERS_DICT } from "../Utils/constants";
 import { DatePickerInput } from "react-native-paper-dates";
 import { getTodayMinus18Years } from "../Utils/commonFunctions";
 import { register } from "../services/userService";
+import Checkbox from "../components/Checkbox";
 
 const styles = StyleSheet.create({
   signUp: {
     width: "60%",
-    marginBottom: 60,
+    marginBottom: 32,
+    marginTop: 16,
   },
   divider: {
-    margin: 10,
+    margin: 8,
     width: "90%",
     padding: 1,
   },
   headLine: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
   text: {
     width: "90%",
     textAlign: "left",
   },
-  returnToLoginPageBtn: {
-    marginBottom: 10,
-  },
-  textContainer: {
-    width: "90%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  termsOfServiceAction: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    width: "90%",
-  },
   datePickerInput: {
     width: "90%",
-    marginTop: 12,
+    marginTop: 8,
+  },
+  termsAndConditionsContainer: {
+    display: "flex",
+    width: "90%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 2,
+  },
+  termsAndConditionsBtn: {
+    color: "#007AFF",
+  },
+  upperContainer: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    flexDirection: "column",
   },
 });
 
@@ -70,6 +80,7 @@ const Register = ({ navigation }) => {
   const [lastNameIsCorrect, setLastNameIsCorrect] = useState(false);
   const [sex, setSex] = useState(GENDERS[0]);
   const [birthDate, setBirthDate] = useState(getTodayMinus18Years());
+  const [checked, setChecked] = useState(false);
 
   const signUp = async () => {
     try {
@@ -95,13 +106,6 @@ const Register = ({ navigation }) => {
   const screenWidth = Dimensions.get("window").width;
   return (
     <LoggedOutPageLayout>
-      <Text style={[styles.text, styles.headLine]} variant="headlineMedium">
-        Sign Up
-      </Text>
-      <Text style={styles.text} variant="titleSmall">
-        It&apos;s quick and easy.
-      </Text>
-      <Divider style={styles.divider} />
       <ScrollView
         contentContainerStyle={{
           width: screenWidth,
@@ -109,6 +113,15 @@ const Register = ({ navigation }) => {
         }}
         showsVerticalScrollIndicator={true}
       >
+        <View style={styles.upperContainer}>
+          <Text style={[styles.text, styles.headLine]} variant="headlineMedium">
+            Sign Up
+          </Text>
+          <Text style={styles.text} variant="titleSmall">
+            It&apos;s quick and easy.
+          </Text>
+          <Divider style={styles.divider} />
+        </View>
         <Input
           label="First Name"
           value={firstName}
@@ -187,47 +200,34 @@ const Register = ({ navigation }) => {
           areIcons={true}
           label="Sex: "
         />
-
-        <View style={styles.textContainer}>
-          <Text style={styles.text} variant="bodyMedium">
-            By clicking Sign Up, you agree to our Terms, Data
-          </Text>
-
-          <View style={styles.termsOfServiceAction}>
-            <Text variant="bodyMedium">Policy and Cookie Policy.</Text>
-            <Button
-              mode="text"
-              onPress={() => navigation.navigate("LoginScreen")}
-            >
-              Term of Service
-            </Button>
-          </View>
+        <View style={styles.termsAndConditionsContainer}>
+          <Checkbox setChecked={setChecked} checked={checked} />
+          <Text variant="bodyMedium">Agree with</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>
+            <Text style={styles.termsAndConditionsBtn} variant="bodyMedium">
+              Terms & Conditions
+            </Text>
+          </TouchableOpacity>
         </View>
+        <Button
+          mode="contained"
+          onPress={
+            firstNameIsCorrect &&
+            lastNameIsCorrect &&
+            emailIsCorrect &&
+            confirmSecretUgbPassword &&
+            passwordIsCorrect &&
+            confirmPasswordIsCorrect &&
+            passwordsMatch &&
+            birthDate &&
+            checked &&
+            signUp
+          }
+          style={styles.signUp}
+        >
+          Sign Up
+        </Button>
       </ScrollView>
-      <Button
-        style={styles.returnToLoginPageBtn}
-        mode="text"
-        onPress={() => navigation.navigate("LoginScreen")}
-      >
-        Return to login page
-      </Button>
-      <Button
-        mode="contained"
-        onPress={
-          firstNameIsCorrect &&
-          lastNameIsCorrect &&
-          emailIsCorrect &&
-          confirmSecretUgbPassword &&
-          passwordIsCorrect &&
-          confirmPasswordIsCorrect &&
-          passwordsMatch &&
-          birthDate &&
-          signUp
-        }
-        style={styles.signUp}
-      >
-        Sign Up
-      </Button>
     </LoggedOutPageLayout>
   );
 };

@@ -12,7 +12,7 @@ import { dataValidators } from "../Utils/dataValidators";
 
 const styles = StyleSheet.create({
   divider: {
-    margin: 10,
+    margin: 8,
     width: "90%",
     padding: 1,
   },
@@ -20,12 +20,12 @@ const styles = StyleSheet.create({
     width: "90%",
   },
   marginTop: {
-    marginTop: 20,
+    marginTop: 8,
   },
 });
 
 const LoginScreen = ({ navigation }) => {
-  const [storeState, setStoreState] = useStoreContext();
+  const [store, setStore] = useStoreContext();
   const [email, setEmail] = React.useState("");
   const [emailIsCorrect, setEmailIsCorrect] = React.useState(false);
   const [password, setPassword] = React.useState("");
@@ -37,8 +37,8 @@ const LoginScreen = ({ navigation }) => {
       const auth = data?.authorization;
       if (auth) {
         await AsyncStorage.setItem("token", auth);
-        setStoreState({
-          ...storeState,
+        setStore({
+          ...store,
           user: data,
           isLoggedIn: true,
         });
@@ -82,7 +82,7 @@ const LoginScreen = ({ navigation }) => {
         Forgot Password?
       </Button>
       <Divider style={styles.divider} />
-      <Button mode="contained" onPress={() =>navigation.navigate("Register")}>
+      <Button mode="contained" onPress={() => navigation.navigate("Register")}>
         Create New Account
       </Button>
     </LoggedOutPageLayout>

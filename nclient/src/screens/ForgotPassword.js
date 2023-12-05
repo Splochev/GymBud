@@ -13,35 +13,32 @@ import { dataValidators } from "../Utils/dataValidators";
 const styles = StyleSheet.create({
   sendResetInstructionsBtn: {
     width: "60%",
+    marginTop: 8,
   },
   divider: {
     margin: 10,
     width: "90%",
     padding: 1,
   },
-  headLine: {
-    marginBottom: 10,
-    marginTop: 90,
-  },
   text: {
     width: "90%",
     textAlign: "left",
   },
   returnToLoginPageBtn: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
 });
 
 const ForgotPassword = ({ navigation }) => {
-  const storeState = useStoreContext();
+  const [store, setStore] = useStoreContext();
   const [email, setEmail] = React.useState("");
   const [emailIsCorrect, setEmailIsCorrect] = React.useState(false);
 
   const resetPassword = async () => {
     try {
       await forgottenPassword(email);
-      storeState[1]({
-        ...storeState,
+      setStore({
+        ...store,
         email: email,
       });
       setEmail("");
@@ -54,7 +51,7 @@ const ForgotPassword = ({ navigation }) => {
 
   return (
     <LoggedOutPageLayout>
-      <Text style={[styles.text, styles.headLine]} variant="headlineMedium">
+      <Text style={styles.text} variant="headlineMedium">
         Reset Password
       </Text>
       <Text style={styles.text} variant="titleSmall">
@@ -69,13 +66,6 @@ const ForgotPassword = ({ navigation }) => {
         validator={dataValidators.isEmail}
         setValidatorPassed={setEmailIsCorrect}
       />
-      <Button
-        style={styles.returnToLoginPageBtn}
-        mode="text"
-        onPress={() => navigation.navigate("LoginScreen")}
-      >
-        Return to login page
-      </Button>
       <Button
         mode="contained"
         onPress={emailIsCorrect && resetPassword}

@@ -22,7 +22,6 @@ const styles = StyleSheet.create({
   },
   headLine: {
     marginBottom: 10,
-    marginTop: 90,
   },
   textContainer: {
     width: "90%",
@@ -44,15 +43,15 @@ const styles = StyleSheet.create({
 });
 
 const ConfirmForgotPasswordCode = ({ navigation }) => {
-  const storeState = useStoreContext();
+  const [store, setStore] = useStoreContext();
   const [code, setCode] = React.useState("");
   const [codeIsCorrect, setCodeIsCorrect] = React.useState(false);
 
   const confirmForgotPasswordCode = async () => {
     try {
-      await verifyForgotPasswordCode(storeState[0].email, code);
-      storeState[1]({
-        ...storeState,
+      await verifyForgotPasswordCode(store.email, code);
+      setStore({
+        ...store,
         code: code,
       });
       navigation.navigate("ResetPassword");
@@ -74,7 +73,7 @@ const ConfirmForgotPasswordCode = ({ navigation }) => {
           reset code we have sent to:
         </Text>
         <View style={styles.emailAction}>
-          <Text>{storeState[0].email}</Text>
+          <Text>{store.email}</Text>
           <Button
             mode="text"
             onPress={() => navigation.navigate("ForgotPassword")}
@@ -91,13 +90,6 @@ const ConfirmForgotPasswordCode = ({ navigation }) => {
         validator={dataValidators.codeIsCorrect}
       />
       <Divider style={styles.divider} />
-      <Button
-        style={styles.returnToLoginPageBtn}
-        mode="text"
-        onPress={() => navigation.navigate("LoginScreen")}
-      >
-        Return to login page
-      </Button>
       <Button
         mode="contained"
         onPress={codeIsCorrect && confirmForgotPasswordCode}
