@@ -5,6 +5,7 @@ import {
   Dimensions,
   View,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import Button from "../components/Button";
 import Input from "../components/Input";
@@ -60,6 +61,14 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     flexDirection: "column",
   },
+  logo: {
+    maxHeight: 280,
+    resizeMode: "contain",
+  },
+  smallerLogo: {
+    maxHeight: 240,
+    resizeMode: "contain",
+  },
 });
 
 const Register = ({ navigation }) => {
@@ -104,6 +113,8 @@ const Register = ({ navigation }) => {
   }, [password, confirmPassword]);
 
   const screenWidth = Dimensions.get("window").width;
+  const deviceHeight = Dimensions.get("window").height;
+
   return (
     <LoggedOutPageLayout>
       <ScrollView
@@ -113,6 +124,13 @@ const Register = ({ navigation }) => {
         }}
         showsVerticalScrollIndicator={true}
       >
+        <View>
+          <Image
+            source={require("../../assets/logo-no-background-with-slogan.png")}
+            style={deviceHeight === 667 ? styles.smallerLogo : styles.logo}
+          />
+        </View>
+
         <View style={styles.upperContainer}>
           <Text style={[styles.text, styles.headLine]} variant="headlineMedium">
             Sign Up

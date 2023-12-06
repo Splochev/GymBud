@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { View, StyleSheet, ImageBackground, Image } from "react-native";
 import PropTypes from "prop-types";
 import { useStoreContext } from "../store/Store";
@@ -43,9 +43,6 @@ const styles = StyleSheet.create({
 const LoggedOutPageLayout = ({ children }) => {
   const [store] = useStoreContext();
   const deviceHeight = Dimensions.get("window").height;
-
-  useEffect(() => {console.log('currentPage', store.currentPage)}, [store.currentPage]);
-  useEffect(() => {console.log('previousPage', store.previousPage)}, [store.previousPage]);
 
   return (
     <View style={styles.container}>
