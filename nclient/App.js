@@ -6,7 +6,7 @@ import LoginScreen from "./src/screens/LoginScreen";
 import DetailsScreen from "./src/screens/DetailsScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMe } from "./src/services/userService";
-import { ActivityIndicator, PaperProvider } from "react-native-paper";
+import { ActivityIndicator, PaperProvider, DefaultTheme } from "react-native-paper";
 import { StoreContext, initialStoreState } from "./src/store/Store";
 import ForgotPassword from "./src/screens/ForgotPassword";
 import ConfirmForgotPasswordCode from "./src/screens/ConfirmForgotPasswordCode";
@@ -16,6 +16,16 @@ import NavigationBar from "./src/components/NavigationBar";
 import { LOGGED_OUT_PAGES } from "./src/Utils/constants";
 
 const Stack = createStackNavigator();
+
+const theme = {
+  ...DefaultTheme,
+  roundness: 50,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#28A745',
+    accent: 'red',
+  },
+};
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -54,7 +64,7 @@ export default function App() {
 
   if (storeState.isLoggedIn) {
     return (
-      <PaperProvider>
+      <PaperProvider theme={theme}>
         <StoreContext.Provider value={[storeState, setStoreState]}>
           <NavigationContainer>
             <Stack.Navigator initialRouteName={"Details"}>
@@ -67,7 +77,7 @@ export default function App() {
   }
 
   return (
-    <PaperProvider>
+    <PaperProvider theme={theme}>
       <StoreContext.Provider value={[storeState, setStoreState]}>
         <NavigationContainer>
           <Stack.Navigator
