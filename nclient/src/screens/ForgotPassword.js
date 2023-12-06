@@ -44,7 +44,6 @@ const ForgotPassword = ({ navigation }) => {
       setEmail("");
       navigation.navigate("ConfirmForgotPasswordCode");
     } catch (error) {
-      console.log(error);
       console.error("Error while signing in:", error);
     }
   };

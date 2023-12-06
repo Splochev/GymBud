@@ -47,7 +47,6 @@ const ResetPassword = ({ navigation }) => {
       await resetForgottenPassword(password, store.code);
       navigation.navigate("LoginScreen");
     } catch (error) {
-      console.log(error);
       console.error("Error while signing in:", error);
     }
   };
@@ -81,7 +80,7 @@ const ResetPassword = ({ navigation }) => {
         setValidatorPassed={setConfirmPasswordIsCorrect}
       />
       {!passwordsMatch && (
-        <Text style={{ color: "red" }}>Passwords do not match</Text>
+        <Text style={{ color: "red" }}>Passwords do not match</Text>  // TODO: use theme
       )}
       <Button
         mode="contained"

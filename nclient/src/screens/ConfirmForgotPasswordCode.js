@@ -56,7 +56,6 @@ const ConfirmForgotPasswordCode = ({ navigation }) => {
       });
       navigation.navigate("ResetPassword");
     } catch (error) {
-      console.log(error);
       console.error("Error while signing in:", error);
     }
   };

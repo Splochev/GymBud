@@ -44,7 +44,6 @@ const LoginScreen = ({ navigation }) => {
         });
       }
     } catch (error) {
-      console.log(error);
       console.error("Error while signing in:", error);
     }
   };

@@ -7,7 +7,7 @@ import { Dimensions } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
+    backgroundColor: "#fff",  // TODO: use theme
     flex: 1,
     justifyContent: "flex-end",
   },

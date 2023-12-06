@@ -3,7 +3,7 @@ import { Modal, Portal } from "react-native-paper";
 import PropTypes from "prop-types";
 
 const containerStyle = {
-  backgroundColor: "white",
+  backgroundColor: "white",  // TODO: use theme
   padding: 20,
   width: "85%",
   alignSelf: "center",

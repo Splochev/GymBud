@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   termsAndConditionsBtn: {
-    color: "#007AFF",
+    color: "#007AFF",  // TODO: use theme
   },
   upperContainer: {
     width: "100%",
@@ -103,7 +103,6 @@ const Register = ({ navigation }) => {
         birthDate
       );
     } catch (error) {
-      console.log(error);
       console.error("Error while signing in:", error);
     }
   };
@@ -193,7 +192,7 @@ const Register = ({ navigation }) => {
           setValidatorPassed={setConfirmPasswordIsCorrect}
         />
         {!passwordsMatch && password && confirmPassword && (
-          <Text style={{ color: "red" }}>Passwords do not match</Text>
+          <Text style={{ color: "red" }}>Passwords do not match</Text>  // TODO: use theme
         )}
         <View style={styles.datePickerInput}>
           <DatePickerInput
