@@ -37,9 +37,9 @@ module.exports = class WorkoutController {
         this.router.post('/add-workout-journal-session-exercises', AuthHelpers.loggedIn, (req, res) => this.addWorkoutJournalSessionExercises(req, res));
 
 
-        this.router.put('/add-weight-entry', AuthHelpers.loggedIn, (req, res) => this.addWeightEntry(req, res));
+        this.router.put('/add-weight-entries', AuthHelpers.loggedIn, (req, res) => this.addWeightEntries(req, res));
         this.router.put('/add-reps-entry', AuthHelpers.loggedIn, (req, res) => this.addRepsEntry(req, res));
-        this.router.get('/get-repetitions-data', AuthHelpers.loggedIn, (req, res) => this.getRepetitionsData(req, res));
+        this.router.post('/get-repetitions-data', AuthHelpers.loggedIn, (req, res) => this.getRepetitionsData(req, res));
     }
 
     async addWorkoutJournal(req, res) {
@@ -686,61 +686,94 @@ module.exports = class WorkoutController {
         }
     };
 
-    async addWeightEntry(req, res) {
+    async addWeightEntries(req, res) {
         try {
-            const weight = req.body.weight;
-            const forSet = req.body.forSet;
-            const createdOn = req.body.createdOn;
-            const dailyWorkoutDataId = req.body.dailyWorkoutDataId;
+            const weightEntires = req.body;
 
-            if (isNaN(Number(weight)) || !forSet || !createdOn || !dailyWorkoutDataId) {
-                let invalidParam = ''
-                if (isNaN(Number(weight))) {
-                    invalidParam = 'weight'
-                } else if (!forSet) {
-                    invalidParam = 'forSet'
-                } else if (!createdOn) {
-                    invalidParam = 'createdOn'
-                } else if (!dailyWorkoutDataId) {
-                    invalidParam = 'dailyWorkoutDataId'
-                }
-                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
+            if (!weightEntires || !weightEntires.length) {
+                res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid weight entries`));
                 return;
             }
-
+    
+            let createdOn = '';
+            const weightEntriesIds = weightEntires.map(we => {
+                const weight = we.weight;
+                const forSet = we.forSet;
+                createdOn = we.createdOn;
+                const dailyWorkoutDataId = we.dailyWorkoutDataId;
+    
+                if (isNaN(Number(weight)) || !forSet || !createdOn || !dailyWorkoutDataId) {
+                    let invalidParam = ''
+                    if (isNaN(Number(weight))) {
+                        invalidParam = 'weight'
+                    } else if (!forSet) {
+                        invalidParam = 'forSet'
+                    } else if (!createdOn) {
+                        invalidParam = 'createdOn'
+                    } else if (!dailyWorkoutDataId) {
+                        invalidParam = 'dailyWorkoutDataId'
+                    }
+                    res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid ${invalidParam}`));
+                    return;
+                }
+    
+               return escape(we.dailyWorkoutDataId);
+            }).join(',');
+    
             const entries = await MysqlAdapter.query(`
                 SELECT
                     *
                 FROM daily_workout_weight_entries      
                 WHERE
-                    daily_workout_data_id = ${escape(dailyWorkoutDataId)}
+                    daily_workout_data_id IN (${weightEntriesIds})
                     AND createdOn = ${escape(createdOn)}
             `);
-
-            if (entries.length) {
-                const weightEntries = JSON.parse(entries[0]['weight_entries']);
-                weightEntries[forSet] = Number(weight);
-                const entry = JSON.stringify(weightEntries)
-
-                await MysqlAdapter.query(`
-                    UPDATE daily_workout_weight_entries
-                    SET weight_entries = ${escape(entry)}
-                    WHERE
-                        daily_workout_data_id = ${escape(dailyWorkoutDataId)}
-                        AND createdOn = ${escape(createdOn)}
-                 `);
-            } else {
-                const entry = `{"${forSet}":${Number(weight)}}`;
-                await MysqlAdapter.query(`
-                    INSERT INTO daily_workout_weight_entries(daily_workout_data_id,weight_entries,createdOn)
-                        VALUES (
-                            ${escape(dailyWorkoutDataId)},
-                            ${escape(entry)},
-                            ${escape(createdOn)}
-                        )
-                 `);
+    
+            const forUpdate = [];
+            const forInsert = [];
+    
+            for (const entry of entries) {
+                const weightEntry = JSON.parse(entry['weight_entries']);
+                const foundEntryIndex = weightEntires.findIndex(we => we.dailyWorkoutDataId === entry.daily_workout_data_id);
+                if (foundEntryIndex !== -1) {
+                    weightEntry[weightEntires[foundEntryIndex].forSet] = Number(weightEntires[foundEntryIndex].weight);
+                    const entryString = JSON.stringify(weightEntry)
+    
+                    forUpdate.push({ entry: entryString, dailyWorkoutDataId: entry.daily_workout_data_id });
+                    weightEntires.splice(foundEntryIndex, 1);
+                }
             }
-
+    
+            for (const entry of weightEntires) {
+                const entryString = `{"${entry.forSet}":${Number(entry.weight)}}`;
+                forInsert.push({ entry: entryString, dailyWorkoutDataId: entry.dailyWorkoutDataId });
+            }
+    
+            await MysqlAdapter.transactionScope(async transactionQuery => {
+                if (forUpdate.length) {
+                    for (const entry of forUpdate) {
+                        await transactionQuery(`
+                            UPDATE daily_workout_weight_entries
+                            SET weight_entries = ${escape(entry.entry)}
+                            WHERE
+                                daily_workout_data_id = ${escape(entry.dailyWorkoutDataId)}
+                                AND createdOn = ${escape(createdOn)}
+                        `)
+                    }
+                }
+    
+                if (forInsert.length) {
+                    const values = [];
+                    for (const entry of forInsert) {
+                        values.push(`(${escape(entry.dailyWorkoutDataId)},${escape(entry.entry)},${escape(createdOn)})`);
+                    }
+    
+                    await transactionQuery(`
+                        INSERT INTO daily_workout_weight_entries(daily_workout_data_id,weight_entries,createdOn)
+                            VALUES ${values.join(',')}
+                    `)
+                }
+            });
             res.json({ success: true });
         } catch (error) {
             console.log(error)
@@ -812,87 +845,113 @@ module.exports = class WorkoutController {
 
     async getRepetitionsData(req, res) {
         try {
-            const dailyWorkoutDataId = req.query.dailyWorkoutDataId;
-            if (!dailyWorkoutDataId) {
+            if (!req.body || !req.body.length) {
                 res.status(409).json(ErrorHandler.GenerateError(409, ErrorHandler.ErrorTypes.bad_param, `Invalid dailyWorkoutDataId`));
                 return;
             }
 
-            const weightEntries = await MysqlAdapter.query(`
-                    SELECT * FROM daily_workout_weight_entries
-                    WHERE daily_workout_data_id = ${escape(dailyWorkoutDataId)}
-                    ORDER BY createdOn DESC
-                    LIMIT 6
-            `);
+            const dailyWorkoutDataIds = req.body;
+            const limit = dailyWorkoutDataIds.length === 1 ? 6 : 1;
+            const order = dailyWorkoutDataIds.length === 1 ? 'ASC' : 'DESC';
+            const today = parseDate(new Date(), '/');
+            const todayFilter = dailyWorkoutDataIds.length > 1 ? `AND createdOn != ${escape(today)}` : '';
 
-            const repsEntries = await MysqlAdapter.query(`
-                    SELECT * FROM daily_workout_reps_entries
-                    WHERE daily_workout_data_id = ${escape(dailyWorkoutDataId)}
-                    ORDER BY createdOn DESC
-                    LIMIT 6
-            `);
+            const weightEntries = await Promise.all(
+                dailyWorkoutDataIds.map(id => {
+                    return MysqlAdapter.query(`
+                        SELECT * FROM daily_workout_weight_entries      
+                        WHERE daily_workout_data_id = ${escape(id)} ${todayFilter}
+                        ORDER BY createdOn ${order}
+                        LIMIT ${limit}
+                    `);
+                })
+            );
+            const flatWeightEntries = weightEntries.flat();
 
-            const today = parseDate(new Date(), '/')
-            let todaysData = {};
-            const historicalEntires = {};
+            const repsEntries = await Promise.all(
+                dailyWorkoutDataIds.map(id => {
+                    return MysqlAdapter.query(`
+                        SELECT * FROM daily_workout_reps_entries      
+                        WHERE daily_workout_data_id = ${escape(id)} ${todayFilter}
+                        ORDER BY createdOn ${order}
+                        LIMIT ${limit}
+                    `);
+                })
+            );
+            const flatRepsEntries = repsEntries.flat();
 
-            for (const entry of weightEntries) {
-                const weightEntry = JSON.parse(entry['weight_entries']);
-                if (entry.createdOn === today) {
-                    for (const key of Object.keys(weightEntry)) {
-                        todaysData[key] = { weight: Number(weightEntry[key]) || '', reps: '' };
+            const resArr = [];
+            for (const dailyWorkoutDataId of dailyWorkoutDataIds) {
+                let todaysData = {};
+                const historicalEntires = {};
+                
+                for (const entry of flatWeightEntries) {
+                    if(entry.daily_workout_data_id !== dailyWorkoutDataId){
+                        continue;
                     }
-                } else {
-                    let createdOnAsString = new Date(entry.createdOn);
-                    const month = createdOnAsString.getMonth() + 1;
-                    const day = createdOnAsString.getDate();
-                    createdOnAsString = `${days[createdOnAsString.getDay()]} ${month < 10 ? `0${month}` : month}/${day < 10 ? `0${day}` : day}`;
-                    for (const key of Object.keys(weightEntry)) {
-                        const historicalEntry = { weight: Number(weightEntry[key]) || '', reps: '', date: createdOnAsString }
-                        if (historicalEntires[key]) {
-                            historicalEntires[key].push(historicalEntry)
-                        } else {
-                            historicalEntires[key] = [historicalEntry]
+
+                    const weightEntry = JSON.parse(entry['weight_entries']);
+                    if (entry.createdOn === today) {
+                        for (const key of Object.keys(weightEntry)) {
+                            todaysData[key] = { weight: Number(weightEntry[key]) || '', reps: '' };
                         }
-                    }
-                }
-            }
-
-            for (const entry of repsEntries) {
-                const repEntry = JSON.parse(entry['reps_entries']);
-                if (entry.createdOn === today) {
-                    for (const key of Object.keys(repEntry)) {
-                        if (todaysData[key]) {
-                            todaysData[key].reps = Number(repEntry[key]) || '';
-                        } else {
-                            todaysData[key] = { weight: '', reps: Number(repEntry[key]) || '' };
-                        }
-                    }
-                } else {
-                    let createdOnAsString = new Date(entry.createdOn);
-                    const month = createdOnAsString.getMonth() + 1;
-                    const day = createdOnAsString.getDate();
-                    createdOnAsString = `${days[createdOnAsString.getDay()]} ${month < 10 ? `0${month}` : month}/${day < 10 ? `0${day}` : day}`;
-                    for (const key of Object.keys(repEntry)) {
-                        if (historicalEntires[key]) {
-                            const historicalEntry = historicalEntires[key].find(he => he.date === createdOnAsString);
-                            if (historicalEntry) {
-                                historicalEntry.reps = Number(repEntry[key]) || '';
+                    } else {
+                        let createdOnAsString = new Date(entry.createdOn);
+                        const month = createdOnAsString.getMonth() + 1;
+                        const day = createdOnAsString.getDate();
+                        createdOnAsString = `${days[createdOnAsString.getDay()]} ${month < 10 ? `0${month}` : month}/${day < 10 ? `0${day}` : day}`;
+                        for (const key of Object.keys(weightEntry)) {
+                            const historicalEntry = { weight: Number(weightEntry[key]) || '', reps: '', date: createdOnAsString }
+                            if (historicalEntires[key]) {
+                                historicalEntires[key].push(historicalEntry)
                             } else {
-                                historicalEntires[key].push({ reps: Number(repEntry[key]) || '', weight: '', date: createdOnAsString });
+                                historicalEntires[key] = [historicalEntry]
                             }
-                        } else {
-                            historicalEntires[key] = [{ reps: Number(repEntry[key]) || '', weight: '', date: createdOnAsString }]
                         }
                     }
                 }
+
+                for (const entry of flatRepsEntries) {
+                    if(entry.daily_workout_data_id !== dailyWorkoutDataId){
+                        continue;
+                    }
+                    
+                    const repEntry = JSON.parse(entry['reps_entries']);
+                    if (entry.createdOn === today) {
+                        for (const key of Object.keys(repEntry)) {
+                            if (todaysData[key]) {
+                                todaysData[key].reps = Number(repEntry[key]) || '';
+                            } else {
+                                todaysData[key] = { weight: '', reps: Number(repEntry[key]) || '' };
+                            }
+                        }
+                    } else {
+                        let createdOnAsString = new Date(entry.createdOn);
+                        const month = createdOnAsString.getMonth() + 1;
+                        const day = createdOnAsString.getDate();
+                        createdOnAsString = `${days[createdOnAsString.getDay()]} ${month < 10 ? `0${month}` : month}/${day < 10 ? `0${day}` : day}`;
+                        for (const key of Object.keys(repEntry)) {
+                            if (historicalEntires[key]) {
+                                const historicalEntry = historicalEntires[key].find(he => he.date === createdOnAsString);
+                                if (historicalEntry) {
+                                    historicalEntry.reps = Number(repEntry[key]) || '';
+                                } else {
+                                    historicalEntires[key].push({ reps: Number(repEntry[key]) || '', weight: '', date: createdOnAsString });
+                                }
+                            } else {
+                                historicalEntires[key] = [{ reps: Number(repEntry[key]) || '', weight: '', date: createdOnAsString }]
+                            }
+                        }
+                    }
+                }
+
+                if (!Object.keys(todaysData).length) {
+                    todaysData = null;
+                }
+                resArr.push({ todaysData: todaysData, historicalEntires: historicalEntires });
             }
 
-            if (!Object.keys(todaysData).length) {
-                todaysData = null;
-            }
-
-            res.json({ todaysData: todaysData, historicalEntires: historicalEntires });
+            res.json(resArr);
         } catch (error) {
             console.log(error)
             res.status(500).json(ErrorHandler.GenerateError(500, ErrorHandler.ErrorTypes.server_error, 'Server error!'));
