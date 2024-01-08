@@ -452,7 +452,6 @@ const WorkoutBuilder = () => {
   }, [exercisesForMergeDisabled, exercisesForMerge]);
 
   const saveChanges = () => {
-    //setSavingChangesLoading(true);
     const tempSessionExercises = [];
     let order = 1;
 
@@ -509,18 +508,10 @@ const WorkoutBuilder = () => {
         setRefreshWorkoutJournalSessionExercises({});
       },
       (error) => {
-        console.log("LOGOUT ERROR--->", error);
+        console.error("LOGOUT ERROR--->", error);
         setRefreshWorkoutJournalSessionExercises({});
       }
     );
-
-    // console.log(sessionExercises)
-    // console.log(tempSessionExercises)
-    // console.log(selectedWorkoutSessionObj);
-    // console.log(selectedWorkoutJournalObj);
-
-    //setSavingChangesLoading(false);
-    //setSavedChanges(true);
   };
 
   const onClickMerge = () => {
@@ -1026,7 +1017,6 @@ const WorkoutBuilder = () => {
           </div>
           {showRepetitionsComponent ? null : (
             <div className={styles.saveAndResetActions}>
-              {/* <UGBButton className={styles.defaultButton} onClick={resetToDefault} btnType='outlinedPrimary' variant='outlined'>Reset To Default</UGBButton> */}
               <UGBButton
                 onClick={saveChanges}
                 btnType="primary"

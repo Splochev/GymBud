@@ -1,12 +1,26 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { List, ListItem, ListItemText } from "@material-ui/core";
+import { List, ListItem, ListItemText, makeStyles } from "@material-ui/core";
 import { UGBButton } from "../Global/UGBButton";
 import UGBLabel from "../Global/UGBLabel";
 import { postData, putData } from "../utils/FetchUtils";
 import { parseDate } from "../utils/utilFunc";
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    padding: theme.spacing(1.5),
+  },
+  applyGoalsBtn: {
+    display: "flex",
+    gap: theme.spacing(2),
+    alignItems: "baseline",
+    justifyContent: "end",
+  },
+}));
+
 const WeightAndRepsGoal = ({ exercisesList }) => {
+  const styles = useStyles();
   const [showFlag, setShowFlag] = useState(false);
   const [exerciseListWithRepetitionsData, setExerciseListWithRepetitionsData] =
     useState([]);
@@ -65,10 +79,10 @@ const WeightAndRepsGoal = ({ exercisesList }) => {
               });
 
               const goalText = `Set ${i + 1}: ${Number(weight) + li}Kg`;
-              goalEntiresText += i === 0 ? goalText : `/ ${goalText}`;
+              goalEntiresText += i === 0 ? goalText : ` / ${goalText}`;
 
               const text = `Set ${i + 1}: ${weight}Kg`;
-              historicalEntiresText += i === 0 ? text : `/ ${text}`;
+              historicalEntiresText += i === 0 ? text : ` / ${text}`;
             });
 
             tempEx.todaysData = todaysData;
@@ -113,15 +127,14 @@ const WeightAndRepsGoal = ({ exercisesList }) => {
   useEffect(() => {
     if (!exIds.length || exerciseListWithRepetitionsData.length) return;
     getRepetitionsData(exIds);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exIds]);
 
   return (
-    <div>
+    <div className={styles.container}>
       {showFlag ? (
         <UGBLabel variant="subtitle2">
-          "You need to have worked out once in order to set a goal for your next
-          workout."
+          You need to have worked out once in order to set a goal for your next
+          workout.
         </UGBLabel>
       ) : (
         <>
@@ -152,9 +165,11 @@ const WeightAndRepsGoal = ({ exercisesList }) => {
               );
             })}
           </List>
-          <UGBButton onClick={applyGoals} btnType="primary">
-            Apply Goals
-          </UGBButton>
+          <div className={styles.applyGoalsBtn}>
+            <UGBButton onClick={applyGoals} btnType="primary">
+              Apply Goals
+            </UGBButton>
+          </div>
         </>
       )}
     </div>

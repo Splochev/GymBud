@@ -739,16 +739,30 @@ module.exports = class WorkoutController {
                     weightEntry[weightEntires[foundEntryIndex].forSet] = Number(weightEntires[foundEntryIndex].weight);
                     const entryString = JSON.stringify(weightEntry)
     
-                    forUpdate.push({ entry: entryString, dailyWorkoutDataId: entry.daily_workout_data_id });
+                    const existingEntry = forUpdate.find(fi => fi.dailyWorkoutDataId === entry.daily_workout_data_id);
+                    if(existingEntry) {
+                        existingEntry.entry = existingEntry.entry.substring(0, existingEntry.entry.length - 1);
+                        existingEntry.entry += `,"${weightEntires[foundEntryIndex].forSet}":${Number(weightEntires[foundEntryIndex].weight)}}`;
+                    } else{
+                        forUpdate.push({ entry: entryString, dailyWorkoutDataId: entry.daily_workout_data_id });
+                    }
                     weightEntires.splice(foundEntryIndex, 1);
                 }
             }
-    
+
             for (const entry of weightEntires) {
                 const entryString = `{"${entry.forSet}":${Number(entry.weight)}}`;
-                forInsert.push({ entry: entryString, dailyWorkoutDataId: entry.dailyWorkoutDataId });
+
+                const existingEntry = forInsert.find(fi => fi.dailyWorkoutDataId === entry.dailyWorkoutDataId);
+                if (existingEntry) {
+                    console.log(existingEntry);
+                    existingEntry.entry = existingEntry.entry.substring(0, existingEntry.entry.length - 1);
+                    existingEntry.entry += `,"${entry.forSet}":${Number(entry.weight)}}`;
+                } else {
+                    forInsert.push({ entry: entryString, dailyWorkoutDataId: entry.dailyWorkoutDataId });
+                }
             }
-    
+            
             await MysqlAdapter.transactionScope(async transactionQuery => {
                 if (forUpdate.length) {
                     for (const entry of forUpdate) {
@@ -762,6 +776,7 @@ module.exports = class WorkoutController {
                     }
                 }
     
+
                 if (forInsert.length) {
                     const values = [];
                     for (const entry of forInsert) {
